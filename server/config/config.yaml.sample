@@ -1,0 +1,9 @@
+server:
+  address: localhost
+  port: 8082
+
+cache:
+  path: "./pool.db"
+
+auth:
+  secret: "<admin api secret>"
