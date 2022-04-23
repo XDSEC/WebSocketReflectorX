@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net"
-	"wsrx/proxy"
 )
 
 // ClientManager is a websocket manager
@@ -34,7 +33,7 @@ func (manager *ClientManager) Start() {
 		case client := <-Manager.Register:
 			log.Printf("[CONNECTED]: %s", client.ID)
 			Manager.Clients[client.ID] = client
-			go proxy.Copy(client.ID, client.Socket, client.TCP, Manager.Unregister)
+			go Copy(client.ID, client.Socket, client.TCP)
 		case clientId := <-Manager.Unregister:
 			log.Printf("[DISCONNECTED]: %s", clientId)
 			if client, ok := Manager.Clients[clientId]; ok {

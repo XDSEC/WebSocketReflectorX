@@ -1,4 +1,4 @@
-package proxy
+package mapper
 
 import (
 	"github.com/gorilla/websocket"
@@ -32,7 +32,7 @@ func chanFromConn(conn net.Conn) chan []byte {
 }
 
 // Copy accepts a websocket connection and TCP connection and copies data between them
-func Copy(id string, wsConn *websocket.Conn, tcpConn net.Conn, unregister chan string) {
+func Copy(id string, wsConn *websocket.Conn, tcpConn net.Conn) {
 	wsConnAdapter := adapter.New(wsConn)
 	wsChan := chanFromConn(wsConnAdapter)
 	tcpChan := chanFromConn(tcpConn)
@@ -41,26 +41,26 @@ func Copy(id string, wsConn *websocket.Conn, tcpConn net.Conn, unregister chan s
 		case wsData := <-wsChan:
 			if wsData == nil {
 				log.Printf("WebSocket connection closed: D: %v, S: %v", tcpConn.LocalAddr(), wsConnAdapter.RemoteAddr())
-				unregister <- id
+				Manager.Unregister <- id
 				return
 			} else {
 				_, err := tcpConn.Write(wsData)
 				if err != nil {
 					log.Println("Error writing to TCP connection:", err)
-					unregister <- id
+					Manager.Unregister <- id
 					return
 				}
 			}
 		case tcpData := <-tcpChan:
 			if tcpData == nil {
 				log.Printf("TCP connection closed: D: %v, S: %v", tcpConn.LocalAddr(), wsConnAdapter.LocalAddr())
-				unregister <- id
+				Manager.Unregister <- id
 				return
 			} else {
 				_, err := wsConnAdapter.Write(tcpData)
 				if err != nil {
 					log.Println("Error writing to WebSocket connection:", err)
-					unregister <- id
+					Manager.Unregister <- id
 					return
 				}
 			}

@@ -103,6 +103,7 @@ func GetMapperListHandler(ctx *gin.Context) {
 		ctx.Abort()
 	}
 	ctx.JSON(200, mappers)
+	ctx.SetAccepted()
 }
 
 func TrafficHandler(ctx *gin.Context) {
@@ -150,7 +151,7 @@ func TrafficHandler(ctx *gin.Context) {
 	}
 	log.Printf("Proxying traffic to %v on behalf of %v", remoteTCPConn.RemoteAddr(), conn.RemoteAddr())
 	client := &mapper.Client{
-		ID:     id + "#" + conn.RemoteAddr().String(),
+		ID:     id + "#" + ctx.ClientIP() + "[" + conn.RemoteAddr().String() + "]",
 		Socket: conn,
 		TCP:    remoteTCPConn,
 	}
