@@ -44,7 +44,7 @@ func main() {
 		}
 		wsConn, _, err := websocket.DefaultDialer.Dial(argsWithoutPros[0], nil)
 		if err != nil {
-			log.Fatal("dial:", err)
+			log.Println("dial error: ", err)
 		}
 		client := &mapper.Client{
 			ID:     uuid.NewV4().String(),
