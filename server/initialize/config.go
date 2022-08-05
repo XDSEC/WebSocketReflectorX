@@ -1,9 +1,10 @@
 package initialize
 
 import (
-	"github.com/spf13/viper"
 	"log"
 	"wsrx/server/global"
+
+	"github.com/spf13/viper"
 )
 
 func InitConfig() error {
@@ -18,8 +19,8 @@ func initViper() error {
 	v := viper.New()
 	v.SetConfigName("config")      // name of config file (without extension)
 	v.SetConfigType("yaml")        // REQUIRED if the config file does not have the extension in the name
-	v.AddConfigPath("/etc/wsrs/")  // path to look for the config file in
-	v.AddConfigPath("$HOME/.wsrs") // call multiple times to add many search paths
+	v.AddConfigPath("/etc/wsrx/")  // path to look for the config file in
+	v.AddConfigPath("$HOME/.wsrx") // call multiple times to add many search paths
 	v.AddConfigPath(".")           // optionally look for config in the working directory
 	if err := v.ReadInConfig(); err != nil {
 		log.Println("Could not access config file. maybe it is not exist?")

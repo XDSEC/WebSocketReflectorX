@@ -2,9 +2,10 @@ package initialize
 
 import (
 	"fmt"
-	"go.etcd.io/bbolt"
 	"time"
 	"wsrx/server/global"
+
+	"go.etcd.io/bbolt"
 )
 
 func InitCache() error {
