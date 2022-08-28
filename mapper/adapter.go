@@ -1,4 +1,4 @@
-package adapter
+package mapper
 
 import (
 	"errors"
@@ -47,9 +47,9 @@ func (a *Adapter) Read(b []byte) (int, error) {
 	if err != nil {
 		a.reader = nil
 
-		// EOF for the current Websocket frame, more will probably come so..
+		// EOF for the current Websocket frame, more will probably come so...
 		if err == io.EOF {
-			// .. we must hide this from the caller since our semantics are a
+			// ... we must hide this from the caller since our semantics are a
 			// stream of bytes across many frames
 			err = nil
 		}

@@ -2,7 +2,6 @@ package mapper
 
 import (
 	"github.com/gorilla/websocket"
-	"log"
 	"net"
 )
 
@@ -31,11 +30,11 @@ func (manager *ClientManager) Start() {
 	for {
 		select {
 		case client := <-Manager.Register:
-			log.Printf("[CONNECTED]: %s", client.ID)
+			//log.Printf("[CONNECTED]: %s", client.ID)
 			Manager.Clients[client.ID] = client
 			go Copy(client.ID, client.Socket, client.TCP)
 		case clientId := <-Manager.Unregister:
-			log.Printf("[DISCONNECTED]: %s", clientId)
+			//log.Printf("[DISCONNECTED]: %s", clientId)
 			if client, ok := Manager.Clients[clientId]; ok {
 				_ = client.TCP.Close()
 				_ = client.Socket.Close()

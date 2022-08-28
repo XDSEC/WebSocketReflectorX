@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"go.etcd.io/bbolt"
-	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -108,14 +107,13 @@ func GetMapperListHandler(ctx *gin.Context) {
 
 func TrafficHandler(ctx *gin.Context) {
 	id := ctx.Param("uuid")
-	log.Println("TrafficHandler", id)
 	var tcpAddr string
 	// check uuid exists and get address
 	if err := global.Cache.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte("Default"))
 		v := b.Get([]byte(id))
 		if v == nil {
-			return errors.New("mapper is invalid")
+			return errors.New("mapper not found")
 		}
 		tcpAddr = string(v)
 		return nil
@@ -149,7 +147,7 @@ func TrafficHandler(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	log.Printf("Proxying traffic to %v on behalf of %v", remoteTCPConn.RemoteAddr(), conn.RemoteAddr())
+	//log.Printf("Proxying traffic to %v on behalf of %v", remoteTCPConn.RemoteAddr(), conn.RemoteAddr())
 	client := &mapper.Client{
 		ID:     id + "#" + ctx.ClientIP() + "[" + conn.RemoteAddr().String() + "]",
 		Socket: conn,
