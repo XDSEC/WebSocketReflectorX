@@ -13,27 +13,41 @@ A port mapper that transport/tunnel a TCP connection though the websockets proto
 ### Server
 
 ```bash
-go build -o server server/entry.go
+go build -o wsrx src/entry.go
 ```
 
 `config.yaml`:
 
 ```yaml
 server:
-  address: localhost # server address
-  port: 8000 # main server port
+  address: 0.0.0.0 # server address
+  port: 1145 # main server port
 
-cache:
-  path: "./pool.db" # where to store mapper config?
+  auth:
+    enabled: true
+    auth_token: 1145141919810 # Accessing the management api
 
-auth:
-  secret: "<admin api secret>" # Accessing the management api
+  cache:
+    cache_path: ./cache.db # where to store mapper config?
+
+# config logger
+logger:
+  level: info
+  format: console
+  directory: /var/log/wsrx
+  max_age: 30
+  link_name: wsrx.latest.log
+  show_line: false
+  encode_level: CapitalLevelEncoder
+  stacktrace_key: wsrx
+  log_in_console: true
+  log_in_file: false
 ```
 
 then put config.yaml and server executable file in the same directory, run:
 
 ```bash
-./server
+./wsrx serve
 ```
 
 you can use nginx to proxy the server to a public address.
@@ -72,8 +86,7 @@ server {
 ### Client
 
 ```bash
-go build -o client client/entry.go
-./client ws://challenge.domain/traffic/<challenge id>
+./wsrx connect ws://challenge.domain/traffic/<challenge id>
 ```
 
 then the client will open a tcp server on your localhost, you can access it directly and all traffic will be tunneled through the websocket to challenge.domain.

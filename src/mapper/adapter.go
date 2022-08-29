@@ -12,20 +12,20 @@ import (
 // an adapter for representing WebSocket connection as a net.Conn
 // some caveats apply: https://github.com/gorilla/websocket/issues/441
 
-type Adapter struct {
+type MutWsConn struct {
 	conn       *websocket.Conn
 	readMutex  sync.Mutex
 	writeMutex sync.Mutex
 	reader     io.Reader
 }
 
-func New(conn *websocket.Conn) *Adapter {
-	return &Adapter{
+func New(conn *websocket.Conn) *MutWsConn {
+	return &MutWsConn{
 		conn: conn,
 	}
 }
 
-func (a *Adapter) Read(b []byte) (int, error) {
+func (a *MutWsConn) Read(b []byte) (int, error) {
 	// Read() can be called concurrently, and we mutate some internal state here
 	a.readMutex.Lock()
 	defer a.readMutex.Unlock()
@@ -58,7 +58,7 @@ func (a *Adapter) Read(b []byte) (int, error) {
 	return bytesRead, err
 }
 
-func (a *Adapter) Write(b []byte) (int, error) {
+func (a *MutWsConn) Write(b []byte) (int, error) {
 	a.writeMutex.Lock()
 	defer a.writeMutex.Unlock()
 
@@ -76,19 +76,19 @@ func (a *Adapter) Write(b []byte) (int, error) {
 	return bytesWritten, err
 }
 
-func (a *Adapter) Close() error {
+func (a *MutWsConn) Close() error {
 	return a.conn.Close()
 }
 
-func (a *Adapter) LocalAddr() net.Addr {
+func (a *MutWsConn) LocalAddr() net.Addr {
 	return a.conn.LocalAddr()
 }
 
-func (a *Adapter) RemoteAddr() net.Addr {
+func (a *MutWsConn) RemoteAddr() net.Addr {
 	return a.conn.RemoteAddr()
 }
 
-func (a *Adapter) SetDeadline(t time.Time) error {
+func (a *MutWsConn) SetDeadline(t time.Time) error {
 	if err := a.SetReadDeadline(t); err != nil {
 		return err
 	}
@@ -96,10 +96,10 @@ func (a *Adapter) SetDeadline(t time.Time) error {
 	return a.SetWriteDeadline(t)
 }
 
-func (a *Adapter) SetReadDeadline(t time.Time) error {
+func (a *MutWsConn) SetReadDeadline(t time.Time) error {
 	return a.conn.SetReadDeadline(t)
 }
 
-func (a *Adapter) SetWriteDeadline(t time.Time) error {
+func (a *MutWsConn) SetWriteDeadline(t time.Time) error {
 	return a.conn.SetWriteDeadline(t)
 }

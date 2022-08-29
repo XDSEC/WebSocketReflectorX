@@ -3,11 +3,12 @@ package mapper
 import (
 	"github.com/gorilla/websocket"
 	"net"
+	"sync"
 )
 
-// ClientManager is a websocket manager
-type ClientManager struct {
-	Clients    map[string]*Client
+// clientManagerStrut is a websocket manager
+type clientManagerStrut struct {
+	Clients    sync.Map
 	Register   chan *Client
 	Unregister chan string
 }
@@ -20,25 +21,24 @@ type Client struct {
 }
 
 // Manager define a ws server manager
-var Manager = ClientManager{
+var Manager = clientManagerStrut{
 	Register:   make(chan *Client),
 	Unregister: make(chan string),
-	Clients:    make(map[string]*Client),
+	Clients:    sync.Map{},
 }
 
-func (manager *ClientManager) Start() {
+func (manager *clientManagerStrut) Start() {
 	for {
 		select {
 		case client := <-Manager.Register:
-			//log.Printf("[CONNECTED]: %s", client.ID)
-			Manager.Clients[client.ID] = client
+			Manager.Clients.Store(client.ID, client)
 			go Copy(client.ID, client.Socket, client.TCP)
 		case clientId := <-Manager.Unregister:
-			//log.Printf("[DISCONNECTED]: %s", clientId)
-			if client, ok := Manager.Clients[clientId]; ok {
+			if value, ok := manager.Clients.Load(clientId); ok {
+				client := value.(*Client)
 				_ = client.TCP.Close()
 				_ = client.Socket.Close()
-				delete(Manager.Clients, clientId)
+				manager.Clients.Delete(clientId)
 			}
 		}
 	}

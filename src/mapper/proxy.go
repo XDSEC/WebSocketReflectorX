@@ -29,39 +29,38 @@ func chanFromConn(conn net.Conn) chan []byte {
 }
 
 // Copy accepts a websocket connection and TCP connection and copies data between them
-func Copy(id string, wsConn *websocket.Conn, tcpConn net.Conn) {
-	wsConnAdapter := New(wsConn)
-	wsChan := chanFromConn(wsConnAdapter)
+func Copy(connLabel string, wsConn *websocket.Conn, tcpConn net.Conn) {
+	mutWsConn := New(wsConn)
+	wsChan := chanFromConn(mutWsConn)
 	tcpChan := chanFromConn(tcpConn)
 	for {
 		select {
 		case wsData := <-wsChan:
 			if wsData == nil {
-				//log.Printf("WebSocket connection closed: D: %v, S: %v", tcpConn.LocalAddr(), wsConnAdapter.RemoteAddr())
-				Manager.Unregister <- id
+				//log.Printf("WebSocket connection closed: D: %v, S: %v", tcpConn.LocalAddr(), mutWsConn.RemoteAddr())
+				Manager.Unregister <- connLabel
 				return
 			} else {
 				_, err := tcpConn.Write(wsData)
 				if err != nil {
 					//log.Println("Error writing to TCP connection:", err)
-					Manager.Unregister <- id
+					Manager.Unregister <- connLabel
 					return
 				}
 			}
 		case tcpData := <-tcpChan:
 			if tcpData == nil {
-				//log.Printf("TCP connection closed: D: %v, S: %v", tcpConn.LocalAddr(), wsConnAdapter.LocalAddr())
-				Manager.Unregister <- id
+				//log.Printf("TCP connection closed: D: %v, S: %v", tcpConn.LocalAddr(), mutWsConn.LocalAddr())
+				Manager.Unregister <- connLabel
 				return
 			} else {
-				_, err := wsConnAdapter.Write(tcpData)
+				_, err := mutWsConn.Write(tcpData)
 				if err != nil {
 					//log.Println("Error writing to WebSocket connection:", err)
-					Manager.Unregister <- id
+					Manager.Unregister <- connLabel
 					return
 				}
 			}
 		}
 	}
-
 }
