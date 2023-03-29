@@ -1,0 +1,27 @@
+[package]
+name = "wsrx"
+version = "0.1.0"
+edition = "2021"
+authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
+description = "Controlled TCP-over-WebSocket forwarding tunnel."
+
+[dependencies]
+tokio = { version = "1.27", features = ["full"] }
+axum = { version = "0.6", features = [
+    "headers",
+    "ws",
+    "http2",
+    "multipart",
+    "macros",
+] }
+tokio-util = "0.7"
+tokio-stream = "0.1"
+bytes = "1.4"
+serde = { version = "1.0", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1.0"
+anyhow = "1.0"
+toml = "0.7"
+uuid = "1.3"
+base64 = "0.21"
+tokio-tungstenite = "0.18"
