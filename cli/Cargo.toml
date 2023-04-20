@@ -8,3 +8,4 @@ description = "Controlled TCP-over-WebSocket forwarding tunnel."
 [dependencies]
 wsrx = { version = "*", path = "../lib" }
 tokio = { version = "1.27", features = ["full"] }
+clap = "4.2"
