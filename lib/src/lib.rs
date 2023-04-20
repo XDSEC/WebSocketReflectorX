@@ -12,6 +12,7 @@ pub async fn proxy_axum_ws(mut ws: WebSocket, mut tcp: TcpStream) {
         tokio::select! {
             res  = ws.recv() => {
                 if let Some(msg) = res {
+                    // TODO: add pcap tcp stream dump features here
                     if let Ok(AxumMessage::Binary(msg)) = msg {
                         let _ = tcp.write_all(&msg).await;
                     }
@@ -21,6 +22,7 @@ pub async fn proxy_axum_ws(mut ws: WebSocket, mut tcp: TcpStream) {
             },
             res  = tcp.read(&mut buf) => {
                 match res {
+                    // TODO: add pcap tcp stream dump features here
                     Ok(n) => {
                         if 0 != n {
                             let _ = ws.send(AxumMessage::Binary(buf[..n].to_vec())).await;
@@ -44,6 +46,7 @@ pub async fn proxy_ws(mut ws: WebSocketStream<MaybeTlsStream<TcpStream>>, mut tc
         tokio::select! {
             res  = ws.next() => {
                 if let Some(msg) = res {
+                    // TODO: add pcap tcp stream dump features here
                     if let Ok(TungsteniteMessage::Binary(msg)) = msg {
                         let _ = tcp.write_all(&msg).await;
                     }
@@ -52,6 +55,7 @@ pub async fn proxy_ws(mut ws: WebSocketStream<MaybeTlsStream<TcpStream>>, mut tc
                 }
             },
             res  = tcp.read(&mut buf) => {
+                // TODO: add pcap tcp stream dump features here
                 match res {
                     Ok(n) => {
                         if 0 != n {
