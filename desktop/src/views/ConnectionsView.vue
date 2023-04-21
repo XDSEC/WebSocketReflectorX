@@ -132,7 +132,7 @@ onMounted(() => {
 
     timer = setInterval(() => {
         refreshConnections()
-    }, 10000)
+    }, 10000) as unknown as number
 })
 
 onBeforeUnmount(() => {
