@@ -6,6 +6,7 @@
       <router-view></router-view>
     </div>
   </div>
+  <global-toast/>
 </template>
 
 <script setup lang="ts">
@@ -14,6 +15,7 @@ import SideBar from './components/SideBar.vue'
 import TitleBar from './components/TitleBar.vue'
 import { ref } from 'vue'
 import { appWindow } from '@tauri-apps/api/window'
+import GlobalToast from './components/GlobalToast.vue'
 
 const isMaximized = ref(false)
 

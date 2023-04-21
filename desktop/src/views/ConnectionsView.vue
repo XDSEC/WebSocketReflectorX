@@ -8,7 +8,8 @@
                         <flash20-regular class="w-5 h-5 mr-2 text-success" />
                         {{ $t('activeConnections') }}
                     </h1>
-                    <div class="text-base self-center opacity-60" v-if="activeConnections.length === 0">{{ $t('empty') }}</div>
+                    <div class="text-base self-center opacity-60" v-if="activeConnections.length === 0">{{ $t('empty') }}
+                    </div>
                     <div v-for="connection in activeConnections" :key="connection.id"
                         class="flex flex-row rounded-sm hover:bg-base-content/5 backdrop-blur p-2 border-opacity-10 border-b border-base-content group">
                         <div class="flex flex-col flex-1">
@@ -33,7 +34,8 @@
                         <plug-disconnected20-regular class="w-5 h-5 mr-2 text-warning" />
                         {{ $t('inactiveConnections') }}
                     </h1>
-                    <div class="text-base self-center opacity-60" v-if="inactiveConnections.length === 0">{{ $t('empty') }}</div>
+                    <div class="text-base self-center opacity-60" v-if="inactiveConnections.length === 0">{{ $t('empty') }}
+                    </div>
                     <div v-for="connection in inactiveConnections" :key="connection.id"
                         class="flex flex-row rounded-sm hover:bg-base-content/5 backdrop-blur p-2 border-opacity-10 border-b border-base-content group">
                         <div class="flex flex-col flex-1">
@@ -59,7 +61,10 @@
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { useThemeStore } from '../stores/theme'
 import { Flash20Regular, Dismiss20Regular, Copy20Regular, PlugDisconnected20Regular } from '@vicons/fluent'
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { invoke } from '@tauri-apps/api/tauri'
+import { useToastStore } from '../stores/toast'
+
 
 export interface Connection {
     id: string
@@ -69,7 +74,47 @@ export interface Connection {
 }
 
 const theme = useThemeStore()
+const toast = useToastStore()
 
 const activeConnections = ref<Connection[]>([])
 const inactiveConnections = ref<Connection[]>([])
+let timer = 0
+
+const refreshConnections = () => {
+    invoke('refresh_latency').then(() => {
+        invoke('get_alive_connections').then((connections) => {
+            activeConnections.value = JSON.parse(connections as string)
+        }).catch((err) => {
+            toast.showMessage('error', err, 5000)
+        })
+        invoke('get_dead_connections').then((connections) => {
+            inactiveConnections.value = JSON.parse(connections as string)
+        }).catch((err) => {
+            toast.showMessage('error', err, 5000)
+        })
+    }).catch((err) => {
+        toast.showMessage('error', err, 5000)
+    })
+}
+
+onMounted(() => {
+    invoke('get_alive_connections').then((connections) => {
+        activeConnections.value = JSON.parse(connections as string)
+    }).catch((err) => {
+        toast.showMessage('error', err, 5000)
+    })
+    invoke('get_dead_connections').then((connections) => {
+        inactiveConnections.value = JSON.parse(connections as string)
+    }).catch((err) => {
+        toast.showMessage('error', err, 5000)
+    })
+
+    timer = setInterval(() => {
+        refreshConnections()
+    }, 10000)
+})
+
+onBeforeUnmount(() => {
+    clearInterval(timer)
+})
 </script>

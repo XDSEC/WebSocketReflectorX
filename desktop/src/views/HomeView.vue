@@ -5,18 +5,50 @@
         <div class="input-group p-6 max-w-xl">
             <input class="input bg-base-content/5 backdrop-blur mt-8 flex-1" placeholder="[ws/wss]://..."
                 v-model="newConnection" />
-            <button class="btn bg-base-content/5 backdrop-blur mt-8 border-none">
+            <button class="btn bg-base-content/5 backdrop-blur mt-8 border-none" @click="addConnection">
                 <send24-regular class="w-6 h-6" />
             </button>
         </div>
-        <div class="h-24"></div>
+        <div class="h-12"></div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import logo from '../assets/logo.svg'
-import {Send24Regular} from '@vicons/fluent'
+import { Send24Regular } from '@vicons/fluent'
+import { invoke } from '@tauri-apps/api/tauri'
+import { useRouter } from 'vue-router'
+import { useToastStore } from '../stores/toast'
+
 const newConnection = ref('')
+const router = useRouter()
+const toast = useToastStore()
+
+// check if the connection is a valid websocket url
+const isValidUrl = (url: string) => {
+    try {
+        let urlObj = new URL(url)
+        if (urlObj.protocol !== 'ws:' && urlObj.protocol !== 'wss:') {
+            return false
+        }
+        return true
+    } catch (e) {
+        return false
+    }
+}
+
+const addConnection = () => {
+    if (isValidUrl(newConnection.value)) {
+        invoke('add_ws_connection', { addr: newConnection.value }).then(() => {
+            newConnection.value = ''
+            router.push('/connections')
+        }).catch((err) => {
+            toast.showMessage('error', err, 5000)
+        })
+    } else {
+        toast.showMessage('error', 'Invalid URL', 5000)
+    }
+}
 
 </script>
