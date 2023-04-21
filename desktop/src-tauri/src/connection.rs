@@ -84,11 +84,9 @@ pub async fn add_ws_connection(addr: impl AsRef<str>) -> anyhow::Result<()> {
 }
 
 pub async fn remove_ws_connection(id: impl AsRef<str>) -> anyhow::Result<()> {
-    CONNECTION_MANAGER
-        .write()
-        .await
-        .connections
-        .remove(id.as_ref());
+    let mut cm = CONNECTION_MANAGER.write().await;
+    cm.connections.remove(id.as_ref());
+    cm.dead_connections.remove(id.as_ref());
     Ok(())
 }
 

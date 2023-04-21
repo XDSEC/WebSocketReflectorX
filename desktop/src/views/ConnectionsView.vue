@@ -23,10 +23,12 @@
                             </h2>
                             <p class="text-sm opacity-60">{{ connection.url }}</p>
                         </div>
-                        <button class="btn btn-sm btn-square btn-ghost hidden group-hover:inline-flex">
+                        <button class="btn btn-sm btn-square btn-ghost hidden group-hover:inline-flex"
+                            @click="copyLocalLink(`localhost:${connection.port}`)">
                             <copy20-regular class="w-5 h-5 text-success" />
                         </button>
-                        <button class="btn btn-sm btn-square btn-ghost hidden group-hover:inline-flex">
+                        <button class="btn btn-sm btn-square btn-ghost hidden group-hover:inline-flex"
+                            @click="closeConnection(connection.id)">
                             <dismiss20-regular class="w-5 h-5" />
                         </button>
                     </div>
@@ -64,6 +66,7 @@ import { Flash20Regular, Dismiss20Regular, Copy20Regular, PlugDisconnected20Regu
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { invoke } from '@tauri-apps/api/tauri'
 import { useToastStore } from '../stores/toast'
+import copy from 'copy-to-clipboard'
 
 
 export interface Connection {
@@ -97,6 +100,23 @@ const refreshConnections = () => {
     })
 }
 
+const closeConnection = (id: string) => {
+    invoke('close_connection', { id }).then(() => {
+        refreshConnections()
+    }).catch((err) => {
+        toast.showMessage('error', err, 5000)
+    })
+}
+
+const copyLocalLink = (url: string) => {
+    try {
+        copy(url)
+        toast.showMessage('success', 'Local link copied!', 5000)
+    } catch {
+        toast.showMessage('error', 'Copy failed', 5000)
+    }
+}
+
 onMounted(() => {
     invoke('get_alive_connections').then((connections) => {
         activeConnections.value = JSON.parse(connections as string)
@@ -108,6 +128,7 @@ onMounted(() => {
     }).catch((err) => {
         toast.showMessage('error', err, 5000)
     })
+    invoke('refresh_latency')
 
     timer = setInterval(() => {
         refreshConnections()
