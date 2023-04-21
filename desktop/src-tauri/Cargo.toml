@@ -1,0 +1,22 @@
+[package]
+name = "wsrx-desktop"
+version = "0.1.0"
+description = "WSRX Desktop Frontend"
+authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.2", features = [] }
+
+[dependencies]
+tauri = { version = "1.2", features = ["dialog-all", "fs-all", "protocol-all", "shell-open", "window-close", "window-hide", "window-maximize", "window-minimize", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+wsrx = {version = "0.1", path="../../lib"}
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

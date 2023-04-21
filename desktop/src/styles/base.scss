@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #app {
+    @apply w-full h-full m-0 p-0;
+}
