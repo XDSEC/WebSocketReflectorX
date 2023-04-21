@@ -38,19 +38,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: 'App v__VERSION__'
+          tagName: wsrx-desktop-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+          releaseName: 'WSRX Desktop v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-      - name: Rust Release
-        uses: manoadamro/rust-release@v1
-        with:
-          # Github Repo Owner
-          owner: XDSEC
-          # Github Repo
-          repo: WebSocketReflectorX
-          # Github Token
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # do not actually create release
-          dry_run: false
