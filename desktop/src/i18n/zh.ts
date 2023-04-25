@@ -10,4 +10,5 @@ export default {
     activeConnections: '活跃连接',
     inactiveConnections: '已断开连接',
     empty: '没有连接',
+    logs: '流量日志',
 }

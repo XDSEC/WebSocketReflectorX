@@ -19,9 +19,9 @@
         </router-link>
         <router-link
             :class="['btn no-animation btn-sm rounded-none btn-ghost text-base normal-case font-normal', theme.sideBarExpanded ? 'justify-start' : undefined]"
-            to="/settings" active-class="active-btn">
-            <settings16-regular class="w-5 h-5" />
-            <span class="ml-4" v-if="theme.sideBarExpanded">{{ $t('settings') }}</span>
+            to="/logs" active-class="active-btn">
+            <code16-regular class="w-5 h-5" />
+            <span class="ml-4" v-if="theme.sideBarExpanded">{{ $t('logs') }}</span>
         </router-link>
         <div class="flex-1"></div>
         <router-link class="btn no-animation btn-sm rounded-none btn-ghost text-base normal-case font-normal justify-start"
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { Home16Regular, Settings16Regular, Link16Regular, Info16Regular } from '@vicons/fluent'
+import { Home16Regular, Link16Regular, Info16Regular, Code16Regular } from '@vicons/fluent'
 import '../styles/effect.scss'
 import { useThemeStore } from '../stores/theme'
 import logo from '../assets/logo.svg'

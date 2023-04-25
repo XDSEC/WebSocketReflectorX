@@ -34,6 +34,15 @@ impl ConnectionManager {
 static CONNECTION_MANAGER: Lazy<Arc<RwLock<ConnectionManager>>> =
     Lazy::new(|| Arc::new(RwLock::new(ConnectionManager::new())));
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Log {
+    pub level: String,
+    pub addr: String,
+    pub message: String
+}
+
+static RUNTIME_LOG: Lazy<Arc<RwLock<Vec<Log>>>> = Lazy::new(|| Arc::new(RwLock::new(Vec::new())));
+
 pub async fn add_ws_connection(addr: impl AsRef<str>) -> anyhow::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:0").await?;
     let port = listener.local_addr()?.port();
@@ -56,25 +65,40 @@ pub async fn add_ws_connection(addr: impl AsRef<str>) -> anyhow::Result<()> {
             let (tcp, _) = match listener.accept().await {
                 Ok(tup) => tup,
                 Err(err) => {
-                    println!("failed to accept tcp connection: {:?}", err);
-                    let mut cm = CONNECTION_MANAGER.write().await;
-                    cm.connections.remove(&id);
-                    cm.dead_connections.insert(id, conn.clone());
-                    return;
+                    let mut logs = RUNTIME_LOG.write().await;
+                    logs.push(Log {
+                        level: "error".to_owned(),
+                        message: format!("TCP error: {}", err),
+                        addr: addr.clone(),
+                    });
+                    continue;
                 }
             };
-            let id = id.clone();
+            let cm = CONNECTION_MANAGER.read().await;
+            if cm.connections.get(&id).is_none() {
+                return;
+            }
+            let mut logs = RUNTIME_LOG.write().await;
+            logs.push(Log {
+                level: "info".to_owned(),
+                message: format!(
+                    "New connection established: {}",
+                    tcp.peer_addr().unwrap().to_string()
+                ),
+                addr: addr.clone(),
+            });
+            drop(logs);
             let addr = addr.clone();
-            let conn = conn.clone();
             tokio::spawn(async move {
-                match proxy_ws_addr(addr, tcp).await {
-                    Ok(()) => (),
+                match proxy_ws_addr(addr.clone(), tcp).await {
+                    Ok(_) => (),
                     Err(err) => {
-                        println!("failed to proxy tcp connection: {:?}", err);
-                        let mut cm = CONNECTION_MANAGER.write().await;
-                        cm.connections.remove(&id);
-                        cm.dead_connections.insert(id, conn);
-                        return;
+                        let mut logs = RUNTIME_LOG.write().await;
+                        logs.push(Log {
+                            level: "error".to_owned(),
+                            message: format!("WebSocket proxy error: {}", err),
+                            addr,
+                        })
                     }
                 }
             });
@@ -113,8 +137,13 @@ pub async fn refresh_latency() -> anyhow::Result<()> {
         let start = std::time::Instant::now();
         let (mut ws, _) = match tokio_tungstenite::connect_async(conn.url.as_str()).await {
             Ok(tup) => tup,
-            Err(err) => {
-                println!("failed to connect to websocket: {:?}", err);
+            Err(_) => {
+                let mut logs = RUNTIME_LOG.write().await;
+                logs.push(Log {
+                    level: "warning".to_owned(),
+                    message: format!("Dead link detected from remote server, removed."),
+                    addr: conn.url.clone(),
+                });
                 dead_conns.push(conn.id.clone());
                 continue;
             }
@@ -129,6 +158,12 @@ pub async fn refresh_latency() -> anyhow::Result<()> {
         }
     }
     Ok(())
+}
+
+pub async fn get_logs() -> String {
+    let logs = RUNTIME_LOG.read().await;
+    let logs = logs.clone();
+    serde_json::to_string(&logs).unwrap()
 }
 
 async fn proxy_ws_addr(addr: impl AsRef<str>, tcp: TcpStream) -> anyhow::Result<()> {

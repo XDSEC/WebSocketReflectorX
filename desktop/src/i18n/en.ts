@@ -9,4 +9,5 @@ export default {
     repoTips: 'Repository',
     activeConnections: 'Active Connections',
     inactiveConnections: 'Inactive Connections',
+    logs: 'Traffic Logs',
 }

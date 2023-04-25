@@ -20,6 +20,11 @@ async fn get_alive_connections() -> Result<String, String> {
 }
 
 #[tauri::command]
+async fn get_logs() -> String {
+    connection::get_logs().await
+}
+
+#[tauri::command]
 async fn get_dead_connections() -> Result<String, String> {
     match connection::get_dead_ws_connections().await {
         Ok(conns) => Ok(serde_json::to_string(&conns).unwrap()),
@@ -50,7 +55,8 @@ fn main() {
             get_alive_connections,
             get_dead_connections,
             close_connection,
-            refresh_latency
+            refresh_latency,
+            get_logs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
