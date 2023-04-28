@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
