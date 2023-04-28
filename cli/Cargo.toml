@@ -7,7 +7,7 @@ description = "Controlled TCP-over-WebSocket forwarding tunnel."
 
 [dependencies]
 wsrx = { version = "*", path = "../lib" }
-tokio = { version = "1.27", features = ["full"] }
+tokio = { version = "1.28", features = ["full"] }
 clap = {version = "4.2", features = ["cargo"]}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
