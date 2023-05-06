@@ -11,4 +11,5 @@ export default {
     inactiveConnections: '已断开连接',
     empty: '没有连接',
     logs: '流量日志',
+    bindAddr: '绑定地址'
 }

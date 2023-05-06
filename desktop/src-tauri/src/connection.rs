@@ -38,19 +38,19 @@ static CONNECTION_MANAGER: Lazy<Arc<RwLock<ConnectionManager>>> =
 pub struct Log {
     pub level: String,
     pub addr: String,
-    pub message: String
+    pub message: String,
 }
 
 static RUNTIME_LOG: Lazy<Arc<RwLock<Vec<Log>>>> = Lazy::new(|| Arc::new(RwLock::new(Vec::new())));
 
-pub async fn add_ws_connection(addr: impl AsRef<str>) -> anyhow::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:0").await?;
-    let port = listener.local_addr()?.port();
-    let url = Url::parse(addr.as_ref())?;
+pub async fn add_ws_connection(target_addr: impl AsRef<str>, bind_addr: impl AsRef<str>) -> anyhow::Result<()> {
+    let listener = TcpListener::bind(bind_addr.as_ref().to_owned() + ":0").await.unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let url = Url::parse(target_addr.as_ref()).unwrap();
     let id = format!("{}#{}", url.host_str().unwrap(), port);
     let conn = Connection {
         id: id.clone(),
-        url: addr.as_ref().to_string(),
+        url: target_addr.as_ref().to_string(),
         port,
         latency: 0,
     };
@@ -59,7 +59,7 @@ pub async fn add_ws_connection(addr: impl AsRef<str>) -> anyhow::Result<()> {
         .await
         .connections
         .insert(id.clone(), conn.clone());
-    let addr = addr.as_ref().to_string();
+    let addr = target_addr.as_ref().to_string();
     tokio::spawn(async move {
         loop {
             let (tcp, _) = match listener.accept().await {

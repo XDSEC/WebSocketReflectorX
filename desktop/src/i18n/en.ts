@@ -10,4 +10,5 @@ export default {
     activeConnections: 'Active Connections',
     inactiveConnections: 'Inactive Connections',
     logs: 'Traffic Logs',
+    bindAddr: 'bind addr',
 }

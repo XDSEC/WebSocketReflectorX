@@ -4,8 +4,8 @@
 mod connection;
 
 #[tauri::command]
-async fn add_ws_connection(addr: String) -> Result<(), String> {
-    match connection::add_ws_connection(addr).await {
+async fn add_ws_connection(target_addr: String, bind_addr: String) -> Result<(), String> {
+    match connection::add_ws_connection(target_addr, bind_addr).await {
         Ok(()) => Ok(()),
         Err(e) => Err(e.to_string()),
     }
