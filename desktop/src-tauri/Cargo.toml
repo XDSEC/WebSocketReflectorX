@@ -1,6 +1,6 @@
 [package]
 name = "wsrx-desktop"
-version = "0.1.2"
+version = "0.1.4"
 description = "WSRX Desktop Frontend"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 edition = "2021"
@@ -8,21 +8,21 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.2", features = [] }
+tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.2", features = ["dialog-all", "fs-all", "protocol-all", "shell-open", "window-close", "window-hide", "window-maximize", "window-minimize", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
+tauri = { version = "1.4", features = ["dialog-all", "fs-all", "protocol-all", "shell-open", "window-close", "window-hide", "window-maximize", "window-minimize", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 wsrx = { version = "0.1", path = "../../lib" }
-tokio = { version = "1.28", features = ["full"] }
+tokio = { version = "1.29", features = ["full"] }
 tokio-util = "0.7"
 tokio-stream = "0.1"
 tokio-tungstenite = { version = "0.18", features = ["rustls-tls-native-roots"] }
 thiserror = "1.0"
 anyhow = "1.0"
-once_cell = "1.17"
-url = "2.3"
+once_cell = "1.18"
+url = "2.4"
 log = "0.4"
 
 [features]
