@@ -1,6 +1,6 @@
 mod connection;
 
-use clap::{arg, command, crate_version};
+use clap::{arg, command, crate_version, value_parser};
 
 #[tokio::main]
 async fn main() {
@@ -15,7 +15,7 @@ async fn main() {
             arg!(
                 -p --port <PORT> "The local TCP port to listen on"
             )
-            .required(false),
+            .required(false).value_parser(value_parser!(u16)),
         )
         .get_matches();
 
