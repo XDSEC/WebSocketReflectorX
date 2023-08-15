@@ -17,7 +17,7 @@
                                 <span>{{ connection.id }}</span>
                                 <span class="opacity-80">-&gt; localhost:{{ connection.port }}</span>
                                 <span class="rounded-full bg-base-content/5 pl-3 pr-3 text-sm text-success">
-                                    {{ connection.latency }} ms
+                                    {{ connection.latency === 0 ? "--" : connection.latency }} ms
                                 </span>
                                 <span class="flex-1"></span>
                             </h2>
@@ -44,12 +44,13 @@
                             <h2 class="flex flex-row items-center space-x-4">
                                 <span>{{ connection.id }}</span>
                                 <span class="rounded-full bg-base-content/5 pl-3 pr-3 text-sm text-warning">
-                                    {{ connection.latency }} ms
+                                    {{ connection.latency === 0 ? "--" : connection.latency }} ms
                                 </span>
                             </h2>
                             <p class="text-sm opacity-60">{{ connection.url }}</p>
                         </div>
-                        <button class="btn btn-sm btn-square btn-ghost hidden group-hover:inline-flex">
+                        <button class="btn btn-sm btn-square btn-ghost hidden group-hover:inline-flex"
+                            @click="closeConnection(connection.id)">
                             <dismiss20-regular class="w-5 h-5" />
                         </button>
                     </div>

@@ -43,11 +43,19 @@ pub struct Log {
 
 static RUNTIME_LOG: Lazy<Arc<RwLock<Vec<Log>>>> = Lazy::new(|| Arc::new(RwLock::new(Vec::new())));
 
-pub async fn add_ws_connection(target_addr: impl AsRef<str>, bind_addr: impl AsRef<str>) -> anyhow::Result<()> {
-    let listener = TcpListener::bind(bind_addr.as_ref().to_owned() + ":0").await.unwrap();
-    let port = listener.local_addr().unwrap().port();
-    let url = Url::parse(target_addr.as_ref()).unwrap();
-    let id = format!("{}#{}", url.host_str().unwrap(), port);
+pub async fn add_ws_connection(
+    target_addr: impl AsRef<str>,
+    bind_addr: impl AsRef<str>,
+) -> anyhow::Result<()> {
+    let listener = TcpListener::bind(bind_addr.as_ref().trim().to_owned() + ":0").await?;
+    let port = listener.local_addr()?.port();
+    let url = Url::parse(target_addr.as_ref().trim())?;
+    let id = format!(
+        "{}#{}",
+        url.host_str()
+            .ok_or_else(|| anyhow::anyhow!("extract URL host failed"))?,
+        port
+    );
     let conn = Connection {
         id: id.clone(),
         url: target_addr.as_ref().to_string(),
@@ -135,20 +143,42 @@ pub async fn refresh_latency() -> anyhow::Result<()> {
     let mut dead_conns = Vec::new();
     for (_, conn) in cm.connections.iter_mut() {
         let start = std::time::Instant::now();
-        let (mut ws, _) = match tokio_tungstenite::connect_async(conn.url.as_str()).await {
-            Ok(tup) => tup,
-            Err(_) => {
+        match reqwest::get(
+            conn.url
+                .as_str()
+                .replace("wss://", "https://")
+                .replace("ws://", "http://"),
+        )
+        .await
+        {
+            Ok(resp) => {
+                if !resp.status().is_success() {
+                    let mut logs = RUNTIME_LOG.write().await;
+                    logs.push(Log {
+                        level: "warning".to_owned(),
+                        message: format!(
+                            "Remote server returned non-200 status code: {}, removing link.",
+                            resp.status()
+                        ),
+                        addr: conn.url.clone(),
+                    });
+                    dead_conns.push(conn.id.clone());
+                    continue;
+                }
+            }
+            Err(err) => {
                 let mut logs = RUNTIME_LOG.write().await;
                 logs.push(Log {
-                    level: "warning".to_owned(),
-                    message: format!("Dead link detected from remote server, removed."),
+                    level: "error".to_owned(),
+                    message: format!(
+                        "Can not connect to remote server with reason: {err}, removing link."
+                    ),
                     addr: conn.url.clone(),
                 });
                 dead_conns.push(conn.id.clone());
                 continue;
             }
         };
-        let _ = ws.close(None).await;
         conn.latency = start.elapsed().as_millis() as u32;
     }
     for id in dead_conns {

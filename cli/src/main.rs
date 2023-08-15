@@ -17,20 +17,27 @@ async fn main() {
             )
             .required(false).value_parser(value_parser!(u16)),
         )
+        .arg(
+            arg!(
+                -g --global "Listen on all interfaces"
+            )
+            .required(false).value_parser(value_parser!(bool)),
+        )
         .get_matches();
 
     let url = matches
         .get_one::<String>("url")
         .expect("The aim WebSocket URL is required")
         .to_string();
+    let bind_global = matches.get_one::<bool>("global").unwrap_or(&false).to_owned();
     match matches.get_one::<u16>("port") {
         Some(port) => {
-            connection::connect(url, Some(port.to_owned()))
+            connection::connect(url, Some(port.to_owned()), bind_global)
                 .await
                 .expect("Failed to connect to WebSocket server");
         }
         None => {
-            connection::connect(url, None)
+            connection::connect(url, None, bind_global)
                 .await
                 .expect("Failed to connect to WebSocket server");
         }
