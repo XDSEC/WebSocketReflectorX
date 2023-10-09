@@ -1,7 +1,7 @@
 {
   "name": "desktop",
   "private": true,
-  "version": "0.1.5",
+  "version": "0.1.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,32 +10,32 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@fontsource/jetbrains-mono": "^4.5.12",
-    "@tauri-apps/api": "^1.2.0",
-    "@types/uuid": "^9.0.1",
+    "@fontsource/jetbrains-mono": "^5.0.15",
+    "@tauri-apps/api": "^1.5.0",
+    "@types/uuid": "^9.0.5",
     "@vicons/fluent": "^0.12.0",
     "copy-to-clipboard": "^3.3.3",
-    "daisyui": "^2.51.5",
+    "daisyui": "^3.9.2",
     "moment": "^2.29.4",
-    "overlayscrollbars": "^2.1.1",
-    "overlayscrollbars-vue": "^0.5.1",
-    "pinia": "^2.0.35",
-    "pinia-plugin-persistedstate": "^3.1.0",
-    "sass": "^1.62.0",
-    "uuid": "^9.0.0",
-    "vue": "^3.2.47",
-    "vue-i18n": "^9.2.2",
-    "vue-router": "^4.1.6"
+    "overlayscrollbars": "^2.3.2",
+    "overlayscrollbars-vue": "^0.5.5",
+    "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
+    "sass": "^1.69.0",
+    "uuid": "^9.0.1",
+    "vue": "^3.3.4",
+    "vue-i18n": "^9.5.0",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.3",
-    "@types/node": "^18.15.13",
-    "@vitejs/plugin-vue": "^4.1.0",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.23",
-    "tailwindcss": "^3.3.1",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.1",
-    "vue-tsc": "^1.4.1"
+    "@tauri-apps/cli": "^1.5.2",
+    "@types/node": "^20.8.3",
+    "@vitejs/plugin-vue": "^4.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11",
+    "vue-tsc": "^1.8.18"
   }
 }

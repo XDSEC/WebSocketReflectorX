@@ -1,6 +1,6 @@
 [package]
 name = "wsrx-desktop"
-version = "0.1.5"
+version = "0.1.6"
 description = "WSRX Desktop Frontend"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 edition = "2021"
