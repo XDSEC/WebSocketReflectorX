@@ -91,7 +91,7 @@ pub async fn add_ws_connection(
                 level: "info".to_owned(),
                 message: format!(
                     "New connection established: {}",
-                    tcp.peer_addr().unwrap().to_string()
+                    tcp.peer_addr().unwrap()
                 ),
                 addr: addr.clone(),
             });
