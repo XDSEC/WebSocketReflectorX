@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
@@ -27,7 +27,7 @@ chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1.0"
 anyhow = "1.0"
 toml = "0.8"
-uuid = "1.4"
+uuid = "1.5"
 base64 = "0.21"
 tokio-tungstenite = { version = "0.20", features = ["rustls-tls-native-roots"] }
 tracing = "0.1"
