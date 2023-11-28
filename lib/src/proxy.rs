@@ -1,10 +1,18 @@
-use axum::extract::ws::{Message as AxumMessage, WebSocket};
-use futures_util::{SinkExt, StreamExt};
+
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
-use tokio_tungstenite::MaybeTlsStream;
-use tokio_tungstenite::{tungstenite::Message as TungsteniteMessage, WebSocketStream};
 
+#[cfg(feature="cli")]
+use tokio_tungstenite::MaybeTlsStream;
+#[cfg(feature="cli")]
+use tokio_tungstenite::{tungstenite::Message as TungsteniteMessage, WebSocketStream};
+#[cfg(feature="cli")]
+use futures_util::{SinkExt, StreamExt};
+
+#[cfg(feature="web")]
+use axum::extract::ws::{Message as AxumMessage, WebSocket};
+
+#[cfg(feature="web")]
 /// Proxy a axum websocket connection to a tcp connection
 ///
 /// # Arguments
@@ -42,6 +50,7 @@ pub async fn proxy_axum_ws(mut ws: WebSocket, mut tcp: TcpStream) -> anyhow::Res
     }
 }
 
+#[cfg(feature="cli")]
 /// Proxy a tungstenite websocket connection to a tcp connection
 ///
 /// # Arguments
