@@ -1,22 +1,22 @@
 [package]
 name = "wsrx-cli"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
 
 [dependencies]
 wsrx = { version = "0.1", path = "../lib", default-features = false, features = ["cli"]}
-tokio = { version = "1.34", features = ["full"] }
+tokio = { version = "1.35", features = ["full"] }
 clap = {version = "4.4", features = ["cargo"]}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio-util = "0.7"
 tokio-stream = "0.1"
-tokio-tungstenite = { version = "0.20", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.21", features = ["rustls-tls-native-roots"] }
 thiserror = "1.0"
 anyhow = "1.0"
-once_cell = "1.18"
+once_cell = "1.19"
 url = "2.5"
 log = "0.4"
 simple_logger = "4.3"
