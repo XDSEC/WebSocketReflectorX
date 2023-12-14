@@ -67,7 +67,7 @@ import { Flash20Regular, Dismiss20Regular, Copy20Regular, PlugDisconnected20Regu
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { invoke } from '@tauri-apps/api/tauri'
 import { useToastStore } from '../stores/toast'
-import copy from 'copy-to-clipboard'
+import { writeText } from '@tauri-apps/api/clipboard'
 
 
 export interface Connection {
@@ -110,12 +110,11 @@ const closeConnection = (id: string) => {
 }
 
 const copyLocalLink = (url: string) => {
-    try {
-        copy(url)
+    writeText(url).then((res) => {
         toast.showMessage('success', 'Local link copied!', 5000)
-    } catch {
+    }).catch((err) => {
         toast.showMessage('error', 'Copy failed', 5000)
-    }
+    })
 }
 
 onMounted(() => {
