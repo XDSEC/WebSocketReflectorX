@@ -15,6 +15,8 @@ enum WsrxCli {
         #[clap(short, long)]
         /// The admin and ws http port to listen on.
         port: Option<u16>,
+        #[clap(short, long)]
+        secret: Option<String>,
     },
     /// Launch wsrx client.
     Connect {
@@ -33,7 +35,7 @@ enum WsrxCli {
 async fn main() {
     let cli = WsrxCli::parse();
     match cli {
-        WsrxCli::Daemon { host, port } => cli::daemon::launch_daemon(host, port).await,
+        WsrxCli::Daemon { host, port, secret } => cli::daemon::launch_daemon(host, port, secret).await,
         WsrxCli::Connect {
             address,
             host,
