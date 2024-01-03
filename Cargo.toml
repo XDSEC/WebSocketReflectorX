@@ -1,0 +1,3 @@
+[workspace]
+members = ["wsrx", "wsrx-desktop"]
+resolver = "2"

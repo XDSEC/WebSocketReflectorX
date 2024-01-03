@@ -1,0 +1,11 @@
+[package]
+name = "wsrx-desktop"
+version = "0.1.13"
+edition = "2021"
+resolver = "2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+adw = {version = "0.5", package = "libadwaita", features = ["v1_4"]}
+gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
