@@ -1,5 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
 
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 1)
+set(VERSION_PATCH 0)
+
+execute_process(
+    COMMAND git describe --always --dirty
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set(FULL_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.g${GIT_VERSION}")
+message(STATUS "Current build version: ${FULL_VERSION}")
+
 project(
   wsrx
     LANGUAGES C CXX
@@ -58,3 +71,5 @@ qt_standard_project_setup()
 add_subdirectory(desktop)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+include(ExternalProject)
