@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/resources">
     <file>assets/add-square-multiple.svg</file>
+    <file>assets/arrow-clockwise.svg</file>
     <file>assets/arrow-counterclockwise.svg</file>
     <file>assets/chevron-down.svg</file>
     <file>assets/chevron-left.svg</file>

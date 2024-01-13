@@ -21,7 +21,7 @@ Button {
         color: Style.palette.primary
         width: 4
         radius: 2
-        height: root.isCurrent ? parent.height - 12 : 0
+        height: root.isCurrent ? parent.height - 16 : 0
 
         Behavior on height {
             NumberAnimation {

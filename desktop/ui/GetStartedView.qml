@@ -35,6 +35,7 @@ Item {
         spacing: 8
 
         anchors.top: parent.verticalCenter
+        anchors.topMargin: 32
         anchors.horizontalCenter: parent.horizontalCenter
         height: root.listenEditExtended ? 40 : 0
 
@@ -49,14 +50,23 @@ Item {
             id: refreshListenButton
             display: AbstractButton.IconOnly
             height: 40
-            icon.source: "qrc:/resources/assets/arrow-counterclockwise.svg"
+            icon.source: "qrc:/resources/assets/arrow-clockwise.svg"
             icon.width: 20
             icon.height: 20
             borderWidth: 0
             hoverEnabled: true
+            rotation: 0
+
+            Behavior on rotation {
+                NumberAnimation {
+                    duration: Style.midAnimationDuration
+                    easing.type: Easing.InOutQuad
+                }
+            }
 
             onClicked: {
                 ui.refreshAvailableAddresses();
+                rotation = Math.ceil(rotation / 180) * 180 + 180;
             }
             
             ToolTip {
