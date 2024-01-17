@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use std::{collections::HashMap, sync::Arc, time::Duration, net::ToSocketAddrs};
 
 use axum::{
     body::Body,
@@ -10,7 +10,6 @@ use axum::{
 };
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
 use thiserror::Error;
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -71,7 +70,7 @@ impl Pool {
     }
 
     async fn create_ws_tunnel(&mut self, ws_key: String, to: String) -> Result<(), WsrxCliError> {
-        let _tcp_addr: SocketAddr = to.parse().map_err(|_| WsrxCliError::InvalidSocketAddr)?;
+        let _tcp_addr = to.to_socket_addrs().map_err(|_| WsrxCliError::InvalidSocketAddr)?;
         self.connections.insert(
             ws_key.clone(),
             Connection {
@@ -89,9 +88,10 @@ impl Pool {
         tcp_addr: String,
         to: String,
     ) -> Result<(), WsrxCliError> {
-        let tcp_addr_obj: SocketAddr = tcp_addr
-            .parse()
+        let mut tcp_addr_obj = tcp_addr
+            .to_socket_addrs()
             .map_err(|_| WsrxCliError::InvalidSocketAddr)?;
+        let tcp_addr_obj = tcp_addr_obj.next().ok_or(WsrxCliError::InvalidSocketAddr)?;
         self.connections.insert(
             tcp_addr.clone(),
             Connection {
