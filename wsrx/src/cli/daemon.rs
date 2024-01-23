@@ -93,7 +93,7 @@ impl Pool {
             .map_err(|_| WsrxCliError::InvalidSocketAddr)?;
         let tcp_addr_obj = tcp_addr_obj.next().ok_or(WsrxCliError::InvalidSocketAddr)?;
         self.connections.insert(
-            tcp_addr.clone(),
+            to.clone(),
             Connection {
                 ws: to.clone(),
                 tcp: tcp_addr.clone(),
