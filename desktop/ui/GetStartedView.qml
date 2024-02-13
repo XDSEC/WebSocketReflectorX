@@ -133,6 +133,7 @@ Item {
         }
 
         TextBox {
+            id: urlTextEdit
             width: 420
             height: 40
             placeholder: "[ws|wss]://..."
@@ -145,8 +146,14 @@ Item {
             icon.width: 20
             icon.height: 20
             borderWidth: 0
+            
+            onClicked: {
+                let bindAddr = addressCombo.currentText;
+                let bindPort = portEdit.inputText;
+                let targetUrl = urlTextEdit.inputText;
+                api.launchClient(bindAddr, bindPort, targetUrl);
+                ui.page = 1;
+            }
         }
-
     }
-
 }

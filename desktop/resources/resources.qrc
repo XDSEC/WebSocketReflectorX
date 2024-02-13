@@ -32,6 +32,8 @@
     <file>assets/weather-moon.svg</file>
     <file>assets/weather-sunny.svg</file>
     <file>assets/web-asset.svg</file>
+    <file>assets/plug-disconnected.svg</file>
+    <file>assets/flash-on.svg</file>
     <file>fonts/JetBrainsMono-Regular.ttf</file>
   </qresource>
 </RCC>

@@ -11,6 +11,7 @@
 Ui::Ui(QObject* parent) {
     m_uiEngine = new QQmlEngine(this);
     m_translator = new QTranslator(this);
+    m_api = new Api(this);
     auto ok =
         m_translator->load(QString(":/resources/i18n/%1.qm").arg("zh_CN"));
     if (!ok) {
@@ -18,6 +19,11 @@ Ui::Ui(QObject* parent) {
     }
     QApplication::installTranslator(m_translator);
     m_uiEngine->rootContext()->setContextProperty("ui", this);
+    m_uiEngine->rootContext()->setContextProperty("api", m_api);
+    m_uiEngine->rootContext()->setContextProperty("activeConnectionList",
+                                                  m_api->activeConnectionList());
+    m_uiEngine->rootContext()->setContextProperty("historyConnectionList",
+                                                  m_api->historyConnectionList());
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));
@@ -60,6 +66,7 @@ void Ui::requestToQuit() {
     m_window->deleteLater();
     m_uiComponent->deleteLater();
     m_uiEngine->deleteLater();
+    m_api->closeDaemon();
     QApplication::exit(0);
 }
 

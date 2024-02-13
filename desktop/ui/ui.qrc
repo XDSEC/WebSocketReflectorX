@@ -10,5 +10,6 @@
     <file>SideBar.qml</file>
     <file>TitleBar.qml</file>
     <file>VerticalTab.qml</file>
+    <file>ConnectionDetail.qml</file>
   </qresource>
 </RCC>

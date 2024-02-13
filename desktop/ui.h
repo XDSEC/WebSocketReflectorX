@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QCloseEvent>
+#include "api.h"
 
 class QQmlEngine;
 class QQmlComponent;
@@ -18,6 +20,7 @@ class Ui : public QObject {
     QTranslator* m_translator{};
     quint8 m_page = 0;
     QStringList m_availableAddresses {"127.0.0.1", "0.0.0.0"};
+    Api *m_api;
 
    public:
     explicit Ui(QObject* parent = nullptr);

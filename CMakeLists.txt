@@ -47,8 +47,8 @@ endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(QT_MIN_VERSION 6.5.0)
-find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Quick Gui QuickControls2 Widgets Network Concurrent)
-set(QT_LIBRARIES Qt6::Core Qt6::Widgets Qt6::Network Qt6::Quick Qt6::Gui Qt6::QuickControls2 Qt6::Concurrent)
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Quick Gui QuickControls2 Widgets Network Concurrent WebSockets Core5Compat)
+set(QT_LIBRARIES Qt6::Core Qt6::Widgets Qt6::Network Qt6::Quick Qt6::Gui Qt6::QuickControls2 Qt6::Concurrent Qt6::WebSockets Qt6::Core5Compat)
 
 if(APPLE)
     find_package(Qt6 REQUIRED COMPONENTS MacExtras)
