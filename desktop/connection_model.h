@@ -10,11 +10,11 @@ class ConnectionModel : public QObject {
     QString websocketAddress() const;
     QString tcpAddress() const;
     QString remoteAddress() const;
-    uint lagency() const;
+    uint latency() const;
     private:
     
     QString m_wsAddr;
     QString m_tcpAddr;
     QString m_remoteAddr;
-    uint m_lagency;
+    uint m_latency;
 };

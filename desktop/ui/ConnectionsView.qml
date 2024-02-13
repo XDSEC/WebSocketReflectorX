@@ -79,7 +79,7 @@ Item {
                 remoteAddr: remoteAddress
                 tcpAddr: tcpAddress
                 wsAddr: websocketAddress
-                lagency: lagency
+                latency: latency
                 height: 70
             }
         }
@@ -154,7 +154,7 @@ Item {
                 remoteAddr: remoteAddress
                 tcpAddr: tcpAddress
                 wsAddr: websocketAddress
-                lagency: lagency
+                latency: latency
                 height: 70
             }
         }

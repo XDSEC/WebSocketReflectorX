@@ -11,7 +11,7 @@ class ConnectionListModel : public QAbstractListModel {
         WebsocketAddressRole = Qt::UserRole + 1,
         TcpAddressRole,
         RemoteAddressRole,
-        LagencyRole
+        LatencyRole
     };
     explicit ConnectionListModel(QObject *parent = nullptr);
 

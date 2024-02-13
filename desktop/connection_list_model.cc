@@ -18,8 +18,8 @@ QVariant ConnectionListModel::data(const QModelIndex &index, int role) const {
                 return m_connectionList->at(index.row())->tcpAddress();
             case RemoteAddressRole:
                 return m_connectionList->at(index.row())->remoteAddress();
-            case LagencyRole:
-                return m_connectionList->at(index.row())->lagency();
+            case LatencyRole:
+                return m_connectionList->at(index.row())->latency();
             default:
                 return QVariant();
         }
@@ -32,7 +32,7 @@ QHash<int, QByteArray> ConnectionListModel::roleNames() const {
     roles[WebsocketAddressRole] = "websocketAddress";
     roles[TcpAddressRole] = "tcpAddress";
     roles[RemoteAddressRole] = "remoteAddress";
-    roles[LagencyRole] = "lagency";
+    roles[LatencyRole] = "latency";
     return roles;
 }
 

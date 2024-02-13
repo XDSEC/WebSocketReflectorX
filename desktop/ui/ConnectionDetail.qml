@@ -10,7 +10,7 @@ Item {
     property string remoteAddr
     property string tcpAddr
     property string wsAddr
-    property int lagency
+    property int latency
 
     height: 70
 
@@ -48,7 +48,7 @@ Item {
                                 text: remoteAddr + " -> " + tcpAddr
                             }
                             Label {
-                                text: lagency + " ms"
+                                text: latency + " ms"
                                 color: type == "active" ? "green" : "yellow"
                             }
                         }
