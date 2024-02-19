@@ -1,10 +1,10 @@
+#include "ui.h"
+#include "variables.h"
 #include <QApplication>
 #include <QFont>
 #include <QFontDatabase>
-#include "variables.h"
-#include "ui.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     QApplication::setApplicationName("wsrx");
@@ -12,7 +12,8 @@ int main(int argc, char* argv[]) {
     QApplication::setOrganizationDomain("tech.woooo.wsrx");
     QApplication::setOrganizationName("Ret2Shell");
 
-    QFontDatabase::addApplicationFont(":/resources/fonts/JetBrainsMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(
+        ":/resources/fonts/JetBrainsMono-Regular.ttf");
     auto defaultFont = QFont("JetBrains Mono");
     QApplication::setFont(defaultFont);
 
