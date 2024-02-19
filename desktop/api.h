@@ -35,7 +35,7 @@ class Api : public QObject {
                                   const QString &targetUrl);
     Q_INVOKABLE void cancelClient(const QString &remoteAddr,
                                   const QString &wsAddr, const QString &tcpAddr,
-                                  const qint8 latency, const QString &type);
+                                  const qint32 latency, const QString &type);
   private slots:
     void onDaemonOutput();
 };

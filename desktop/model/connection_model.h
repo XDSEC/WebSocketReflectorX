@@ -9,18 +9,18 @@ class ConnectionModel : public QObject {
                              const QString &remoteAddr = "",
                              const QString &wsAddr = "",
                              const QString &tcpAddr = "",
-                             const qint8 latency = -1);
+                             const qint32 latency = -1);
     ~ConnectionModel();
     QString websocketAddress() const;
     QString tcpAddress() const;
     QString remoteAddress() const;
-    qint8 latency() const;
+    qint32 latency() const;
 
-    void setLatency(qint8 latency);
+    void setLatency(qint32 latency);
 
   private:
     QString m_wsAddr;
     QString m_tcpAddr;
     QString m_remoteAddr;
-    qint8 m_latency;
+    qint32 m_latency;
 };

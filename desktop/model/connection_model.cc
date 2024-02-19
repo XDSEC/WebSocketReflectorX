@@ -2,7 +2,7 @@
 
 ConnectionModel::ConnectionModel(QObject *parent, const QString &remoteAddr,
                                  const QString &wsAddr, const QString &tcpAddr,
-                                 const qint8 latency)
+                                 const qint32 latency)
     : QObject(parent) {
     m_wsAddr = wsAddr;
     m_tcpAddr = tcpAddr;
@@ -16,8 +16,8 @@ QString ConnectionModel::tcpAddress() const { return m_tcpAddr; }
 
 QString ConnectionModel::remoteAddress() const { return m_remoteAddr; }
 
-qint8 ConnectionModel::latency() const { return m_latency; }
+qint32 ConnectionModel::latency() const { return m_latency; }
 
-void ConnectionModel::setLatency(qint8 latency) { m_latency = latency; }
+void ConnectionModel::setLatency(qint32 latency) { m_latency = latency; }
 
 ConnectionModel::~ConnectionModel() = default;

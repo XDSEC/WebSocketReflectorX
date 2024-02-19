@@ -15,7 +15,7 @@ class Maintainer : public QObject {
 
   signals:
     void connectionUnreachable(const QString &remoteAddr, const QString &wsAddr,
-                               const QString &tcpAddr, const qint8 latency,
+                               const QString &tcpAddr, const qint32 latency,
                                const QString &type = "active");
   public slots:
     void updateConnectionList();
@@ -30,5 +30,5 @@ class Maintainer : public QObject {
     QNetworkAccessManager *m_networkManager;
     QList<ConnectionModel *> *m_connectionList;
     QHash<QString, quint64> *m_pingTimestamps;
-    QHash<QString, qint8> *m_failedRecords;
+    QHash<QString, qint32> *m_failedRecords;
 };

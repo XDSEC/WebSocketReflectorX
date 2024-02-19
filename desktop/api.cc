@@ -90,7 +90,7 @@ Q_INVOKABLE void Api::launchClient(const QString &bindAddr,
 
 Q_INVOKABLE void Api::cancelClient(const QString &remoteAddr,
                                    const QString &wsAddr,
-                                   const QString &tcpAddr, const qint8 latency,
+                                   const QString &tcpAddr, const qint32 latency,
                                    const QString &type) {
     if (type == "active") {
         QJsonObject dataJson;

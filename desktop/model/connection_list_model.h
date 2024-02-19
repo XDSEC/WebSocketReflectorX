@@ -23,12 +23,12 @@ class ConnectionListModel : public QAbstractListModel {
                                int role) override;
 
     void insertData(const QString &remoteAddr, const QString &wsAddr,
-                    const QString &tcpAddr, const qint8 latency = -1);
+                    const QString &tcpAddr, const qint32 latency = -1);
     void removeData(const QString &remoteAddr);
 
     int dataCount() const;
     QList<ConnectionModel *> *connectionList() const;
-    bool updateLatency(const QString &remoteAddr, qint8 latency);
+    bool updateLatency(const QString &remoteAddr, qint32 latency);
 
   private:
     QList<ConnectionModel *> *m_connectionList;

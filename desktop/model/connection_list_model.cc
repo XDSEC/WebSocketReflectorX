@@ -39,7 +39,7 @@ QHash<int, QByteArray> ConnectionListModel::roleNames() const {
 void ConnectionListModel::insertData(const QString &remoteAddr,
                                      const QString &wsAddr,
                                      const QString &tcpAddr,
-                                     const qint8 latency) {
+                                     const qint32 latency) {
     for (int i = 0; i < m_connectionList->size(); i++) {
         if (m_connectionList->at(i)->remoteAddress() == remoteAddr) {
             return;
@@ -66,7 +66,7 @@ void ConnectionListModel::removeData(const QString &remoteAddr) {
 int ConnectionListModel::dataCount() const { return m_connectionList->size(); }
 
 bool ConnectionListModel::updateLatency(const QString &remoteAddr,
-                                        qint8 latency) {
+                                        qint32 latency) {
     for (int i = 0; i < m_connectionList->size(); i++) {
         if (m_connectionList->at(i)->remoteAddress() == remoteAddr) {
             QModelIndex index = createIndex(i, 0);

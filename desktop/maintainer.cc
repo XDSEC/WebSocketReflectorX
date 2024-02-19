@@ -6,7 +6,7 @@ Maintainer::Maintainer(QObject *parent,
     : QObject(parent) {
     m_maintainModel = activeConnectionList;
     m_pingTimestamps = new QHash<QString, quint64>();
-    m_failedRecords = new QHash<QString, qint8>();
+    m_failedRecords = new QHash<QString, qint32>();
 
     m_timer = new QTimer(this);
     m_timer->setInterval(3000);
@@ -36,11 +36,13 @@ void Maintainer::pingConnections() {
             qDebug() << "invalid scheme: " << url.scheme();
         }
         QString remoteAddr = connection->remoteAddress();
-        QNetworkRequest req = QNetworkRequest(url);
-        req.setRawHeader("remote-addr", remoteAddr.toUtf8());
-        quint64 start = QDateTime::currentMSecsSinceEpoch();
-        m_pingTimestamps->insert(remoteAddr, start);
-        m_networkManager->sendCustomRequest(req, "OPTIONS");
+        if (!m_pingTimestamps->contains(remoteAddr)) {
+            QNetworkRequest req = QNetworkRequest(url);
+            req.setRawHeader("remote-addr", remoteAddr.toUtf8());
+            quint64 start = QDateTime::currentMSecsSinceEpoch();
+            m_pingTimestamps->insert(remoteAddr, start);
+            m_networkManager->sendCustomRequest(req, "OPTIONS");
+        }
     }
 }
 
@@ -59,7 +61,7 @@ void Maintainer::onNetworkReply(QNetworkReply *reply) {
         }
         return;
     }
-    qint8 latency = end - start;
+    qint32 latency = end - start;
     if (!m_maintainModel->updateLatency(remoteAddr, latency)) {
         qWarning() << "failed to update latency";
     }
@@ -78,7 +80,7 @@ void Maintainer::sendConnectionUnreachable(const QString &remoteAddr) {
         if (connection->remoteAddress() == remoteAddr) {
             QString wsAddr = connection->websocketAddress();
             QString tcpAddr = connection->tcpAddress();
-            qint8 latency = connection->latency();
+            qint32 latency = connection->latency();
             emit connectionUnreachable(remoteAddr, wsAddr, tcpAddr, latency);
             return;
         }
