@@ -7,6 +7,8 @@
 #include <QNetworkRequest>
 #include <QRegExp>
 #include <QUrl>
+#include <QClipboard>
+#include <QGuiApplication>
 
 Api::Api(QObject *parent) {
     m_activeConnectionList = new ConnectionListModel(this);
@@ -109,6 +111,11 @@ Q_INVOKABLE void Api::cancelClient(const QString &remoteAddr,
         qDebug() << "remove history connection [" + remoteAddr + "]";
     }
     emit clientChanged();
+}
+
+Q_INVOKABLE void Api::copyToClipboard(const QString &text) {
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText(text);
 }
 
 Q_INVOKABLE bool Api::noActiveClients() const {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "model/connection_list_model.h"
 #include "maintainer.h"
+#include "model/connection_list_model.h"
 #include <QNetworkAccessManager>
 #include <QObject>
 #include <QProcess>
@@ -28,6 +28,7 @@ class Api : public QObject {
   signals:
     void clientChanged();
   public slots:
+    Q_INVOKABLE void copyToClipboard(const QString &text);
     Q_INVOKABLE bool noActiveClients() const;
     Q_INVOKABLE bool noHistoryClients() const;
     Q_INVOKABLE void launchClient(const QString &bindAddr,

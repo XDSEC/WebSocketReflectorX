@@ -70,6 +70,14 @@ Item {
                         icon.color: "green"
                         opacity: hoverHandler.hovered ? 1 : 0
                         onClicked: {
+                            api.copyToClipboard(tcpAddr)
+                        }
+                        states: State {
+                            name: "pressed"; when: copyButton.pressed
+                            PropertyChanges { target: copyButton; scale: 1.3 }
+                        }
+                        transitions: Transition {
+                            NumberAnimation { properties: "scale"; duration: 200; easing.type: Easing.InOutQuad }
                         }
                         Behavior on opacity {
                             NumberAnimation {
