@@ -1,23 +1,31 @@
 #include "api.h"
 
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QUrl>
+#include <QDateTime>
 #include <QHash>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QNetworkRequest>
 #include <QRegExp>
+#include <QUrl>
 
-Api::Api(QObject* parent) {
-    m_daemonProcess = new QProcess(this);
-    m_manager = new QNetworkAccessManager(this);
+Api::Api(QObject *parent) {
     m_activeConnectionList = new ConnectionListModel(this);
     m_historyConnectionList = new ConnectionListModel(this);
-    connect(m_daemonProcess, &QProcess::readyReadStandardOutput, this, &Api::onDaemonOutput);
-    connect(m_daemonProcess, &QProcess::finished , m_daemonProcess, &QProcess::deleteLater);
+    m_networkManager = new QNetworkAccessManager(this);
 
+    m_daemonProcess = new QProcess(this);
+    connect(m_daemonProcess, &QProcess::readyReadStandardOutput, this,
+            &Api::onDaemonOutput);
+    connect(m_daemonProcess, &QProcess::finished, m_daemonProcess,
+            &QProcess::deleteLater);
     m_daemonProcess->start("./wsrx", {"daemon"});
     qDebug() << "daemon started";
+
+    m_maintainer = new Maintainer(this, m_activeConnectionList);
+    connect(this, &Api::clientChanged, m_maintainer,
+            &Maintainer::updateConnectionList);
+    connect(m_maintainer, &Maintainer::connectionUnreachable, this,
+            &Api::cancelClient);
 }
 
 void Api::closeDaemon() {
@@ -28,13 +36,14 @@ void Api::closeDaemon() {
 void Api::onDaemonOutput() {
     QByteArray buf = m_daemonProcess->readAllStandardOutput();
     QByteArrayList bufList = buf.split('\n');
-    for (const auto& line : bufList) {
-        qDebug() << line;
+    for (const auto &line : bufList) {
+        qDebug(line);
 
         // get daemon url
         qsizetype startIdx = line.indexOf("you can access manage api at ");
         if (startIdx != -1) {
-            m_daemonUrl = new QString(line.mid(startIdx + 29, line.length() - 29 - startIdx - 5));
+            m_daemonUrl = new QString(
+                line.mid(startIdx + 29, line.length() - 29 - startIdx - 5));
             // qDebug() << "m_daemonUrl: " << *m_daemonUrl;
         }
 
@@ -61,7 +70,9 @@ void Api::onDaemonOutput() {
     }
 }
 
-Q_INVOKABLE void Api::launchClient(const QString &bindAddr, const QString &bindPort, const QString &targetUrl) {
+Q_INVOKABLE void Api::launchClient(const QString &bindAddr,
+                                   const QString &bindPort,
+                                   const QString &targetUrl) {
     if (!targetUrl.startsWith("ws://") && !targetUrl.startsWith("wss://")) {
         qDebug("url is invalid");
         return;
@@ -73,41 +84,38 @@ Q_INVOKABLE void Api::launchClient(const QString &bindAddr, const QString &bindP
     QNetworkRequest req = QNetworkRequest(QUrl(*m_daemonUrl + "/pool"));
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = m_manager->post(req, QJsonDocument(dataJson).toJson());
-    if (reply->error()) {
-        qDebug() << reply->errorString();
-        return;
-    }
+    m_networkManager->post(req, QJsonDocument(dataJson).toJson());
     qDebug() << "launch client success";
 }
 
-Q_INVOKABLE void Api::cancelClient(const QString &remoteAddr, const QString &wsAddr, const QString &tcpAddr, const QString &type) {
+Q_INVOKABLE void Api::cancelClient(const QString &remoteAddr,
+                                   const QString &wsAddr,
+                                   const QString &tcpAddr, const qint8 latency,
+                                   const QString &type) {
     if (type == "active") {
         QJsonObject dataJson;
         dataJson["key"] = wsAddr;
         QNetworkRequest req = QNetworkRequest(QUrl(*m_daemonUrl + "/pool"));
         req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-        QNetworkReply *reply = m_manager->sendCustomRequest(req, "DELETE", QJsonDocument(dataJson).toJson());
-        if (reply->error()) {
-            qDebug() << reply->errorString();
-            return;
-        }
-        m_historyConnectionList->insertData(remoteAddr, wsAddr, tcpAddr);
+        m_networkManager->sendCustomRequest(req, "DELETE",
+                                            QJsonDocument(dataJson).toJson());
+        m_historyConnectionList->insertData(remoteAddr, wsAddr, tcpAddr,
+                                            latency);
         m_activeConnectionList->removeData(remoteAddr);
         qDebug() << "cancel connection [" + remoteAddr + "]";
     } else if (type == "history") {
-        m_historyConnectionList->removeData(remoteAddr);     
+        m_historyConnectionList->removeData(remoteAddr);
         qDebug() << "remove history connection [" + remoteAddr + "]";
     }
     emit clientChanged();
 }
 
-Q_INVOKABLE bool Api::noActiveClients() const{
+Q_INVOKABLE bool Api::noActiveClients() const {
     return m_activeConnectionList->dataCount() == 0;
 }
 
-Q_INVOKABLE bool Api::noHistoryClients() const{
+Q_INVOKABLE bool Api::noHistoryClients() const {
     return m_historyConnectionList->dataCount() == 0;
 }
 

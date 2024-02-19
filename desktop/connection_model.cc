@@ -1,11 +1,12 @@
 #include "connection_model.h"
+#include <QDebug>
 
-ConnectionModel::ConnectionModel(QObject *parent, const QString &remoteAddr, const QString &wsAddr, const QString &tcpAddr)
+ConnectionModel::ConnectionModel(QObject *parent, const QString &remoteAddr, const QString &wsAddr, const QString &tcpAddr, const qint8 latency)
     : QObject(parent) {
         m_wsAddr = wsAddr;
         m_tcpAddr = tcpAddr;
         m_remoteAddr = remoteAddr;
-        m_latency = -1;
+        m_latency = latency;
     }
 
 QString ConnectionModel::websocketAddress() const {
@@ -20,8 +21,12 @@ QString ConnectionModel::remoteAddress() const {
     return m_remoteAddr;
 }
 
-uint ConnectionModel::latency() const {
+qint8 ConnectionModel::latency() const {
     return m_latency;
+}
+
+void ConnectionModel::setLatency(qint8 latency) {
+    m_latency = latency;
 }
 
 ConnectionModel::~ConnectionModel() = default;

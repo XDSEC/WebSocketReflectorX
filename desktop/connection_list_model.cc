@@ -36,14 +36,14 @@ QHash<int, QByteArray> ConnectionListModel::roleNames() const {
     return roles;
 }
 
-void ConnectionListModel::insertData(const QString &remoteAddr, const QString &wsAddr, const QString &tcpAddr) {
+void ConnectionListModel::insertData(const QString &remoteAddr, const QString &wsAddr, const QString &tcpAddr, const qint8 latency) {
     for (int i = 0; i < m_connectionList->size(); i++) {
         if (m_connectionList->at(i)->remoteAddress() == remoteAddr) {
             return;
         }
     }
     beginInsertRows(QModelIndex(), m_connectionList->size(), m_connectionList->size());
-    m_connectionList->append(new ConnectionModel(this, remoteAddr, wsAddr, tcpAddr));
+    m_connectionList->append(new ConnectionModel(this, remoteAddr, wsAddr, tcpAddr, latency));
     endInsertRows();
 }
 
@@ -60,4 +60,32 @@ void ConnectionListModel::removeData(const QString &remoteAddr) {
 
 int ConnectionListModel::dataCount() const {
     return m_connectionList->size();
+}
+
+bool ConnectionListModel::updateLatency(const QString &remoteAddr, qint8 latency) {
+    for (int i = 0; i < m_connectionList->size(); i++) {
+        if (m_connectionList->at(i)->remoteAddress() == remoteAddr) {
+            QModelIndex index = createIndex(i, 0);
+            return setData(index, latency, LatencyRole);
+        }
+    }
+    return false;
+}
+
+bool ConnectionListModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    if (index.row() < m_connectionList->size()) {
+        switch (role) {
+            case LatencyRole:
+                m_connectionList->at(index.row())->setLatency(value.toInt());
+                emit dataChanged(index, index);
+                return true;
+            default:
+                return false;
+        }
+    }
+    return false;
+}
+
+QList<ConnectionModel *> *ConnectionListModel::connectionList() const {
+    return m_connectionList;
 }

@@ -20,6 +20,8 @@ set(
   connection_list_model.h
   connection_model.cc
   connection_model.h
+  maintainer.cc
+  maintainer.h
   components/components.qrc
   resources/i18n.qrc
   resources/resources.qrc

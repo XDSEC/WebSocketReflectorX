@@ -10,12 +10,11 @@ Item {
     property string remoteAddr
     property string tcpAddr
     property string wsAddr
-    property int latency
+    property int mlatency
 
     height: 70
 
     Rectangle {
-        id: activeRoot
         width: 850
         height: 70
         color: hoverHandler.hovered ? Style.palette.button : "transparent"
@@ -28,7 +27,6 @@ Item {
             id: hoverHandler
         }
         Rectangle {
-            id: activeClients
             anchors.centerIn: parent
             anchors.topMargin: 5
             width: 830
@@ -48,8 +46,8 @@ Item {
                                 text: remoteAddr + " -> " + tcpAddr
                             }
                             Label {
-                                text: latency + " ms"
-                                color: type == "active" ? "green" : "yellow"
+                                text: mlatency == -1 ? qsTr("Unreachable") : mlatency + " ms"
+                                color: mlatency == -1 ? "red" : (latency < 300 ? "green": "yellow")
                             }
                         }
                         Label {
@@ -94,7 +92,7 @@ Item {
                         icon.height: 20
                         opacity: hoverHandler.hovered ? 1 : 0
                         onClicked: {
-                            api.cancelClient(remoteAddr, wsAddr, tcpAddr, type)
+                            api.cancelClient(remoteAddr, wsAddr, tcpAddr, mlatency, type)
                         }
                         Behavior on opacity {
                             NumberAnimation {
@@ -104,7 +102,6 @@ Item {
                         ToolTip {
                             parent: dismissButtion
                             visible: parent.hovered
-
                             text: qsTr("Delete connection")
                         }
                     }
