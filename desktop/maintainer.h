@@ -1,6 +1,6 @@
 #pragma once
 
-#include "connection_list_model.h"
+#include "model/connection_list_model.h"
 #include <QNetworkReply>
 #include <QObject>
 #include <QTimer>

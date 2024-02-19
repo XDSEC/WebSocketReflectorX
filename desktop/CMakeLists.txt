@@ -16,12 +16,12 @@ set(
   main.cc
   ui.cc
   ui.h
-  connection_list_model.cc
-  connection_list_model.h
-  connection_model.cc
-  connection_model.h
   maintainer.cc
   maintainer.h
+  model/connection_list_model.cc
+  model/connection_list_model.h
+  model/connection_model.cc
+  model/connection_model.h
   components/components.qrc
   resources/i18n.qrc
   resources/resources.qrc

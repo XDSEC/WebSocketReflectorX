@@ -1,5 +1,4 @@
 #include "connection_model.h"
-#include <QDebug>
 
 ConnectionModel::ConnectionModel(QObject *parent, const QString &remoteAddr,
                                  const QString &wsAddr, const QString &tcpAddr,

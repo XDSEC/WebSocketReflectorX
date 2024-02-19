@@ -1,13 +1,10 @@
 #pragma once
 
-#include "connection_list_model.h"
+#include "model/connection_list_model.h"
 #include "maintainer.h"
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QObject>
 #include <QProcess>
-#include <QThread>
-#include <QWaitCondition>
 
 class Api : public QObject {
     Q_OBJECT

@@ -1,5 +1,4 @@
 #include "ui.h"
-
 #include <QApplication>
 #include <QNetworkInterface>
 #include <QQmlComponent>
