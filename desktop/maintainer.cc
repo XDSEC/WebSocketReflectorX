@@ -52,7 +52,7 @@ void Maintainer::onNetworkReply(QNetworkReply *reply) {
 
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "ping reply error: " << reply->errorString();
-        qint8 failedCnt = m_failedRecords->value(remoteAddr, 0);
+        uint failedCnt = m_failedRecords->value(remoteAddr, 0);
         m_failedRecords->insert(remoteAddr, failedCnt + 1);
         if (failedCnt > MAX_RETRY) {
             sendConnectionUnreachable(remoteAddr);
