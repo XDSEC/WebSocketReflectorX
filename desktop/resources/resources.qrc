@@ -3,6 +3,7 @@
     <file>assets/add-square-multiple.svg</file>
     <file>assets/arrow-clockwise.svg</file>
     <file>assets/arrow-counterclockwise.svg</file>
+    <file>assets/checkmark.svg</file>
     <file>assets/chevron-down.svg</file>
     <file>assets/chevron-left.svg</file>
     <file>assets/chevron-right.svg</file>
@@ -25,6 +26,7 @@
     <file>assets/open.svg</file>
     <file>assets/send.svg</file>
     <file>assets/settings.svg</file>
+    <file>assets/shield.svg</file>
     <file>assets/square-multiple.svg</file>
     <file>assets/square.svg</file>
     <file>assets/wand.svg</file>

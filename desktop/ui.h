@@ -1,6 +1,5 @@
 #pragma once
 
-#include "api.h"
 #include <QCloseEvent>
 #include <QObject>
 
@@ -21,7 +20,6 @@ class Ui : public QObject {
     QTranslator *m_translator{};
     quint8 m_page = 0;
     QStringList m_availableAddresses{"127.0.0.1", "0.0.0.0"};
-    Api *m_api;
 
   public:
     explicit Ui(QObject *parent = nullptr);
@@ -33,12 +31,6 @@ class Ui : public QObject {
 
     [[nodiscard]] QStringList availableAddresses() const;
     void setAvailableAddresses(const QStringList &availableAddresses);
-
-    [[nodiscard]] QString address() const;
-    void setAddress(const QString &address);
-
-    [[nodiscard]] quint16 port() const;
-    void setPort(quint16 port);
 
   public slots:
     Q_INVOKABLE void show();

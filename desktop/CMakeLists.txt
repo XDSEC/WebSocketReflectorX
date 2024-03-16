@@ -11,17 +11,9 @@ include_directories(${GENERATED_FILE_PATH})
 
 set(
   SOURCES
-  api.cc
-  api.h
   main.cc
   ui.cc
   ui.h
-  maintainer.cc
-  maintainer.h
-  model/connection_list_model.cc
-  model/connection_list_model.h
-  model/connection_model.cc
-  model/connection_model.h
   components/components.qrc
   resources/i18n.qrc
   resources/resources.qrc

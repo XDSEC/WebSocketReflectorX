@@ -4,22 +4,22 @@
 <context>
     <name>GetStartedView</name>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="66"/>
+        <location filename="../../ui/GetStartedView.qml" line="76"/>
         <source>Refresh available in-bound addresses and ports</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="81"/>
+        <location filename="../../ui/GetStartedView.qml" line="91"/>
         <source>Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="87"/>
+        <location filename="../../ui/GetStartedView.qml" line="99"/>
         <source>Use 0 to get random available port.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="119"/>
+        <location filename="../../ui/GetStartedView.qml" line="131"/>
         <source>Configure In-bound Address</source>
         <translation></translation>
     </message>
@@ -43,12 +43,12 @@
     </message>
     <message>
         <location filename="../../ui/SideBar.qml" line="82"/>
-        <source>Settings</source>
+        <source>Permitted Websites</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="101"/>
-        <source>About</source>
+        <location filename="../../ui/SideBar.qml" line="100"/>
+        <source>Settings</source>
         <translation></translation>
     </message>
 </context>

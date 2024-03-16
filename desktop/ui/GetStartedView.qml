@@ -53,20 +53,51 @@ Item {
             icon.source: "qrc:/resources/assets/arrow-clockwise.svg"
             icon.width: 20
             icon.height: 20
+            icon.color: Style.palette.buttonText
             borderWidth: 0
             hoverEnabled: true
-            rotation: 0
 
-            Behavior on rotation {
-                NumberAnimation {
-                    duration: Style.midAnimationDuration
-                    easing.type: Easing.InOutQuad
+            Timer {
+                id: refreshTimer
+                interval: 2400
+                running: false
+                repeat: false
+                onTriggered: {
+                    refreshListenButton.icon.color = Style.palette.buttonText;
+                    refreshListenButton.icon.source = "qrc:/resources/assets/arrow-clockwise.svg";
                 }
+            }
+
+            Timer {
+                id: loadingTimer
+                interval: 1000
+                running: false
+                repeat: false
+                onTriggered: {
+                    refreshListenButton.icon.color = Style.palette.success;
+                    refreshListenButton.icon.source = "qrc:/resources/assets/checkmark.svg";
+                    loadingSpinner.running = false;
+                    loadingSpinner.opacity = 0;
+                    addressCombo.enabled = true;
+                }
+            }
+
+            Loading {
+                id: loadingSpinner
+                anchors.centerIn: parent
+                radius: 8
+                running: false
+                opacity: 0
             }
 
             onClicked: {
                 ui.refreshAvailableAddresses();
-                rotation = Math.ceil(rotation / 180) * 180 + 180;
+                refreshListenButton.icon.color = "transparent";
+                refreshTimer.running = true;
+                loadingTimer.running = true;
+                loadingSpinner.running = true;
+                loadingSpinner.opacity = 1;
+                addressCombo.enabled = false;
             }
             
             ToolTip {
@@ -146,14 +177,6 @@ Item {
             icon.width: 20
             icon.height: 20
             borderWidth: 0
-            
-            onClicked: {
-                let bindAddr = addressCombo.currentText;
-                let bindPort = portEdit.inputText;
-                let targetUrl = urlTextEdit.inputText;
-                api.launchClient(bindAddr, bindPort, targetUrl);
-                ui.page = 1;
-            }
         }
     }
 }

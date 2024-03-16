@@ -1,6 +1,6 @@
 <RCC>
   <qresource prefix="/ui">
-    <file>AboutView.qml</file>
+    <file>WebsitesView.qml</file>
     <file>ConnectionsView.qml</file>
     <file>FramelessWindow.qml</file>
     <file>GetStartedView.qml</file>
@@ -10,6 +10,5 @@
     <file>SideBar.qml</file>
     <file>TitleBar.qml</file>
     <file>VerticalTab.qml</file>
-    <file>ConnectionDetail.qml</file>
   </qresource>
 </RCC>

@@ -33,7 +33,7 @@ Rectangle {
         anchors.top: titleButton.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: aboutTab.top
+        anchors.bottom: settingsTab.top
         anchors.margins: 4
 
         VerticalTab {
@@ -76,10 +76,10 @@ Rectangle {
         }
 
         VerticalTab {
-            id: settingsTab
+            id: websitesTab
 
-            icon.source: "qrc:/resources/assets/settings.svg"
-            text: qsTr("Settings")
+            icon.source: "qrc:/resources/assets/shield.svg"
+            text: qsTr("Permitted Websites")
             width: parent.width
             height: 36
             isCurrent: ui.page === 3
@@ -90,21 +90,20 @@ Rectangle {
 
     }
 
-    VerticalTab {
-        id: aboutTab
-
+        VerticalTab {
+            id: settingsTab
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.left: parent.left
         anchors.margins: 4
-        icon.source: "qrc:/resources/assets/info.svg"
-        text: qsTr("About")
-        width: parent.width
-        height: 36
-        isCurrent: ui.page === 4
-        onClicked: {
-            ui.page = 4;
+            icon.source: "qrc:/resources/assets/settings.svg"
+            text: qsTr("Settings")
+            width: parent.width
+            height: 36
+            isCurrent: ui.page === 4
+            onClicked: {
+                ui.page = 4;
+            }
         }
-    }
 
 }

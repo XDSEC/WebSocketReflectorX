@@ -73,12 +73,12 @@ FramelessWindow {
                             id: logsView
                         }
 
-                        SettingsView {
-                            id: settingsView
+                        WebsitesView {
+                            id: websitesView
                         }
 
-                        AboutView {
-                            id: aboutView
+                        SettingsView {
+                            id: settingsView
                         }
 
                     }
