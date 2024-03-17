@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.1.13"
+version = "0.2.0"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
@@ -15,7 +15,19 @@ resolver = "2"
 default = ["binary"]
 server = ["dep:axum"]
 client = ["dep:tokio-tungstenite"]
-binary = ["dep:clap", "dep:once_cell", "dep:tracing", "dep:url", "dep:tower-http", "dep:serde", "dep:serde_json", "dep:tracing-subscriber", "server", "client"]
+binary = [
+    "dep:clap",
+    "dep:once_cell",
+    "dep:tracing",
+    "dep:url",
+    "dep:tower-http",
+    "dep:serde",
+    "dep:serde_json",
+    "dep:tracing-subscriber",
+    "dep:subprocess",
+    "server",
+    "client",
+]
 
 [[bin]]
 name = "wsrx"
@@ -23,12 +35,12 @@ required-features = ["binary"]
 
 [dependencies]
 tokio = { version = "1.36", features = ["full"] }
-futures-util = {version="0.3", features = ["sink"]}
-tokio-util = {version="0.7", features = ["codec"]}
+futures-util = { version = "0.3", features = ["sink"] }
+tokio-util = { version = "0.7", features = ["codec"] }
 thiserror = "1.0"
 
 # optional
-axum = { version = "0.7", features = ["ws","macros"], optional = true }
+axum = { version = "0.7", features = ["ws", "macros"], optional = true }
 tokio-tungstenite = { version = "0.21", features = [
     "rustls-tls-native-roots",
 ], optional = true }
@@ -37,8 +49,11 @@ tokio-tungstenite = { version = "0.21", features = [
 clap = { version = "4.4", features = ["derive"], optional = true }
 once_cell = { version = "1.19", optional = true }
 tracing = { version = "0.1", optional = true }
-tracing-subscriber = { version = "0.3", features = ["env-filter"], optional = true }
-url = {version = "2.5", optional = true}
-serde = {version = "1.0", features = ["derive"], optional = true}
-serde_json ={ version="1.0", optional = true}
-tower-http = {version="0.5", features = ["trace"], optional = true}
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+], optional = true }
+url = { version = "2.5", optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+tower-http = { version = "0.5", features = ["trace"], optional = true }
+subprocess = { version = "0.2", optional = true }

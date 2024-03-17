@@ -3,11 +3,17 @@ use std::{
     task::{Context, Poll},
 };
 
+use axum::extract::ws::{Message as AxMessage, WebSocket};
 use futures_util::{sink::Sink, stream::Stream, StreamExt};
 use thiserror::Error;
+use tokio::net::TcpStream;
+use tokio_tungstenite::{
+    tungstenite::{Error as TgError, Message as TgMessage},
+    MaybeTlsStream, WebSocketStream,
+};
 use tokio_util::{
     bytes::{BufMut, Bytes, BytesMut},
-    codec::{Decoder, Encoder},
+    codec::{Decoder, Encoder, Framed},
 };
 
 #[derive(Error, Debug)]
@@ -16,7 +22,7 @@ pub enum Error {
     Io(#[from] std::io::Error),
     #[cfg(feature = "client")]
     #[error("WebSocket error: {0}")]
-    WebSocket(#[from] tokio_tungstenite::tungstenite::Error),
+    WebSocket(#[from] TgError),
     #[cfg(feature = "server")]
     #[error("Axum error: {0}")]
     Axum(#[from] axum::Error),
@@ -28,24 +34,22 @@ pub enum Message {
 }
 
 #[cfg(feature = "client")]
-impl From<tokio_tungstenite::tungstenite::Message> for Message {
-    fn from(msg: tokio_tungstenite::tungstenite::Message) -> Self {
+impl From<TgMessage> for Message {
+    fn from(msg: TgMessage) -> Self {
         match msg {
-            tokio_tungstenite::tungstenite::Message::Binary(data) => Message::Binary(data),
-            tokio_tungstenite::tungstenite::Message::Text(data) => {
-                Message::Binary(data.into_bytes())
-            }
+            TgMessage::Binary(data) => Message::Binary(data),
+            TgMessage::Text(data) => Message::Binary(data.into_bytes()),
             _ => Message::Others,
         }
     }
 }
 
 #[cfg(feature = "server")]
-impl From<axum::extract::ws::Message> for Message {
-    fn from(msg: axum::extract::ws::Message) -> Self {
+impl From<AxMessage> for Message {
+    fn from(msg: AxMessage) -> Self {
         match msg {
-            axum::extract::ws::Message::Binary(data) => Message::Binary(data),
-            axum::extract::ws::Message::Text(data) => Message::Binary(data.into_bytes()),
+            AxMessage::Binary(data) => Message::Binary(data),
+            AxMessage::Text(data) => Message::Binary(data.into_bytes()),
             _ => Message::Others,
         }
     }
@@ -53,13 +57,9 @@ impl From<axum::extract::ws::Message> for Message {
 
 pub enum WsStream {
     #[cfg(feature = "client")]
-    Tungstenite(
-        tokio_tungstenite::WebSocketStream<
-            tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
-        >,
-    ),
+    Tungstenite(WebSocketStream<MaybeTlsStream<TcpStream>>),
     #[cfg(feature = "server")]
-    AxumWebsocket(axum::extract::ws::WebSocket),
+    AxumWebsocket(WebSocket),
 }
 
 pub struct WrappedWsStream {
@@ -67,8 +67,8 @@ pub struct WrappedWsStream {
 }
 
 #[cfg(feature = "client")]
-impl From<tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>> for WrappedWsStream {
-    fn from(stream: tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>) -> Self {
+impl From<WebSocketStream<MaybeTlsStream<TcpStream>>> for WrappedWsStream {
+    fn from(stream: WebSocketStream<MaybeTlsStream<TcpStream>>) -> Self {
         WrappedWsStream {
             stream: WsStream::Tungstenite(stream),
         }
@@ -76,8 +76,8 @@ impl From<tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<t
 }
 
 #[cfg(feature = "server")]
-impl From<axum::extract::ws::WebSocket> for WrappedWsStream {
-    fn from(stream: axum::extract::ws::WebSocket) -> Self {
+impl From<WebSocket> for WrappedWsStream {
+    fn from(stream: WebSocket) -> Self {
         WrappedWsStream {
             stream: WsStream::AxumWebsocket(stream),
         }
@@ -114,37 +114,32 @@ impl Stream for WrappedWsStream {
 impl Sink<Message> for WrappedWsStream {
     type Error = Error;
 
-    fn poll_ready(
-        self: std::pin::Pin<&mut Self>,
-        _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Result<(), Self::Error>> {
+    fn poll_ready(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         match &mut self.get_mut().stream {
             #[cfg(feature = "client")]
-            WsStream::Tungstenite(stream) => std::pin::Pin::new(stream)
-                .poll_ready(_cx)
-                .map_err(|e| e.into()),
+            WsStream::Tungstenite(stream) => Pin::new(stream).poll_ready(_cx).map_err(|e| e.into()),
             #[cfg(feature = "server")]
-            WsStream::AxumWebsocket(stream) => std::pin::Pin::new(stream)
-                .poll_ready(_cx)
-                .map_err(|e| e.into()),
+            WsStream::AxumWebsocket(stream) => {
+                Pin::new(stream).poll_ready(_cx).map_err(|e| e.into())
+            }
             #[allow(unreachable_patterns)]
             _ => Poll::Ready(Ok(())),
         }
     }
 
-    fn start_send(self: std::pin::Pin<&mut Self>, _item: Message) -> Result<(), Self::Error> {
+    fn start_send(self: Pin<&mut Self>, _item: Message) -> Result<(), Self::Error> {
         match &mut self.get_mut().stream {
             #[cfg(feature = "client")]
             WsStream::Tungstenite(stream) => match _item {
-                Message::Binary(data) => std::pin::Pin::new(stream)
-                    .start_send(tokio_tungstenite::tungstenite::Message::Binary(data))
+                Message::Binary(data) => Pin::new(stream)
+                    .start_send(TgMessage::Binary(data))
                     .map_err(|e| e.into()),
                 Message::Others => Ok(()),
             },
             #[cfg(feature = "server")]
             WsStream::AxumWebsocket(stream) => match _item {
-                Message::Binary(data) => std::pin::Pin::new(stream)
-                    .start_send(axum::extract::ws::Message::Binary(data))
+                Message::Binary(data) => Pin::new(stream)
+                    .start_send(AxMessage::Binary(data))
                     .map_err(|e| e.into()),
                 Message::Others => Ok(()),
             },
@@ -153,37 +148,27 @@ impl Sink<Message> for WrappedWsStream {
         }
     }
 
-    fn poll_flush(
-        self: std::pin::Pin<&mut Self>,
-        _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Result<(), Self::Error>> {
+    fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         match &mut self.get_mut().stream {
             #[cfg(feature = "client")]
-            WsStream::Tungstenite(stream) => std::pin::Pin::new(stream)
-                .poll_flush(_cx)
-                .map_err(|e| e.into()),
+            WsStream::Tungstenite(stream) => Pin::new(stream).poll_flush(_cx).map_err(|e| e.into()),
             #[cfg(feature = "server")]
-            WsStream::AxumWebsocket(stream) => std::pin::Pin::new(stream)
-                .poll_flush(_cx)
-                .map_err(|e| e.into()),
+            WsStream::AxumWebsocket(stream) => {
+                Pin::new(stream).poll_flush(_cx).map_err(|e| e.into())
+            }
             #[allow(unreachable_patterns)]
             _ => Poll::Ready(Ok(())),
         }
     }
 
-    fn poll_close(
-        self: std::pin::Pin<&mut Self>,
-        _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Result<(), Self::Error>> {
+    fn poll_close(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         match &mut self.get_mut().stream {
             #[cfg(feature = "client")]
-            WsStream::Tungstenite(stream) => std::pin::Pin::new(stream)
-                .poll_close(_cx)
-                .map_err(|e| e.into()),
+            WsStream::Tungstenite(stream) => Pin::new(stream).poll_close(_cx).map_err(|e| e.into()),
             #[cfg(feature = "server")]
-            WsStream::AxumWebsocket(stream) => std::pin::Pin::new(stream)
-                .poll_close(_cx)
-                .map_err(|e| e.into()),
+            WsStream::AxumWebsocket(stream) => {
+                Pin::new(stream).poll_close(_cx).map_err(|e| e.into())
+            }
             #[allow(unreachable_patterns)]
             _ => Poll::Ready(Ok(())),
         }
@@ -193,8 +178,7 @@ impl Sink<Message> for WrappedWsStream {
 pub async fn proxy_stream<S, T>(s1: S, s2: T) -> Result<(), Error>
 where
     S: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-{
+    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin, {
     let (s1sink, s1stream) = s1.split();
     let (s2sink, s2stream) = s2.split();
     let f1 = s1stream.forward(s2sink);
@@ -242,8 +226,8 @@ impl Encoder<Message> for MessageCodec {
     }
 }
 
-pub async fn proxy(ws: WrappedWsStream, tcp: tokio::net::TcpStream) -> Result<(), Error> {
-    let framed_tcp_stream = tokio_util::codec::Framed::new(tcp, MessageCodec::new());
+pub async fn proxy(ws: WrappedWsStream, tcp: TcpStream) -> Result<(), Error> {
+    let framed_tcp_stream = Framed::new(tcp, MessageCodec::new());
     proxy_stream(ws, framed_tcp_stream).await?;
     Ok(())
 }

@@ -52,6 +52,6 @@ async fn main() {
             host,
             port,
         } => cli::connect::launch(address, host, port).await,
-        WsrxCli::Serve { host, port, secret } => cli::server::launch(host, port, secret).await,
+        WsrxCli::Serve { host, port, secret } => cli::serve::launch(host, port, secret).await,
     }
 }
