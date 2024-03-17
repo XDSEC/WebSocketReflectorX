@@ -18,7 +18,7 @@
         <file>Slider.qml</file>
         <file>SplitView.qml</file>
         <file>StackView.qml</file>
-        <file>TextBox.qml</file>
+        <file>TextField.qml</file>
         <file>ToolTip.qml</file>
         <file>qmldir</file>
     </qresource>

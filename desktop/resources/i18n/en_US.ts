@@ -4,23 +4,43 @@
 <context>
     <name>GetStartedView</name>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="76"/>
+        <location filename="../../ui/GetStartedView.qml" line="110"/>
         <source>Refresh available in-bound addresses and ports</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="91"/>
+        <location filename="../../ui/GetStartedView.qml" line="125"/>
         <source>Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="99"/>
+        <location filename="../../ui/GetStartedView.qml" line="131"/>
         <source>Use 0 to get random available port.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="131"/>
+        <location filename="../../ui/GetStartedView.qml" line="163"/>
         <source>Configure In-bound Address</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="178"/>
+        <source>Select All</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="184"/>
+        <source>Cut</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="190"/>
+        <source>Copy</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="196"/>
+        <source>Paste</source>
         <translation></translation>
     </message>
 </context>
@@ -47,31 +67,8 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="100"/>
+        <location filename="../../ui/SideBar.qml" line="101"/>
         <source>Settings</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>TextBox</name>
-    <message>
-        <location filename="../../components/TextBox.qml" line="132"/>
-        <source>Select All</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../components/TextBox.qml" line="138"/>
-        <source>Cut</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../components/TextBox.qml" line="144"/>
-        <source>Copy</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../components/TextBox.qml" line="150"/>
-        <source>Paste</source>
         <translation></translation>
     </message>
 </context>

@@ -25,7 +25,7 @@ Item {
         anchors.left: logoImage.right
         anchors.leftMargin: 16
         anchors.top: logoImage.top
-        anchors.topMargin: 4
+        anchors.topMargin: 8
         font.pixelSize: 24
         opacity: 0.8
     }
@@ -35,7 +35,7 @@ Item {
         anchors.left: logoText.left
         anchors.top: logoText.bottom
         anchors.topMargin: 8
-        opacity: 0.3
+        opacity: 0.6
         text: "Idealism is that you will probably never receive something back,\nbut nonetheless still decide to give."
     }
 }

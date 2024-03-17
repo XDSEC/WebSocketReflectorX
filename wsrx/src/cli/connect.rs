@@ -6,7 +6,7 @@ use wsrx::proxy;
 use crate::cli::logger::init_logger;
 
 
-pub async fn launch_client(address: String, host: Option<String>, port: Option<u16>) {
+pub async fn launch(address: String, host: Option<String>, port: Option<u16>) {
   let port = port.unwrap_or(0);
   let host = host.unwrap_or(String::from("127.0.0.1"));
   init_logger();

@@ -53,7 +53,7 @@ QtObject {
         alternateBase: "#10000000"
         base: "transparent"
         brightText: "#000000"
-        button: "#04000000"
+        button: "#10000000"
         buttonText: "#101010"
         dark: "#40000000"
         highlight: "#403399FF"

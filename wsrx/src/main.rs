@@ -29,17 +29,29 @@ enum WsrxCli {
         /// The admin and ws http port to listen on.
         port: Option<u16>,
     },
+    /// Launch wsrx server.
+    Serve {
+        #[clap(long)]
+        /// The admin and ws http address to listen on.
+        host: Option<String>,
+        #[clap(short, long)]
+        /// The admin and ws http port to listen on.
+        port: Option<u16>,
+        #[clap(short, long)]
+        secret: Option<String>,
+    },
 }
 
 #[tokio::main]
 async fn main() {
     let cli = WsrxCli::parse();
     match cli {
-        WsrxCli::Daemon { host, port, secret } => cli::daemon::launch_daemon(host, port, secret).await,
+        WsrxCli::Daemon { host, port, secret } => cli::daemon::launch(host, port, secret).await,
         WsrxCli::Connect {
             address,
             host,
             port,
-        } => cli::connect::launch_client(address, host, port).await,
+        } => cli::connect::launch(address, host, port).await,
+        WsrxCli::Serve { host, port, secret } => cli::server::launch(host, port, secret).await,
     }
 }

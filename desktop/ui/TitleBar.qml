@@ -56,6 +56,22 @@ Rectangle {
         onClicked: window.showMinimized()
     }
 
+    Button {
+        id: styleButton
+
+        anchors.right: minimizeButton.left
+        anchors.verticalCenter: parent.verticalCenter
+        display: AbstractButton.IconOnly
+        flat: true
+        icon.height: 16
+        icon.source: Style.isDark ? "qrc:/resources/assets/weather-moon.svg" : "qrc:/resources/assets/weather-sunny.svg"
+        icon.width: 16
+        radius: 0
+        width: 48
+        height: parent.height
+        onClicked: () => Style.isDark = !Style.isDark
+    }
+
     TapHandler {
         gesturePolicy: TapHandler.DragThreshold
         onTapped: {

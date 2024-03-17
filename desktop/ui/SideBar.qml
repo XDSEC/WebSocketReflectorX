@@ -92,10 +92,11 @@ Rectangle {
 
         VerticalTab {
             id: settingsTab
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.margins: 4
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.margins: 4
+            anchors.bottomMargin: 6
             icon.source: "qrc:/resources/assets/settings.svg"
             text: qsTr("Settings")
             width: parent.width

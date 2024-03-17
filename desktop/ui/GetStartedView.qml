@@ -24,7 +24,7 @@ Item {
         anchors.top: logoImage.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         text: "WebSocket Reflector X"
-        font.pixelSize: 18
+        font.pixelSize: 24
         font.bold: true
     }
 
@@ -35,7 +35,7 @@ Item {
         spacing: 8
 
         anchors.top: parent.verticalCenter
-        anchors.topMargin: 32
+        anchors.topMargin: 64
         anchors.horizontalCenter: parent.horizontalCenter
         height: root.listenEditExtended ? 40 : 0
 
@@ -59,7 +59,7 @@ Item {
 
             Timer {
                 id: refreshTimer
-                interval: 2400
+                interval: 1700
                 running: false
                 repeat: false
                 onTriggered: {
@@ -91,8 +91,11 @@ Item {
             }
 
             onClicked: {
+                if (refreshTimer.running) {
+                    return;
+                }
                 ui.refreshAvailableAddresses();
-                refreshListenButton.icon.color = "transparent";
+                refreshListenButton.icon.color = Style.palette.button;
                 refreshTimer.running = true;
                 loadingTimer.running = true;
                 loadingSpinner.running = true;
@@ -115,13 +118,11 @@ Item {
             width: 360
         }
 
-        TextBox {
+        TextField {
             id: portEdit
             width: 104
             height: 40
-            placeholder: qsTr("Port")
-            inputText: "0"
-            inputArea.validator: IntValidator { bottom:0; top: 65535 }
+            placeholderText: qsTr("Port")
 
             ToolTip {
                 parent: portEdit
@@ -163,11 +164,47 @@ Item {
             }
         }
 
-        TextBox {
+        TextField {
             id: urlTextEdit
             width: 420
             height: 40
-            placeholder: "[ws|wss]://..."
+            placeholderText: "[ws|wss]://..."
+
+            Menu {
+                id: contentMenu
+
+                MenuItem {
+                    icon.source: "qrc:/resources/assets/add-square-multiple.svg"
+                    text: qsTr("Select All")
+                    onTriggered: urlTextEdit.selectAll()
+                }
+
+                MenuItem {
+                    icon.source: "qrc:/resources/assets/cut.svg"
+                    text: qsTr("Cut")
+                    onTriggered: urlTextEdit.cut()
+                }
+
+                MenuItem {
+                    icon.source: "qrc:/resources/assets/copy.svg"
+                    text: qsTr("Copy")
+                    onTriggered: urlTextEdit.copy()
+                }
+
+                MenuItem {
+                    icon.source: "qrc:/resources/assets/clipboard-paste.svg"
+                    text: qsTr("Paste")
+                    onTriggered: urlTextEdit.paste()
+                }
+
+            }
+
+            TapHandler {
+                acceptedButtons: Qt.RightButton
+                onTapped: {
+                    contentMenu.popup()
+                }
+            }
         }
 
         Button {

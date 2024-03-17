@@ -4,24 +4,44 @@
 <context>
     <name>GetStartedView</name>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="76"/>
+        <location filename="../../ui/GetStartedView.qml" line="110"/>
         <source>Refresh available in-bound addresses and ports</source>
         <translation>刷新可用的监听地址</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="91"/>
+        <location filename="../../ui/GetStartedView.qml" line="125"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="99"/>
+        <location filename="../../ui/GetStartedView.qml" line="131"/>
         <source>Use 0 to get random available port.</source>
         <translation>填0来获取随机可用端口。</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="131"/>
+        <location filename="../../ui/GetStartedView.qml" line="163"/>
         <source>Configure In-bound Address</source>
         <translation>设置入站地址</translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="178"/>
+        <source>Select All</source>
+        <translation>全选</translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="184"/>
+        <source>Cut</source>
+        <translation>剪切</translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="190"/>
+        <source>Copy</source>
+        <translation>复制</translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="196"/>
+        <source>Paste</source>
+        <translation>粘贴</translation>
     </message>
 </context>
 <context>
@@ -47,7 +67,7 @@
         <translation>授权网站</translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="100"/>
+        <location filename="../../ui/SideBar.qml" line="101"/>
         <source>Settings</source>
         <translation>软件设置</translation>
     </message>
@@ -59,24 +79,20 @@
 <context>
     <name>TextBox</name>
     <message>
-        <location filename="../../components/TextBox.qml" line="132"/>
         <source>Select All</source>
-        <translation>全选</translation>
+        <translation type="vanished">全选</translation>
     </message>
     <message>
-        <location filename="../../components/TextBox.qml" line="138"/>
         <source>Cut</source>
-        <translation>剪切</translation>
+        <translation type="vanished">剪切</translation>
     </message>
     <message>
-        <location filename="../../components/TextBox.qml" line="144"/>
         <source>Copy</source>
-        <translation>复制</translation>
+        <translation type="vanished">复制</translation>
     </message>
     <message>
-        <location filename="../../components/TextBox.qml" line="150"/>
         <source>Paste</source>
-        <translation>粘贴</translation>
+        <translation type="vanished">粘贴</translation>
     </message>
 </context>
 </TS>
