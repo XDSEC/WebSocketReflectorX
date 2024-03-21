@@ -137,15 +137,14 @@ async fn launch_tunnel(
                     let (ws, _) = match tokio_tungstenite::connect_async(&url).await {
                         Ok(ws) => ws,
                         Err(e) => {
-                            error!("Failed to connect to websocket server: {e}");
+                            error!("Failed to connect to {url}: {e}");
                             return;
                         }
                     };
                     match proxy(ws.into(), tcp).await {
                         Ok(_) => {}
                         Err(e) => {
-                            info!("REMOVE remote <-wsrx-> {peer_addr} with error");
-                            debug!("TCP connection closed: {e}");
+                            info!("REMOVE {url} <-wsrx-> {peer_addr}, {e}");
                         }
                     }
                 });
