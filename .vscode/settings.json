@@ -3,6 +3,7 @@
   "files.associations": {
     "*.qrc": "xml",
     "qmldir": "plaintext",
-    "qqmlcomponent": "cpp"
+    "qqmlcomponent": "cpp",
+    "qnetworkinterface": "cpp"
   }
 }

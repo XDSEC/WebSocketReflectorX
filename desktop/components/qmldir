@@ -18,5 +18,8 @@ ScrollView 1.0 ScrollView.qml
 Slider 1.0 Slider.qml
 SplitView 1.0 SplitView.qml
 StackView 1.0 StackView.qml
+Switch 1.0 Switch.qml
+SwitchIndicator 1.0 SwitchIndicator.qml
+TextArea 1.0 TextArea.qml
 TextField 1.0 TextField.qml
 ToolTip 1.0 ToolTip.qml

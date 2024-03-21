@@ -6,8 +6,9 @@
 #include <QQmlEngine>
 #include <QQuickWindow>
 #include <QTranslator>
+#include "daemon.h"
 
-Ui::Ui(QObject *parent) {
+Ui::Ui(QObject *parent) : QObject(parent) {
     m_uiEngine = new QQmlEngine(this);
     m_translator = new QTranslator(this);
     auto ok =
@@ -16,7 +17,9 @@ Ui::Ui(QObject *parent) {
         qWarning() << "failed to load translator";
     }
     QApplication::installTranslator(m_translator);
+    m_daemon = new Daemon(this);
     m_uiEngine->rootContext()->setContextProperty("ui", this);
+    m_uiEngine->rootContext()->setContextProperty("daemon", m_daemon);
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));
@@ -34,29 +37,6 @@ void Ui::setPage(quint8 page) {
     emit pageChanged(page);
 }
 
-QStringList Ui::availableAddresses() const { return m_availableAddresses; }
-
-void Ui::setAvailableAddresses(const QStringList &availableAddresses) {
-    if (m_availableAddresses == availableAddresses)
-        return;
-    m_availableAddresses = availableAddresses;
-    emit availableAddressesChanged(availableAddresses);
-}
-
-Q_INVOKABLE void Ui::refreshAvailableAddresses() {
-    auto addresses = QNetworkInterface::allAddresses();
-    QStringList availableAddresses;
-    availableAddresses.append("127.0.0.1");
-    for (const auto &address : addresses) {
-        if (address.isLoopback())
-            continue;
-        if (address.protocol() != QAbstractSocket::IPv4Protocol)
-            continue;
-        availableAddresses.append(address.toString());
-    }
-    availableAddresses.append("0.0.0.0");
-    setAvailableAddresses(availableAddresses);
-}
 
 void Ui::requestToQuit() {
     m_window->close();

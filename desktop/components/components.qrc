@@ -18,6 +18,9 @@
         <file>Slider.qml</file>
         <file>SplitView.qml</file>
         <file>StackView.qml</file>
+        <file>Switch.qml</file>
+        <file>SwitchIndicator.qml</file>
+        <file>TextArea.qml</file>
         <file>TextField.qml</file>
         <file>ToolTip.qml</file>
         <file>qmldir</file>

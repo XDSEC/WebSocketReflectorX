@@ -94,7 +94,7 @@ Item {
                 if (refreshTimer.running) {
                     return;
                 }
-                ui.refreshAvailableAddresses();
+                daemon.refreshAvailableAddresses();
                 refreshListenButton.icon.color = Style.palette.button;
                 refreshTimer.running = true;
                 loadingTimer.running = true;
@@ -114,7 +114,7 @@ Item {
         ComboBox {
             id: addressCombo
 
-            model: ui.availableAddresses
+            model: daemon.availableAddresses
             width: 360
         }
 
@@ -123,6 +123,7 @@ Item {
             width: 104
             height: 40
             placeholderText: qsTr("Port")
+            text: "0"
 
             ToolTip {
                 parent: portEdit
