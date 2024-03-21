@@ -3,10 +3,12 @@ use std::{
     task::{Context, Poll},
 };
 
+#[cfg(feature = "server")]
 use axum::extract::ws::{Message as AxMessage, WebSocket};
 use futures_util::{sink::Sink, stream::Stream, StreamExt};
 use thiserror::Error;
 use tokio::net::TcpStream;
+#[cfg(feature = "client")]
 use tokio_tungstenite::{
     tungstenite::{Error as TgError, Message as TgMessage},
     MaybeTlsStream, WebSocketStream,
@@ -92,21 +94,21 @@ impl Stream for WrappedWsStream {
             #[cfg(feature = "client")]
             WsStream::Tungstenite(stream) => {
                 match futures_util::ready!(Pin::new(stream).poll_next(_cx)) {
-                    Some(Ok(msg)) => return Poll::Ready(Some(Ok(msg.into()))),
-                    Some(Err(e)) => return Poll::Ready(Some(Err(e.into()))),
-                    None => return Poll::Ready(None),
+                    Some(Ok(msg)) => Poll::Ready(Some(Ok(msg.into()))),
+                    Some(Err(e)) => Poll::Ready(Some(Err(e.into()))),
+                    None => Poll::Ready(None),
                 }
             }
             #[cfg(feature = "server")]
             WsStream::AxumWebsocket(stream) => {
                 match futures_util::ready!(Pin::new(stream).poll_next(_cx)) {
-                    Some(Ok(msg)) => return Poll::Ready(Some(Ok(msg.into()))),
-                    Some(Err(e)) => return Poll::Ready(Some(Err(e.into()))),
-                    None => return Poll::Ready(None),
+                    Some(Ok(msg)) => Poll::Ready(Some(Ok(msg.into()))),
+                    Some(Err(e)) => Poll::Ready(Some(Err(e.into()))),
+                    None => Poll::Ready(None),
                 }
             }
             #[allow(unreachable_patterns)]
-            _ => return Poll::Ready(None),
+            _ => Poll::Ready(None),
         }
     }
 }
@@ -178,7 +180,8 @@ impl Sink<Message> for WrappedWsStream {
 pub async fn proxy_stream<S, T>(s1: S, s2: T) -> Result<(), Error>
 where
     S: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin, {
+    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
+{
     let (s1sink, s1stream) = s1.split();
     let (s2sink, s2stream) = s2.split();
     let f1 = s1stream.forward(s2sink);

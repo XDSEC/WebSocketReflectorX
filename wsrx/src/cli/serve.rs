@@ -1,9 +1,21 @@
-use std::time::Duration;
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
-use axum::{body::Body, extract::FromRef, http::Request, response::Response};
-use tokio::net::TcpListener;
+use axum::{
+    body::Body,
+    extract::{FromRef, Path, Request as ExtractRequest, State, WebSocketUpgrade},
+    http::{header::CONTENT_TYPE, Request, StatusCode},
+    middleware::Next,
+    response::{IntoResponse, Response},
+    routing::get,
+};
+use serde::Deserialize;
+use tokio::{
+    net::{TcpListener, TcpStream},
+    sync::RwLock,
+};
 use tower_http::trace::TraceLayer;
-use tracing::{info, Span};
+use tracing::{error, info, Span};
+use wsrx::proxy;
 
 use crate::cli::logger::init_logger;
 
@@ -33,11 +45,36 @@ pub async fn launch(host: Option<String>, port: Option<u16>, secret: Option<Stri
 #[derive(Clone, FromRef)]
 pub struct GlobalState {
     pub secret: Option<String>,
+    pub connections: Arc<RwLock<HashMap<String, String>>>,
 }
 
 fn build_router(secret: Option<String>) -> axum::Router {
-    let state = GlobalState { secret };
+    let state = GlobalState {
+        secret,
+        connections: Arc::new(RwLock::new(HashMap::new())),
+    };
     axum::Router::new()
+        .route(
+            "/pool",
+            get(get_tunnels)
+                .post(launch_tunnel)
+                .delete(close_tunnel),
+        )
+        .layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            |State(secret): State<Option<String>>, req: ExtractRequest, next: Next| async move {
+                if let Some(secret) = secret {
+                    if let Some(auth) = req.headers().get("authorization") {
+                        if auth.to_str().map_err(|_| StatusCode::UNAUTHORIZED)? == secret {
+                            return Ok(next.run(req).await);
+                        }
+                    }
+                    return Err(StatusCode::UNAUTHORIZED);
+                }
+                Ok(next.run(req).await)
+            },
+        ))
+        .route("/traffic/*key", get(process_traffic).options(ping))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<Body>| {
@@ -53,4 +90,89 @@ fn build_router(secret: Option<String>) -> axum::Router {
                 }),
         )
         .with_state::<()>(state)
+}
+
+#[derive(Deserialize)]
+struct TunnelRequest {
+    pub from: String,
+    pub to: String,
+}
+
+async fn launch_tunnel(
+    State(connections): State<Arc<RwLock<HashMap<String, String>>>>,
+    axum::Json(req): axum::Json<TunnelRequest>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let mut pool = connections.write().await;
+    pool.insert(req.from, req.to);
+    Ok(StatusCode::CREATED)
+}
+
+async fn get_tunnels(
+    State(connections): State<Arc<RwLock<HashMap<String, String>>>>,
+) -> impl IntoResponse {
+    let pool = connections.read().await;
+    let resp = serde_json::to_string::<HashMap<String, String>>(&pool).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("failed to serialize pool: {}", e),
+        )
+    });
+    axum::response::Response::builder()
+        .status(StatusCode::OK)
+        .header(CONTENT_TYPE, "application/json")
+        .body(resp.unwrap())
+        .unwrap()
+}
+
+#[derive(Deserialize)]
+struct CloseTunnelRequest {
+    pub key: String,
+}
+
+async fn close_tunnel(
+    State(connections): State<Arc<RwLock<HashMap<String, String>>>>,
+    axum::Json(req): axum::Json<CloseTunnelRequest>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let mut pool = connections.write().await;
+    if pool.remove(&req.key).is_some() {
+        Ok(StatusCode::OK)
+    } else {
+        Err((StatusCode::NOT_FOUND, "not found"))
+    }
+}
+
+async fn process_traffic(
+    State(connections): State<Arc<RwLock<HashMap<String, String>>>>, Path(key): Path<String>,
+    ws: Option<WebSocketUpgrade>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let pool = connections.read().await;
+    if let Some(conn) = pool.get(&key) {
+        let tcp_addr = conn.clone();
+        if let Some(ws) = ws {
+            Ok(ws.on_upgrade(move |socket| async move {
+                let tcp = TcpStream::connect(&tcp_addr).await;
+                if tcp.is_err() {
+                    error!("failed to connect to tcp server: {}", tcp.unwrap_err());
+                    return;
+                }
+                let tcp = tcp.unwrap();
+                proxy(socket.into(), tcp).await.ok();
+            }))
+        } else {
+            Err((StatusCode::NO_CONTENT, ""))
+        }
+    } else {
+        Err((StatusCode::NOT_FOUND, "not found"))
+    }
+}
+
+async fn ping(
+    State(connections): State<Arc<RwLock<HashMap<String, String>>>>, Path(key): Path<String>,
+) -> impl IntoResponse {
+    let pool = connections.read().await;
+    if pool.get(&key).is_some() {
+        StatusCode::OK
+    } else {
+        StatusCode::NOT_FOUND
+    }
 }
