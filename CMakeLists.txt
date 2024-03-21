@@ -16,7 +16,7 @@ message(STATUS "Current build version: ${FULL_VERSION}")
 project(
   wsrx
     LANGUAGES C CXX
-    VERSION 0.2.0
+    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
 )
 
 set(
