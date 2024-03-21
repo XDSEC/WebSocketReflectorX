@@ -8,6 +8,7 @@ homepage = "https://github.com/ret2shell/wsrx"
 documentation = "https://docs.rs/wsrx"
 repository = "https://github.com/ret2shell/wsrx"
 readme = "README.md"
+rust-version = "1.77.0"
 license = "MPL-2.0"
 resolver = "2"
 
