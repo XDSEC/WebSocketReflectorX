@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationDisplayName("WebSocket Reflector X");
     QApplication::setOrganizationDomain("tech.woooo.wsrx");
     QApplication::setOrganizationName("Ret2Shell");
+    QApplication::setApplicationVersion(FULL_VERSION);
 
     QFontDatabase::addApplicationFont(
         ":/resources/fonts/sarasa-mono-sc-regular.ttf");

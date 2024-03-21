@@ -12,6 +12,8 @@ include_directories(${GENERATED_FILE_PATH})
 set(
   SOURCES
   main.cc
+  daemon.cc
+  daemon.h
   ui.cc
   ui.h
   components/components.qrc
