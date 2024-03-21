@@ -30,24 +30,18 @@ Item {
 
     Row {
         id: listenEdit
+
         width: addressEdit.width
         clip: true
         spacing: 8
-
         anchors.top: parent.verticalCenter
         anchors.topMargin: 64
         anchors.horizontalCenter: parent.horizontalCenter
         height: root.listenEditExtended ? 40 : 0
 
-        Behavior on height {
-            NumberAnimation {
-                duration: Style.midAnimationDuration
-                easing.type: Easing.InOutExpo
-            }
-        }
-
         Button {
             id: refreshListenButton
+
             display: AbstractButton.IconOnly
             height: 40
             icon.source: "qrc:/resources/assets/arrow-clockwise.svg"
@@ -56,9 +50,22 @@ Item {
             icon.color: Style.palette.buttonText
             borderWidth: 0
             hoverEnabled: true
+            onClicked: {
+                if (refreshTimer.running)
+                    return ;
+
+                daemon.refreshAvailableAddresses();
+                refreshListenButton.icon.color = Style.palette.button;
+                refreshTimer.running = true;
+                loadingTimer.running = true;
+                loadingSpinner.running = true;
+                loadingSpinner.opacity = 1;
+                addressCombo.enabled = false;
+            }
 
             Timer {
                 id: refreshTimer
+
                 interval: 1700
                 running: false
                 repeat: false
@@ -70,6 +77,7 @@ Item {
 
             Timer {
                 id: loadingTimer
+
                 interval: 1000
                 running: false
                 repeat: false
@@ -84,31 +92,19 @@ Item {
 
             Loading {
                 id: loadingSpinner
+
                 anchors.centerIn: parent
                 radius: 8
                 running: false
                 opacity: 0
             }
 
-            onClicked: {
-                if (refreshTimer.running) {
-                    return;
-                }
-                daemon.refreshAvailableAddresses();
-                refreshListenButton.icon.color = Style.palette.button;
-                refreshTimer.running = true;
-                loadingTimer.running = true;
-                loadingSpinner.running = true;
-                loadingSpinner.opacity = 1;
-                addressCombo.enabled = false;
-            }
-            
             ToolTip {
                 parent: refreshListenButton
                 visible: parent.hovered
-
                 text: qsTr("Refresh available in-bound addresses and ports")
             }
+
         }
 
         ComboBox {
@@ -120,6 +116,7 @@ Item {
 
         TextField {
             id: portEdit
+
             width: 104
             height: 40
             placeholderText: qsTr("Port")
@@ -128,9 +125,17 @@ Item {
             ToolTip {
                 parent: portEdit
                 visible: portEdit.state === "Focus"
-
                 text: qsTr("Use 0 to get random available port.")
             }
+
+        }
+
+        Behavior on height {
+            NumberAnimation {
+                duration: Style.midAnimationDuration
+                easing.type: Easing.InOutExpo
+            }
+
         }
 
     }
@@ -145,6 +150,7 @@ Item {
 
         Button {
             id: inboundButton
+
             display: AbstractButton.IconOnly
             height: 40
             icon.source: "qrc:/resources/assets/settings.svg"
@@ -156,17 +162,18 @@ Item {
                 root.listenEditExtended = !root.listenEditExtended;
             }
             hoverEnabled: true
-            
+
             ToolTip {
                 parent: inboundButton
                 visible: parent.hovered
-
                 text: qsTr("Configure In-bound Address")
             }
+
         }
 
         TextField {
             id: urlTextEdit
+
             width: 420
             height: 40
             placeholderText: "[ws|wss]://..."
@@ -203,9 +210,10 @@ Item {
             TapHandler {
                 acceptedButtons: Qt.RightButton
                 onTapped: {
-                    contentMenu.popup()
+                    contentMenu.popup();
                 }
             }
+
         }
 
         Button {
@@ -216,5 +224,7 @@ Item {
             icon.height: 20
             borderWidth: 0
         }
+
     }
+
 }

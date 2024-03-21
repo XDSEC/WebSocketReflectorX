@@ -1,22 +1,16 @@
 import QtQuick
-import QtQuick.Templates as T
 import QtQuick.Controls.impl
+import QtQuick.Templates as T
 import Rx.Widgets
 
 T.TextArea {
     id: control
 
-    implicitWidth: Math.max(contentWidth + leftPadding + rightPadding,
-                            implicitBackgroundWidth + leftInset + rightInset,
-                            placeholder.implicitWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(contentHeight + topPadding + bottomPadding,
-                             implicitBackgroundHeight + topInset + bottomInset,
-                             placeholder.implicitHeight + topPadding + bottomPadding)
-
+    implicitWidth: Math.max(contentWidth + leftPadding + rightPadding, implicitBackgroundWidth + leftInset + rightInset, placeholder.implicitWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(contentHeight + topPadding + bottomPadding, implicitBackgroundHeight + topInset + bottomInset, placeholder.implicitHeight + topPadding + bottomPadding)
     padding: 12
     topInset: 0
     bottomInset: 0
-
     color: Style.palette.text
     selectionColor: Color.transparent(Style.palette.primary, 0.4)
     selectedTextColor: Style.palette.text

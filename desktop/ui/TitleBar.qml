@@ -69,7 +69,9 @@ Rectangle {
         radius: 0
         width: 48
         height: parent.height
-        onClicked: () => Style.isDark = !Style.isDark
+        onClicked: () => {
+            return Style.isDark = !Style.isDark;
+        }
     }
 
     TapHandler {

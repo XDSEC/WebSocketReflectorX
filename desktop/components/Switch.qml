@@ -5,10 +5,14 @@ import Rx.Widgets
 T.Switch {
     id: control
 
+    property bool useSystemFocusVisuals: true
+
     implicitWidth: implicitContentWidth
     implicitHeight: implicitContentHeight
 
-    property bool useSystemFocusVisuals: true
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+    }
 
     indicator: SwitchIndicator {
         anchors.verticalCenter: parent.verticalCenter
@@ -19,20 +23,15 @@ T.Switch {
         control: control
     }
 
-    HoverHandler {
-        cursorShape: Qt.PointingHandCursor
-    }
-
     contentItem: Text {
         leftPadding: 0
         rightPadding: 0
-
         text: control.text
         font: control.font
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
-
-        opacity: enabled ? 1.0 : 0.2
+        opacity: enabled ? 1 : 0.2
         color: Style.palette.buttonText
     }
+
 }

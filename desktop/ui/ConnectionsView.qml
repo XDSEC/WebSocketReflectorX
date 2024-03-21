@@ -5,5 +5,4 @@ import Rx.Widgets
 
 Item {
     id: root
-    
 }
