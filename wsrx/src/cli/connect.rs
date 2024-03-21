@@ -5,10 +5,11 @@ use wsrx::proxy;
 
 use crate::cli::logger::init_logger;
 
-pub async fn launch(address: String, host: Option<String>, port: Option<u16>) {
+pub async fn launch(address: String, host: Option<String>, port: Option<u16>, log_json: Option<bool>) {
+    let log_json = log_json.unwrap_or(false);
+    init_logger(log_json);
     let port = port.unwrap_or(0);
     let host = host.unwrap_or(String::from("127.0.0.1"));
-    init_logger();
     let listener = TcpListener::bind(format!("{host}:{port}"))
         .await
         .expect("failed to bind port");

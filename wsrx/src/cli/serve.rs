@@ -19,8 +19,11 @@ use wsrx::proxy;
 
 use crate::cli::logger::init_logger;
 
-pub async fn launch(host: Option<String>, port: Option<u16>, secret: Option<String>) {
-    init_logger();
+pub async fn launch(
+    host: Option<String>, port: Option<u16>, secret: Option<String>, log_json: Option<bool>,
+) {
+    let log_json = log_json.unwrap_or(false);
+    init_logger(log_json);
     let router = build_router(secret);
     let listener = TcpListener::bind(&format!(
         "{}:{}",
@@ -56,9 +59,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
     axum::Router::new()
         .route(
             "/pool",
-            get(get_tunnels)
-                .post(launch_tunnel)
-                .delete(close_tunnel),
+            get(get_tunnels).post(launch_tunnel).delete(close_tunnel),
         )
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
