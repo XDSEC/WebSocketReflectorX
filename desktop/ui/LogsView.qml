@@ -11,30 +11,67 @@ ListView {
     leftMargin: 32
     rightMargin: 32
     topMargin: 16
+    model: logs
+    clip: true
 
     add: Transition {
-        NumberAnimation { properties: "x"; from: 100; duration: Style.midAnimationDuration; easing.type: Easing.OutExpo; }
-        NumberAnimation { properties: "opacity"; from: 0; to: 1; duration: Style.midAnimationDuration; }
+        NumberAnimation {
+            properties: "x"
+            from: 100
+            duration: Style.midAnimationDuration
+            easing.type: Easing.OutExpo
+        }
+
+        NumberAnimation {
+            properties: "opacity"
+            from: 0
+            to: 1
+            duration: Style.midAnimationDuration
+        }
+
     }
 
     addDisplaced: Transition {
-        NumberAnimation { properties: "y"; duration: Style.midAnimationDuration; easing.type: Easing.OutExpo; }
+        NumberAnimation {
+            properties: "y"
+            duration: Style.midAnimationDuration
+            easing.type: Easing.OutExpo
+        }
+
     }
 
     removeDisplaced: Transition {
-        PauseAnimation { duration: 300; }
-        NumberAnimation { properties: "y"; duration: Style.midAnimationDuration }
+        PauseAnimation {
+            duration: 300
+        }
+
+        NumberAnimation {
+            properties: "y"
+            duration: Style.midAnimationDuration
+        }
+
     }
 
     remove: Transition {
-        NumberAnimation { properties: "x"; to: 100; duration: Style.midAnimationDuration; easing.type: Easing.OutExpo; }
-        NumberAnimation { properties: "opacity"; from: 1; to: 0; duration: Style.midAnimationDuration; easing.type: Easing.OutExpo; }
+        NumberAnimation {
+            properties: "x"
+            to: 100
+            duration: Style.midAnimationDuration
+            easing.type: Easing.OutExpo
+        }
+
+        NumberAnimation {
+            properties: "opacity"
+            from: 1
+            to: 0
+            duration: Style.midAnimationDuration
+            easing.type: Easing.OutExpo
+        }
+
     }
 
-    ScrollBar.vertical: ScrollBar {}
-    model: logs
-
-    clip: true
+    ScrollBar.vertical: ScrollBar {
+    }
 
     delegate: Item {
         width: ListView.view.width - 64
@@ -42,6 +79,7 @@ ListView {
 
         IconLabel {
             id: levelIndicator
+
             alignment: Qt.AlignVCenter | Qt.AlignHCenter
             display: AbstractButton.IconOnly
             anchors.top: parent.top
@@ -91,6 +129,7 @@ ListView {
 
         TextEdit {
             id: logsEdit
+
             readOnly: true
             text: `[${target}] ${message}`
             anchors.left: levelIndicator.right
@@ -102,11 +141,9 @@ ListView {
             wrapMode: TextEdit.Wrap
             // font.bold: root.isActive
             color: Style.palette.text
-
             selectByMouse: true
             selectedTextColor: Style.palette.text
             selectionColor: Color.transparent(Style.palette.primary, 0.4)
-
             opacity: {
                 switch (level) {
                 case 0:
@@ -130,5 +167,7 @@ ListView {
             height: 1
             color: Style.palette.alternateBase
         }
+
     }
+
 }
