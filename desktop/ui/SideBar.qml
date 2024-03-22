@@ -73,6 +73,24 @@ Rectangle {
             onClicked: {
                 ui.page = 2;
             }
+
+
+            Button {
+                id: exportButton
+                icon.source: "qrc:/resources/assets/open.svg"
+                display: AbstractButton.IconOnly
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                flat: true
+
+                opacity: logsTab.hovered ? 1 : 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Style.midAnimationDuration
+                    }
+                }
+            }
         }
 
         VerticalTab {

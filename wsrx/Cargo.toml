@@ -13,7 +13,7 @@ license = "MPL-2.0"
 resolver = "2"
 
 [features]
-default = []
+default = ["binary"]
 server = ["dep:axum"]
 client = ["dep:tokio-tungstenite"]
 binary = [

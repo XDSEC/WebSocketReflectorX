@@ -20,6 +20,7 @@ Ui::Ui(QObject *parent) : QObject(parent) {
     m_daemon = new Daemon(this);
     m_uiEngine->rootContext()->setContextProperty("ui", this);
     m_uiEngine->rootContext()->setContextProperty("daemon", m_daemon);
+    m_uiEngine->rootContext()->setContextProperty("logs", m_daemon->logs());
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));

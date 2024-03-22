@@ -11,12 +11,14 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use tokio::{net::TcpListener, sync::RwLock, task::JoinHandle};
 use tower_http::trace::TraceLayer;
-use tracing::{error, info, Span};
+use tracing::{debug, error, info, Span};
 use wsrx::proxy;
 
 use crate::cli::logger::init_logger;
 
-pub async fn launch(host: Option<String>, port: Option<u16>, secret: Option<String>, log_json: Option<bool>) {
+pub async fn launch(
+    host: Option<String>, port: Option<u16>, secret: Option<String>, log_json: Option<bool>,
+) {
     let log_json = log_json.unwrap_or(false);
     init_logger(log_json);
     let router = build_router(secret);
@@ -89,7 +91,11 @@ fn build_router(secret: Option<String>) -> axum::Router {
                 })
                 .on_request(())
                 .on_response(|response: &Response, latency: Duration, _span: &Span| {
-                    info!("[{}] in {}ms", response.status(), latency.as_millis());
+                    debug!(
+                        "API Request [{}] in {}ms",
+                        response.status(),
+                        latency.as_millis()
+                    );
                 }),
         )
         .with_state::<()>(state)
@@ -114,18 +120,20 @@ async fn launch_tunnel(
     let tcp_addr_obj = tcp_addr_obj
         .next()
         .ok_or((StatusCode::BAD_REQUEST, "failed to get socket addr"))?;
+    let listener = TcpListener::bind(tcp_addr_obj)
+        .await.map_err(|err| {
+            error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
+            (StatusCode::INTERNAL_SERVER_ERROR, "failed to bind tcp address")
+        })?;
+    info!(
+        "CREATE tcp server: {} <--wsrx--> {}",
+        listener.local_addr().expect("failed to bind port"),
+        req.to
+    );
     let tunnel = Tunnel {
-        from: req.from.clone(),
+        from: listener.local_addr().expect("failed to bind port").to_string(),
         to: req.to.clone(),
         handle: Some(tokio::task::spawn(async move {
-            let listener = TcpListener::bind(tcp_addr_obj)
-                .await
-                .expect("failed to bind port");
-            info!(
-                "CREATE tcp server: {} <--wsrx--> {}",
-                listener.local_addr().expect("failed to bind port"),
-                req.to
-            );
             loop {
                 let Ok((tcp, _)) = listener.accept().await else {
                     error!("Failed to accept tcp connection, exiting.");
@@ -133,7 +141,7 @@ async fn launch_tunnel(
                 };
                 let url = req.to.clone();
                 let peer_addr = tcp.peer_addr().unwrap();
-                info!("CREATE remote <-wsrx-> {}", peer_addr);
+                info!("LINK {url} <-wsrx-> {peer_addr}");
                 tokio::spawn(async move {
                     let (ws, _) = match tokio_tungstenite::connect_async(&url).await {
                         Ok(ws) => ws,
@@ -145,7 +153,7 @@ async fn launch_tunnel(
                     match proxy(ws.into(), tcp).await {
                         Ok(_) => {}
                         Err(e) => {
-                            info!("REMOVE {url} <-wsrx-> {peer_addr}, {e}");
+                            info!("REMOVE {url} <-wsrx-> {peer_addr}: {e}");
                         }
                     }
                 });
@@ -159,7 +167,7 @@ async fn launch_tunnel(
             "failed to serialize tunnel",
         )
     });
-    pool.insert(req.from.clone(), tunnel);
+    pool.insert(tunnel.from.clone(), tunnel);
     resp
 }
 

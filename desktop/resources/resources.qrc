@@ -36,6 +36,8 @@
     <file>assets/web-asset.svg</file>
     <file>assets/plug-disconnected.svg</file>
     <file>assets/flash-on.svg</file>
+    <file>assets/checkmark-circle.svg</file>
+    <file>assets/error-circle.svg</file>
     <file>fonts/sarasa-mono-sc-regular.ttf</file>
   </qresource>
 </RCC>
