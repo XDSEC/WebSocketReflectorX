@@ -45,43 +45,50 @@
     </message>
 </context>
 <context>
-    <name>LogsView</name>
-    <message>
-        <location filename="../../ui/LogsView.qml" line="111"/>
-        <source>Export</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>SettingsView</name>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="78"/>
+        <location filename="../../ui/SettingsView.qml" line="90"/>
         <source>System information for bug reporting and debugging</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="57"/>
+        <location filename="../../ui/SettingsView.qml" line="69"/>
         <source>Running in system tray when closed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="88"/>
+        <location filename="../../ui/SettingsView.qml" line="17"/>
+        <source>Text files (*.txt)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SettingsView.qml" line="100"/>
         <source>Please include the following information when reporting bugs or asking for help.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="120"/>
-        <location filename="../../ui/SettingsView.qml" line="137"/>
+        <location filename="../../ui/SettingsView.qml" line="132"/>
+        <location filename="../../ui/SettingsView.qml" line="149"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="126"/>
+        <location filename="../../ui/SettingsView.qml" line="138"/>
         <source>Copied!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="150"/>
+        <location filename="../../ui/SettingsView.qml" line="173"/>
+        <source>Export network logs</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SettingsView.qml" line="185"/>
+        <source>Export</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SettingsView.qml" line="198"/>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
         <translation></translation>
     </message>
@@ -89,27 +96,37 @@
 <context>
     <name>SideBar</name>
     <message>
-        <location filename="../../ui/SideBar.qml" line="43"/>
+        <location filename="../../ui/SideBar.qml" line="36"/>
+        <source>Text files (*.txt)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SideBar.qml" line="55"/>
         <source>Get Started</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="56"/>
+        <location filename="../../ui/SideBar.qml" line="68"/>
         <source>Connections</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="69"/>
+        <location filename="../../ui/SideBar.qml" line="81"/>
         <source>Network Logs</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="82"/>
+        <location filename="../../ui/SideBar.qml" line="111"/>
+        <source>Export Logs</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SideBar.qml" line="123"/>
         <source>Permitted Websites</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="102"/>
+        <location filename="../../ui/SideBar.qml" line="143"/>
         <source>Settings</source>
         <translation></translation>
     </message>

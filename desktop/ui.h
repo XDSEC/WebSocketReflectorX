@@ -8,6 +8,7 @@ class QQmlComponent;
 class QQuickWindow;
 class QTranslator;
 class Daemon;
+class ToastList;
 
 class Ui : public QObject {
     Q_OBJECT
@@ -18,6 +19,7 @@ class Ui : public QObject {
     QQuickWindow *m_window{};
     QTranslator *m_translator{};
     Daemon *m_daemon;
+    ToastList *m_toasts;
     quint8 m_page = 0;
 
   public:

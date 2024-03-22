@@ -1,3 +1,4 @@
+import Qt.labs.platform
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -8,6 +9,17 @@ ScrollView {
 
     clip: true
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+    FileDialog {
+        id: exportLogDialog
+
+        fileMode: FileDialog.SaveFile
+        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+        nameFilters: [qsTr("Text files (*.txt)")]
+        onAccepted: {
+            daemon.exportLogs(exportLogDialog.file);
+        }
+    }
 
     Image {
         id: logoImage
@@ -54,25 +66,26 @@ ScrollView {
         anchors.topMargin: 64
         anchors.left: logoImage.left
         anchors.right: logoText.right
+        anchors.rightMargin: 8
         text: qsTr("Running in system tray when closed")
     }
 
     Rectangle {
-        id: separator
+        id: separator1
 
         anchors.top: runningInTraySwitch.bottom
         anchors.topMargin: 16
         anchors.left: logoImage.left
         anchors.right: logoText.right
         height: 1
-        color: Style.palette.alternateBase
+        color: Style.palette.midlight
     }
 
     Label {
         id: debugInfoTitleText
 
-        anchors.top: separator.bottom
-        anchors.topMargin: 24
+        anchors.top: separator1.bottom
+        anchors.topMargin: 16
         anchors.left: logoImage.left
         anchors.right: logoText.right
         text: qsTr("System information for bug reporting and debugging")
@@ -138,6 +151,53 @@ ScrollView {
             }
         }
 
+    }
+
+    Rectangle {
+        id: separator2
+
+        anchors.top: debugInfoArea.bottom
+        anchors.topMargin: 16
+        anchors.left: logoImage.left
+        anchors.right: logoText.right
+        height: 1
+        color: Style.palette.midlight
+    }
+
+    Label {
+        id: exportLogsTitleText
+
+        anchors.top: separator2.bottom
+        anchors.topMargin: 16
+        anchors.left: logoImage.left
+        anchors.right: logoText.right
+        text: qsTr("Export network logs")
+    }
+
+    Button {
+        id: exportLogsButton
+
+        anchors.verticalCenter: exportLogsTitleText.verticalCenter
+        anchors.right: logoText.right
+        anchors.rightMargin: 8
+        icon.source: "qrc:/resources/assets/open.svg"
+        icon.color: Style.palette.primary
+        display: AbstractButton.TextBesideIcon
+        text: qsTr("Export")
+        onClicked: {
+            exportLogDialog.open();
+        }
+    }
+
+    Rectangle {
+        id: separator3
+
+        anchors.top: exportLogsTitleText.bottom
+        anchors.topMargin: 16
+        anchors.left: logoImage.left
+        anchors.right: logoText.right
+        height: 1
+        color: Style.palette.midlight
     }
 
     Label {

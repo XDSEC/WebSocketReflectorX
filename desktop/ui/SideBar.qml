@@ -1,3 +1,4 @@
+import Qt.labs.platform
 import QtQuick
 import QtQuick.Controls
 import Rx.Widgets
@@ -26,6 +27,17 @@ Rectangle {
         font.bold: true
         hoverColor: "transparent"
         pressedColor: "transparent"
+    }
+
+    FileDialog {
+        id: exportLogDialog
+
+        fileMode: FileDialog.SaveFile
+        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+        nameFilters: [qsTr("Text files (*.txt)")]
+        onAccepted: {
+            daemon.exportLogs(exportLogDialog.file);
+        }
     }
 
     Column {
@@ -83,6 +95,14 @@ Rectangle {
                 anchors.right: parent.right
                 flat: true
                 opacity: logsTab.hovered ? 1 : 0
+                onClicked: {
+                    exportLogDialog.open();
+                }
+
+                ToolTip {
+                    text: qsTr("Export Logs")
+                    visible: exportButton.hovered
+                }
 
                 Behavior on opacity {
                     NumberAnimation {

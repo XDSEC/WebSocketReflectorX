@@ -8,10 +8,13 @@
 #include <QNetworkInterface>
 #include <QProcess>
 #include <QSysInfo>
+#include <QFile>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 #include "variables.h"
 
-Log::Log(const QString &timestamp, LogLevel level, const QString &message, const QString &target)
+Log::Log(const QString &timestamp, EventLevel level, const QString &message, const QString &target)
     : m_timestamp(timestamp), m_level(level), m_message(message), m_target(target) {}
 
 Log::Log(const Log &other) {
@@ -23,7 +26,7 @@ Log::Log(const Log &other) {
 
 Log::Log() {
     m_timestamp = QDateTime::currentDateTime().toString(Qt::ISODate);
-    m_level = LogLevel::INFO;
+    m_level = EventLevel::INFO;
     m_message = "EMPTY";
     m_target = "EMPTY";
 }
@@ -47,15 +50,15 @@ Log Log::fromJson(const QString &json) {
         level = obj["level"].toString();
     else
         level = "INFO";
-    LogLevel level_enum;
+    EventLevel level_enum;
     if (level == "INFO")
-        level_enum = LogLevel::INFO;
+        level_enum = EventLevel::INFO;
     else if (level == "WARN")
-        level_enum = LogLevel::WARNING;
+        level_enum = EventLevel::WARNING;
     else if (level == "ERROR")
-        level_enum = LogLevel::ERROR;
+        level_enum = EventLevel::ERROR;
     else
-        level_enum = LogLevel::INFO;
+        level_enum = EventLevel::INFO;
     auto message = obj["fields"].toObject()["message"].toString();
     auto target = obj["target"].toString();
     return Log(timestamp, level_enum, message, target);
@@ -68,9 +71,23 @@ void Log::setTimestamp(const QString &timestamp) {
     m_timestamp = timestamp;
 }
 
-LogLevel Log::level() const { return m_level; }
+EventLevel Log::level() const { return m_level; }
 
-void Log::setLevel(LogLevel level) {
+QString Log::levelString() const { 
+    switch (m_level) {
+        case EventLevel::INFO:
+            return "INFO";
+        case EventLevel::WARNING:
+            return "WARN";
+        case EventLevel::ERROR:
+            return "ERROR";
+        case EventLevel::SUCCESS:
+            return "SUCCESS";
+    }
+    return "INFO";
+ }
+
+void Log::setLevel(EventLevel level) {
     if (m_level == level) return;
     m_level = level;
 }
@@ -139,6 +156,10 @@ void LogList::appendLogs(const QString &json) {
     }
 }
 
+QVector<Log> *LogList::logs() const {
+    return const_cast<QVector<Log> *>(&m_list);
+}
+
 Daemon::Daemon(QObject *parent) : QObject(parent) {
     refreshAvailableAddresses();
     auto daemon_path = QCoreApplication::applicationDirPath() + "/wsrx";
@@ -159,6 +180,7 @@ Daemon::Daemon(QObject *parent) : QObject(parent) {
     connect(m_daemon, &QProcess::readyReadStandardError, this, [this]() {
         qWarning() << m_daemon->readAllStandardError();
     });
+    m_network = new QNetworkAccessManager(this);
 }
 
 Daemon::~Daemon() {
@@ -189,6 +211,31 @@ Q_INVOKABLE void Daemon::refreshAvailableAddresses() {
     setAvailableAddresses(availableAddresses);
 }
 
+Q_INVOKABLE void Daemon::requestConnect(const QString &address,
+                                        const QString &host,
+                                        const quint16 port) {
+    auto url = QUrl(m_apiRoot + "pool");
+    auto request = QNetworkRequest(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    auto json = QJsonObject();
+    json["to"] = address;
+    json["from"] = QString("%1:%2").arg(host).arg(port);
+    // qDebug() << QJsonDocument(json).toJson();
+    auto reply = m_network->post(request, QJsonDocument(json).toJson());
+    connect(reply, &QNetworkReply::finished, this, [&]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            emit connected(false, reply->errorString());
+        } else {
+            emit connected(true, reply->readAll());
+        }
+        reply->deleteLater();
+    });
+}
+
+Q_INVOKABLE void Daemon::requestDisconnect(const QString &local_address) {
+    return Q_INVOKABLE void();
+}
+
 QString Daemon::systemInfo() const {
     auto info =
         QString(
@@ -208,4 +255,17 @@ QString Daemon::systemInfo() const {
 
 LogList *Daemon::logs() const {
     return m_logs;
+}
+
+void Daemon::exportLogs(const QUrl& path) const {
+    auto file = new QFile(path.toLocalFile());
+    if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open file for writing:" << path;
+        return;
+    }
+    QTextStream out(file);
+    auto logs = this->m_logs->logs();
+    for (const auto& log : *logs) {
+        out << log.timestamp() << " [" << log.target() << "] " << log.levelString() << " " << log.message() << "\n";
+    }
 }

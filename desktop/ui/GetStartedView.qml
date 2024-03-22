@@ -223,6 +223,9 @@ Item {
             icon.width: 20
             icon.height: 20
             borderWidth: 0
+            onClicked: {
+                daemon.requestConnect(urlTextEdit.text, addressCombo.currentText, portEdit.text);
+            }
         }
 
     }

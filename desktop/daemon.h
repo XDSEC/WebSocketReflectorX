@@ -4,23 +4,23 @@
 #include <QObject>
 
 class QProcess;
-
-enum LogLevel { INFO, WARNING, ERROR, SUCCESS };
+class QNetworkAccessManager;
+enum EventLevel { INFO, WARNING, ERROR, SUCCESS };
 
 class Log : public QObject {
     Q_GADGET
     Q_PROPERTY(QString timestamp READ timestamp WRITE setTimestamp)
-    Q_PROPERTY(LogLevel level READ level WRITE setLevel)
+    Q_PROPERTY(EventLevel level READ level WRITE setLevel)
     Q_PROPERTY(QString message READ message WRITE setMessage)
     Q_PROPERTY(QString target READ target WRITE setTarget)
    private:
     QString m_timestamp;
-    LogLevel m_level;
+    EventLevel m_level;
     QString m_message;
     QString m_target;
 
    public:
-    Log(const QString &timestamp, LogLevel level, const QString &message, const QString &target);
+    Log(const QString &timestamp, EventLevel level, const QString &message, const QString &target);
 
     Log(const Log &other);
 
@@ -36,9 +36,11 @@ class Log : public QObject {
 
     void setTimestamp(const QString &timestamp);
 
-    [[nodiscard]] LogLevel level() const;
+    [[nodiscard]] EventLevel level() const;
 
-    void setLevel(LogLevel level);
+    [[nodiscard]] QString levelString() const;
+
+    void setLevel(EventLevel level);
 
     [[nodiscard]] QString message() const;
 
@@ -78,6 +80,8 @@ class LogList : public QAbstractListModel {
     [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
     void appendLogs(const QString &json);
+
+    QVector<Log>* logs() const;
 };
 
 class Daemon : public QObject {
@@ -89,8 +93,9 @@ class Daemon : public QObject {
    private:
     QStringList m_availableAddresses{"127.0.0.1", "0.0.0.0"};
     QProcess *m_daemon;
-    QString m_api_root = "http://127.0.0.1:3307/";
+    QString m_apiRoot = "http://127.0.0.1:3307/";
     LogList *m_logs;
+    QNetworkAccessManager *m_network;
 
    public:
     explicit Daemon(QObject *parent = nullptr);
@@ -106,11 +111,20 @@ class Daemon : public QObject {
     LogList* logs() const;
 
    public slots:
+    Q_INVOKABLE void exportLogs(const QUrl& path) const;
 
     Q_INVOKABLE void refreshAvailableAddresses();
 
-   signals:
+    Q_INVOKABLE void requestConnect(const QString& address, const QString& host, const quint16 port);
 
+    Q_INVOKABLE void requestDisconnect(const QString& local_address);
+
+   signals:
     void availableAddressesChanged(const QStringList &availableAddresses);
+
     void systemInfoChanged(const QString &systemInfo);
+
+    void connected(bool success, const QString &message);
+
+    void disconnected(bool success, const QString &message);
 };
