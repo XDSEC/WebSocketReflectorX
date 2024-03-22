@@ -3,6 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Rx.Widgets
 
-Item {
+ScrollView {
     id: root
 }

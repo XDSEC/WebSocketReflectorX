@@ -1,16 +1,33 @@
 #include "daemon.h"
 
 #include <QAbstractSocket>
+#include <QCoreApplication>
 #include <QNetworkInterface>
+#include <QProcess>
 #include <QSysInfo>
 
 #include "variables.h"
 
 Daemon::Daemon(QObject *parent) : QObject(parent) {
     refreshAvailableAddresses();
+    auto daemon_path = QCoreApplication::applicationDirPath() + "/wsrx";
+#ifdef Q_OS_WIN
+    daemon_path += ".exe";
+#endif
+    auto args = QStringList{"daemon", "-l", "true", "-p", "3307"};
+    m_daemon = new QProcess(this);
+    m_daemon->start(daemon_path, args);
+    if (!m_daemon->waitForStarted()) {
+        qWarning() << "Daemon is not started correctly.";
+    }
 }
 
-Daemon::~Daemon() = default;
+Daemon::~Daemon() {
+    m_daemon->terminate();
+    if (!m_daemon->waitForFinished())
+        qWarning() << "Daemon is not terminated correctly.";
+    m_daemon->deleteLater();
+}
 
 QStringList Daemon::availableAddresses() const { return m_availableAddresses; }
 

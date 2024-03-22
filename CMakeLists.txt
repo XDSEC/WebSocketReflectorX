@@ -5,11 +5,12 @@ set(VERSION_MINOR 2)
 set(VERSION_PATCH 0)
 
 execute_process(
-    COMMAND git describe --always --dirty
+  COMMAND git describe --always --dirty
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_VARIABLE GIT_VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
 set(FULL_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.g${GIT_VERSION}")
 message(STATUS "Current build version: ${FULL_VERSION}")
 
@@ -33,7 +34,6 @@ include(CheckFunctionExists)
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_MAKE_PROGRAM ninja)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -51,15 +51,15 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Quick Gui QuickContr
 set(QT_LIBRARIES Qt6::Core Qt6::Widgets Qt6::Network Qt6::Quick Qt6::Gui Qt6::QuickControls2 Qt6::Concurrent)
 
 if(APPLE)
-    find_package(Qt6 REQUIRED COMPONENTS MacExtras)
-    list(APPEND QT_LIBRARIES Qt6::MacExtras)
+  find_package(Qt6 REQUIRED COMPONENTS MacExtras)
+  list(APPEND QT_LIBRARIES Qt6::MacExtras)
 elseif(WIN32)
-    find_package(Qt6 REQUIRED COMPONENTS WinExtras)
-    list(APPEND QT_LIBRARIES Qt6::WinExtras)
+  find_package(Qt6 REQUIRED COMPONENTS WinExtras)
+  list(APPEND QT_LIBRARIES Qt6::WinExtras)
 else()
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    list(APPEND QT_LIBRARIES Qt6::DBus)
-    get_target_property(QT_DBUSXML2CPP_EXECUTABLE Qt6::qdbusxml2cpp LOCATION)
+  find_package(Qt6 REQUIRED COMPONENTS DBus)
+  list(APPEND QT_LIBRARIES Qt6::DBus)
+  get_target_property(QT_DBUSXML2CPP_EXECUTABLE Qt6::qdbusxml2cpp LOCATION)
 endif()
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)

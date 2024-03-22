@@ -2,6 +2,8 @@
 
 #include <QObject>
 
+class QProcess;
+
 class Daemon : public QObject {
     Q_OBJECT
     Q_PROPERTY(QStringList availableAddresses READ availableAddresses WRITE
@@ -10,6 +12,8 @@ class Daemon : public QObject {
 
    private:
     QStringList m_availableAddresses{"127.0.0.1", "0.0.0.0"};
+    QProcess *m_daemon;
+    QString m_api_root = "http://127.0.0.1:3307/";
 
    public:
     explicit Daemon(QObject *parent = nullptr);

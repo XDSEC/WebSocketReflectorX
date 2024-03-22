@@ -32,10 +32,20 @@ Item {
         Behavior on x {
             enabled: !indicator.control.pressed
 
-            SmoothedAnimation {
-                velocity: 200
+            NumberAnimation {
+                duration: Style.midAnimationDuration
+                easing.type: Easing.InOutQuad
             }
 
+        }
+
+        Behavior on color {
+            enabled: !indicator.control.pressed
+
+            ColorAnimation {
+                duration: Style.midAnimationDuration
+                easing.type: Easing.InOutQuad
+            }
         }
 
     }
