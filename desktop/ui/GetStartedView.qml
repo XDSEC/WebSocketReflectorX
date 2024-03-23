@@ -123,15 +123,15 @@ Item {
             text: "0"
             hoverEnabled: true
 
-            validator: IntValidator {
-                bottom: 0
-                top: 65535
-            }
-
             ToolTip {
                 parent: portEdit
                 visible: portEdit.hovered
                 text: qsTr("Use 0 to get random available port.")
+            }
+
+            validator: IntValidator {
+                bottom: 0
+                top: 65535
             }
 
         }

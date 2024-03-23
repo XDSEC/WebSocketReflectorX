@@ -23,7 +23,12 @@ Rectangle {
         radius: 0
         width: 48
         height: parent.height
-        onClicked: ui.requestToQuit()
+        onClicked: {
+            if (ui.runningInTray)
+                window.close();
+            else
+                ui.requestToQuit();
+        }
     }
 
     Button {
@@ -70,7 +75,8 @@ Rectangle {
         width: 48
         height: parent.height
         onClicked: () => {
-            return Style.isDark = !Style.isDark;
+            Style.isDark = !Style.isDark;
+            ui.isDark = Style.isDark;
         }
     }
 

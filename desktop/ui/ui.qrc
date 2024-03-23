@@ -8,6 +8,7 @@
     <file>Main.qml</file>
     <file>SettingsView.qml</file>
     <file>SideBar.qml</file>
+    <file>SystemTray.qml</file>
     <file>TitleBar.qml</file>
     <file>VerticalTab.qml</file>
   </qresource>

@@ -4,6 +4,9 @@
     "*.qrc": "xml",
     "qmldir": "plaintext",
     "qqmlcomponent": "cpp",
-    "qnetworkinterface": "cpp"
+    "qnetworkinterface": "cpp",
+    "chrono": "cpp",
+    "typeindex": "cpp",
+    "typeinfo": "cpp"
   }
 }

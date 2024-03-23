@@ -56,7 +56,6 @@ Rectangle {
             icon.source: "qrc:/resources/assets/home.svg"
             text: qsTr("Get Started")
             width: parent.width
-            height: 36
             isCurrent: root.page === 0
             onClicked: {
                 root.page = 0;
@@ -69,7 +68,6 @@ Rectangle {
             icon.source: "qrc:/resources/assets/link.svg"
             text: qsTr("Connections")
             width: parent.width
-            height: 36
             isCurrent: root.page === 1
             onClicked: {
                 root.page = 1;
@@ -82,7 +80,6 @@ Rectangle {
             icon.source: "qrc:/resources/assets/code.svg"
             text: qsTr("Network Logs")
             width: parent.width
-            height: 36
             isCurrent: root.page === 2
             onClicked: {
                 root.page = 2;
@@ -123,7 +120,6 @@ Rectangle {
             icon.source: "qrc:/resources/assets/shield.svg"
             text: qsTr("Permitted Websites")
             width: parent.width
-            height: 36
             isCurrent: root.page === 3
             onClicked: {
                 root.page = 3;
@@ -143,7 +139,6 @@ Rectangle {
         icon.source: "qrc:/resources/assets/settings.svg"
         text: qsTr("Settings")
         width: parent.width
-        height: 36
         isCurrent: root.page === 4
         onClicked: {
             root.page = 4;

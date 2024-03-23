@@ -51,8 +51,8 @@ T.Button {
             else
                 return control.normalColor;
         }
-        implicitHeight: 36
-        implicitWidth: 36
+        implicitHeight: 40
+        implicitWidth: 40
         radius: control.radius
 
         Behavior on color {

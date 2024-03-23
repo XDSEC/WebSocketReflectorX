@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.impl
 import QtQuick.Templates as T
 import Rx.Widgets
 
@@ -8,7 +10,7 @@ T.Switch {
     property bool useSystemFocusVisuals: true
 
     implicitWidth: implicitContentWidth
-    implicitHeight: implicitContentHeight
+    implicitHeight: 40
 
     HoverHandler {
         cursorShape: Qt.PointingHandCursor

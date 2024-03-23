@@ -4,12 +4,12 @@
 <context>
     <name>Daemon</name>
     <message>
-        <location filename="../../daemon.cc" line="219"/>
+        <location filename="../../daemon.cc" line="87"/>
         <source>Invalid URL format.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../daemon.cc" line="222"/>
+        <location filename="../../daemon.cc" line="91"/>
         <source>Invalid scheme, only `ws` and `wss` are supported.</source>
         <translation></translation>
     </message>
@@ -27,32 +27,32 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="133"/>
+        <location filename="../../ui/GetStartedView.qml" line="129"/>
         <source>Use 0 to get random available port.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="174"/>
+        <location filename="../../ui/GetStartedView.qml" line="175"/>
         <source>Configure In-bound Address</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="191"/>
+        <location filename="../../ui/GetStartedView.qml" line="192"/>
         <source>Select All</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="197"/>
+        <location filename="../../ui/GetStartedView.qml" line="198"/>
         <source>Cut</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="203"/>
+        <location filename="../../ui/GetStartedView.qml" line="204"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="209"/>
+        <location filename="../../ui/GetStartedView.qml" line="210"/>
         <source>Paste</source>
         <translation></translation>
     </message>
@@ -60,12 +60,12 @@
 <context>
     <name>SettingsView</name>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="91"/>
+        <location filename="../../ui/SettingsView.qml" line="168"/>
         <source>System information for bug reporting and debugging</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="70"/>
+        <location filename="../../ui/SettingsView.qml" line="119"/>
         <source>Running in system tray when closed</source>
         <translation></translation>
     </message>
@@ -75,33 +75,38 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="101"/>
+        <location filename="../../ui/SettingsView.qml" line="73"/>
+        <source>Software Language</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SettingsView.qml" line="173"/>
         <source>Please include the following information when reporting bugs or asking for help.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="133"/>
-        <location filename="../../ui/SettingsView.qml" line="150"/>
+        <location filename="../../ui/SettingsView.qml" line="200"/>
+        <location filename="../../ui/SettingsView.qml" line="217"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="139"/>
+        <location filename="../../ui/SettingsView.qml" line="206"/>
         <source>Copied!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="174"/>
+        <location filename="../../ui/SettingsView.qml" line="138"/>
         <source>Export network logs</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="186"/>
+        <location filename="../../ui/SettingsView.qml" line="149"/>
         <source>Export</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="210"/>
+        <location filename="../../ui/SettingsView.qml" line="238"/>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
         <translation></translation>
     </message>
@@ -119,28 +124,51 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="70"/>
+        <location filename="../../ui/SideBar.qml" line="69"/>
         <source>Connections</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="83"/>
+        <location filename="../../ui/SideBar.qml" line="81"/>
         <source>Network Logs</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="105"/>
+        <location filename="../../ui/SideBar.qml" line="102"/>
         <source>Export Logs</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="124"/>
+        <location filename="../../ui/SideBar.qml" line="121"/>
         <source>Permitted Websites</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="144"/>
+        <location filename="../../ui/SideBar.qml" line="140"/>
         <source>Settings</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SystemTray</name>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="21"/>
+        <source>Tunnels</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="31"/>
+        <source>Network Logs</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="41"/>
+        <source>Permitted Websites</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="51"/>
+        <source>Quit</source>
         <translation></translation>
     </message>
 </context>

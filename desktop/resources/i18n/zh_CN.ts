@@ -4,12 +4,12 @@
 <context>
     <name>Daemon</name>
     <message>
-        <location filename="../../daemon.cc" line="219"/>
+        <location filename="../../daemon.cc" line="87"/>
         <source>Invalid URL format.</source>
-        <translation type="unfinished">URL 格式错误。</translation>
+        <translation>URL 格式错误。</translation>
     </message>
     <message>
-        <location filename="../../daemon.cc" line="222"/>
+        <location filename="../../daemon.cc" line="91"/>
         <source>Invalid scheme, only `ws` and `wss` are supported.</source>
         <translation>不支持此协议，仅支持连接到ws或wss协议。</translation>
     </message>
@@ -27,32 +27,32 @@
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="133"/>
+        <location filename="../../ui/GetStartedView.qml" line="129"/>
         <source>Use 0 to get random available port.</source>
         <translation>填0来获取随机可用端口。</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="174"/>
+        <location filename="../../ui/GetStartedView.qml" line="175"/>
         <source>Configure In-bound Address</source>
         <translation>设置入站地址</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="191"/>
+        <location filename="../../ui/GetStartedView.qml" line="192"/>
         <source>Select All</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="197"/>
+        <location filename="../../ui/GetStartedView.qml" line="198"/>
         <source>Cut</source>
         <translation>剪切</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="203"/>
+        <location filename="../../ui/GetStartedView.qml" line="204"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="209"/>
+        <location filename="../../ui/GetStartedView.qml" line="210"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
@@ -71,12 +71,12 @@
         <translation type="vanished">(c) 2022 - 2024 回归终端。根据 MIT 协议进行分发。源代码可以在&lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt;找到。</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="91"/>
+        <location filename="../../ui/SettingsView.qml" line="168"/>
         <source>System information for bug reporting and debugging</source>
         <translation>系统调试信息</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="70"/>
+        <location filename="../../ui/SettingsView.qml" line="119"/>
         <source>Running in system tray when closed</source>
         <translation>关闭窗口后继续在系统托盘中运行</translation>
     </message>
@@ -86,33 +86,38 @@
         <translation>文本文件 (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="101"/>
+        <location filename="../../ui/SettingsView.qml" line="73"/>
+        <source>Software Language</source>
+        <translation>界面显示语言 / Language</translation>
+    </message>
+    <message>
+        <location filename="../../ui/SettingsView.qml" line="173"/>
         <source>Please include the following information when reporting bugs or asking for help.</source>
         <translation>请在反馈Bug或者提问时，附上这里的系统信息，以便于我们复现与解决。</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="133"/>
-        <location filename="../../ui/SettingsView.qml" line="150"/>
+        <location filename="../../ui/SettingsView.qml" line="200"/>
+        <location filename="../../ui/SettingsView.qml" line="217"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="139"/>
+        <location filename="../../ui/SettingsView.qml" line="206"/>
         <source>Copied!</source>
         <translation>已复制！</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="174"/>
+        <location filename="../../ui/SettingsView.qml" line="138"/>
         <source>Export network logs</source>
         <translation>导出网络日志</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="186"/>
+        <location filename="../../ui/SettingsView.qml" line="149"/>
         <source>Export</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="210"/>
+        <location filename="../../ui/SettingsView.qml" line="238"/>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
         <translation>(c) 2022 - 2024 回归终端，根据 MIT 协议进行分发。源代码可以在&lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt;找到。</translation>
     </message>
@@ -130,33 +135,56 @@
         <translation>由此开始</translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="70"/>
+        <location filename="../../ui/SideBar.qml" line="69"/>
         <source>Connections</source>
         <translation>连接情况</translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="83"/>
+        <location filename="../../ui/SideBar.qml" line="81"/>
         <source>Network Logs</source>
         <translation>网络日志</translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="105"/>
+        <location filename="../../ui/SideBar.qml" line="102"/>
         <source>Export Logs</source>
         <translation>导出日志</translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="124"/>
+        <location filename="../../ui/SideBar.qml" line="121"/>
         <source>Permitted Websites</source>
         <translation>授权网站</translation>
     </message>
     <message>
-        <location filename="../../ui/SideBar.qml" line="144"/>
+        <location filename="../../ui/SideBar.qml" line="140"/>
         <source>Settings</source>
         <translation>软件设置</translation>
     </message>
     <message>
         <source>About</source>
         <translation type="vanished">关于</translation>
+    </message>
+</context>
+<context>
+    <name>SystemTray</name>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="21"/>
+        <source>Tunnels</source>
+        <translation>连接状态</translation>
+    </message>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="31"/>
+        <source>Network Logs</source>
+        <translation>网络日志</translation>
+    </message>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="41"/>
+        <source>Permitted Websites</source>
+        <translation>授权网站</translation>
+    </message>
+    <message>
+        <location filename="../../ui/SystemTray.qml" line="51"/>
+        <source>Quit</source>
+        <translation>退出程序</translation>
     </message>
 </context>
 <context>

@@ -59,145 +59,174 @@ ScrollView {
         text: "Idealism is that you will probably never receive something back,\nbut nonetheless still decide to give."
     }
 
-    Switch {
-        id: runningInTraySwitch
-
+    ColumnLayout {
+        spacing: 8
         anchors.top: sloganText.bottom
-        anchors.topMargin: 64
+        anchors.topMargin: 48
         anchors.left: logoImage.left
         anchors.right: logoText.right
-        anchors.rightMargin: 8
-        text: qsTr("Running in system tray when closed")
-    }
 
-    Rectangle {
-        id: separator1
+        RowLayout {
+            Layout.fillWidth: true
 
-        anchors.top: runningInTraySwitch.bottom
-        anchors.topMargin: 16
-        anchors.left: logoImage.left
-        anchors.right: logoText.right
-        height: 1
-        color: Style.palette.midlight
-    }
-
-    Label {
-        id: debugInfoTitleText
-
-        anchors.top: separator1.bottom
-        anchors.topMargin: 16
-        anchors.left: logoImage.left
-        anchors.right: logoText.right
-        text: qsTr("System information for bug reporting and debugging")
-    }
-
-    Label {
-        id: debugInfoTipsText
-
-        anchors.top: debugInfoTitleText.bottom
-        anchors.topMargin: 8
-        anchors.left: debugInfoTitleText.left
-        anchors.right: logoText.right
-        text: qsTr("Please include the following information when reporting bugs or asking for help.")
-        opacity: 0.6
-    }
-
-    ScrollView {
-        id: debugInfoArea
-
-        anchors.top: debugInfoTipsText.bottom
-        anchors.topMargin: 8
-        anchors.left: debugInfoTitleText.left
-        anchors.right: logoText.right
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-
-        TextArea {
-            id: innerDebugInfoArea
-
-            readOnly: true
-            text: daemon.systemInfo
-        }
-
-    }
-
-    Button {
-        id: copyButton
-
-        anchors.top: debugInfoArea.top
-        anchors.topMargin: 8
-        anchors.right: debugInfoArea.right
-        anchors.rightMargin: 8
-        display: AbstractButton.TextBesideIcon
-        icon.source: "qrc:/resources/assets/copy.svg"
-        icon.color: Style.palette.success
-        text: qsTr("Copy")
-        onClicked: {
-            innerDebugInfoArea.selectAll();
-            innerDebugInfoArea.copy();
-            innerDebugInfoArea.deselect();
-            icon.source = "qrc:/resources/assets/checkmark.svg";
-            text = qsTr("Copied!");
-            copyButtonTimer.start();
-        }
-
-        Timer {
-            id: copyButtonTimer
-
-            interval: 1000
-            repeat: false
-            onTriggered: {
-                copyButton.icon.source = "qrc:/resources/assets/copy.svg";
-                copyButton.text = qsTr("Copy");
+            Label {
+                text: qsTr("Software Language")
+                Layout.fillWidth: true
             }
+
+            ComboBox {
+                id: languageComboBox
+                textRole: "text"
+                valueRole: "value"
+
+                Layout.rightMargin: 8
+                width: 240
+
+                currentIndex: ["en_US", "zh_CN"].indexOf(ui.language)
+
+                ListModel {
+                    id: languageModel
+
+                    ListElement {
+                        value: "en_US"
+                        text: "English"
+                    }
+
+                    ListElement {
+                        value: "zh_CN"
+                        text: "简体中文"
+                    }
+
+                }
+
+                model: languageModel
+
+                onCurrentValueChanged: {
+                    ui.language = languageComboBox.currentValue;
+                }
+
+            }
+
         }
 
-    }
-
-    Rectangle {
-        id: separator2
-
-        anchors.top: debugInfoArea.bottom
-        anchors.topMargin: 16
-        anchors.left: logoImage.left
-        anchors.right: logoText.right
-        height: 1
-        color: Style.palette.midlight
-    }
-
-    Label {
-        id: exportLogsTitleText
-
-        anchors.top: separator2.bottom
-        anchors.topMargin: 16
-        anchors.left: logoImage.left
-        anchors.right: logoText.right
-        text: qsTr("Export network logs")
-    }
-
-    Button {
-        id: exportLogsButton
-
-        anchors.verticalCenter: exportLogsTitleText.verticalCenter
-        anchors.right: logoText.right
-        anchors.rightMargin: 8
-        icon.source: "qrc:/resources/assets/open.svg"
-        icon.color: Style.palette.primary
-        display: AbstractButton.TextBesideIcon
-        text: qsTr("Export")
-        onClicked: {
-            exportLogDialog.open();
+        Rectangle {
+            height: 1
+            color: Style.palette.midlight
+            Layout.fillWidth: true
         }
-    }
 
-    Rectangle {
-        id: separator3
+        Switch {
+            text: qsTr("Running in system tray when closed")
+            checked: ui.runningInTray
+            onCheckedChanged: {
+                ui.runningInTray = checked;
+            }
+            Layout.fillWidth: true
+            Layout.rightMargin: 8
+        }
 
-        anchors.top: exportLogsTitleText.bottom
-        anchors.topMargin: 16
-        anchors.left: logoImage.left
-        anchors.right: logoText.right
-        height: 1
-        color: Style.palette.midlight
+        Rectangle {
+            height: 1
+            color: Style.palette.midlight
+            Layout.fillWidth: true
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            Label {
+                text: qsTr("Export network logs")
+                Layout.fillWidth: true
+            }
+
+            Button {
+                id: exportLogsButton
+
+                Layout.rightMargin: 8
+                icon.source: "qrc:/resources/assets/open.svg"
+                icon.color: Style.palette.primary
+                display: AbstractButton.TextBesideIcon
+                text: qsTr("Export")
+                onClicked: {
+                    exportLogDialog.open();
+                }
+            }
+
+        }
+
+        Rectangle {
+            height: 1
+            color: Style.palette.midlight
+            Layout.fillWidth: true
+        }
+
+        ColumnLayout {
+            spacing: 8
+            Layout.fillWidth: true
+
+            Label {
+                text: qsTr("System information for bug reporting and debugging")
+                Layout.fillWidth: true
+                Layout.topMargin: 8
+            }
+
+            Label {
+                text: qsTr("Please include the following information when reporting bugs or asking for help.")
+                Layout.fillWidth: true
+                opacity: 0.6
+            }
+
+            ScrollView {
+                id: debugInfoArea
+
+                Layout.fillWidth: true
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+                TextArea {
+                    id: innerDebugInfoArea
+
+                    readOnly: true
+                    text: daemon.systemInfo
+
+                    Button {
+                        id: copyButton
+
+                        anchors.top: parent.top
+                        anchors.topMargin: 8
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        display: AbstractButton.TextBesideIcon
+                        icon.source: "qrc:/resources/assets/copy.svg"
+                        icon.color: Style.palette.success
+                        text: qsTr("Copy")
+                        onClicked: {
+                            innerDebugInfoArea.selectAll();
+                            innerDebugInfoArea.copy();
+                            innerDebugInfoArea.deselect();
+                            icon.source = "qrc:/resources/assets/checkmark.svg";
+                            text = qsTr("Copied!");
+                            copyButtonTimer.start();
+                        }
+
+                        Timer {
+                            id: copyButtonTimer
+
+                            interval: 1000
+                            repeat: false
+                            onTriggered: {
+                                copyButton.icon.source = "qrc:/resources/assets/copy.svg";
+                                copyButton.text = qsTr("Copy");
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
     }
 
     Label {
