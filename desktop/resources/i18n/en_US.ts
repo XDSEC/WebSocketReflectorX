@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en">
+<TS version="2.1" language="en_US">
+<context>
+    <name>ConnectionsView</name>
+    <message>
+        <location filename="../../ui/ConnectionsView.qml" line="12"/>
+        <source>No connections</source>
+        <translation></translation>
+    </message>
+</context>
 <context>
     <name>Daemon</name>
     <message>
@@ -58,14 +66,22 @@
     </message>
 </context>
 <context>
+    <name>LogsView</name>
+    <message>
+        <location filename="../../ui/LogsView.qml" line="12"/>
+        <source>No logs</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>SettingsView</name>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="168"/>
+        <location filename="../../ui/SettingsView.qml" line="165"/>
         <source>System information for bug reporting and debugging</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="119"/>
+        <location filename="../../ui/SettingsView.qml" line="116"/>
         <source>Running in system tray when closed</source>
         <translation></translation>
     </message>
@@ -80,33 +96,33 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="173"/>
+        <location filename="../../ui/SettingsView.qml" line="171"/>
         <source>Please include the following information when reporting bugs or asking for help.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="200"/>
-        <location filename="../../ui/SettingsView.qml" line="217"/>
+        <location filename="../../ui/SettingsView.qml" line="198"/>
+        <location filename="../../ui/SettingsView.qml" line="215"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="206"/>
+        <location filename="../../ui/SettingsView.qml" line="204"/>
         <source>Copied!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="138"/>
+        <location filename="../../ui/SettingsView.qml" line="135"/>
         <source>Export network logs</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="149"/>
+        <location filename="../../ui/SettingsView.qml" line="146"/>
         <source>Export</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="238"/>
+        <location filename="../../ui/SettingsView.qml" line="236"/>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
         <translation></translation>
     </message>

@@ -204,9 +204,11 @@ async fn close_tunnel(
         if let Some(handle) = tunnel.handle.as_ref() {
             handle.abort();
         }
+        info!("REMOVE {} <-wsrx-> {}", tunnel.from, tunnel.to);
         pool.remove(&req.key);
         Ok(StatusCode::OK)
     } else {
+        error!("Tunnel does not exist: {}", req.key);
         Err((StatusCode::NOT_FOUND, "not found"))
     }
 }

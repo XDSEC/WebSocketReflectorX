@@ -14,7 +14,7 @@ T.Button {
     property color activeColor: Style.palette.midlight
     property int radius: 6
     property bool square: false
-    property int borderWidth: 1
+    property int borderWidth: 0
     property bool active: false
 
     display: AbstractButton.TextOnly

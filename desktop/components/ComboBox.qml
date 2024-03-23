@@ -71,7 +71,7 @@ T.ComboBox {
             }
 
         }
-        
+
     }
 
     indicator: ColorImage {

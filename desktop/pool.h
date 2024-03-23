@@ -56,6 +56,7 @@ Q_DECLARE_METATYPE(Link)
 
 class LinkList : public QAbstractListModel {
     Q_OBJECT
+    Q_PROPERTY(int size READ size NOTIFY sizeChanged)
 
    private:
     QVector<Link> m_list{};
@@ -79,6 +80,8 @@ class LinkList : public QAbstractListModel {
 
     QVariant data(const QModelIndex &index, int role) const override;
 
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+
     QHash<int, QByteArray> roleNames() const override;
 
     void syncLinks(const QString &json);
@@ -86,4 +89,9 @@ class LinkList : public QAbstractListModel {
     void refreshStatus();
 
     void clear();
+
+    [[nodiscard]] int size() const;
+
+    signals:
+    void sizeChanged(int n);
 };

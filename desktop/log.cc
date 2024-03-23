@@ -98,7 +98,11 @@ void Log::setTarget(const QString &target) {
     m_target = target;
 }
 
-LogList::LogList(QObject *parent) : QAbstractListModel(parent) {}
+LogList::LogList(QObject *parent) : QAbstractListModel(parent) {
+  connect(this, &LogList::dataChanged, this, [=]() {
+    emit sizeChanged(rowCount(QModelIndex()));
+  });
+}
 
 LogList::~LogList() = default;
 
@@ -144,14 +148,20 @@ void LogList::appendLogs(const QString &json) {
         m_list.append(Log::fromJson(log_json));
         endInsertRows();
     }
+    emit sizeChanged(rowCount(QModelIndex()));
 }
 
 void LogList::appendLog(const Log &log) {
     beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
     m_list.append(log);
     endInsertRows();
+    emit sizeChanged(rowCount(QModelIndex()));
 }
 
 QVector<Log> *LogList::logs() const {
     return const_cast<QVector<Log> *>(&m_list);
+}
+
+int LogList::size() const {
+    return rowCount(QModelIndex());
 }

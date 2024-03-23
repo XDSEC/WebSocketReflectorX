@@ -20,10 +20,13 @@
     <file>assets/iot.svg</file>
     <file>assets/line-horizontal-1.svg</file>
     <file>assets/link.svg</file>
+    <file>assets/link-dismiss.svg</file>
     <file>assets/logo-bg.svg</file>
     <file>assets/logo.svg</file>
     <file>assets/navigation.svg</file>
     <file>assets/open.svg</file>
+    <file>assets/plug-connected.svg</file>
+    <file>assets/plug-disconnected.svg</file>
     <file>assets/send.svg</file>
     <file>assets/settings.svg</file>
     <file>assets/shield.svg</file>
@@ -34,7 +37,6 @@
     <file>assets/weather-moon.svg</file>
     <file>assets/weather-sunny.svg</file>
     <file>assets/web-asset.svg</file>
-    <file>assets/plug-disconnected.svg</file>
     <file>assets/flash-on.svg</file>
     <file>assets/checkmark-circle.svg</file>
     <file>assets/error-circle.svg</file>

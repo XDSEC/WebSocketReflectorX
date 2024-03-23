@@ -76,13 +76,16 @@ ScrollView {
 
             ComboBox {
                 id: languageComboBox
+
                 textRole: "text"
                 valueRole: "value"
-
                 Layout.rightMargin: 8
                 width: 240
-
                 currentIndex: ["en_US", "zh_CN"].indexOf(ui.language)
+                model: languageModel
+                onCurrentValueChanged: {
+                    ui.language = languageComboBox.currentValue;
+                }
 
                 ListModel {
                     id: languageModel
@@ -97,12 +100,6 @@ ScrollView {
                         text: "简体中文"
                     }
 
-                }
-
-                model: languageModel
-
-                onCurrentValueChanged: {
-                    ui.language = languageComboBox.currentValue;
                 }
 
             }

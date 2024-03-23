@@ -76,6 +76,8 @@ void Link::setLatency(quint32 latency) {
 
 LinkList::LinkList(QObject *parent) : QAbstractListModel(parent) {
     m_network = new QNetworkAccessManager(this);
+    connect(this, &LogList::dataChanged, this,
+            [=]() { emit sizeChanged(rowCount(QModelIndex())); });
 }
 
 LinkList::~LinkList() = default;
@@ -95,6 +97,25 @@ QVariant LinkList::data(const QModelIndex &index, int role) const {
     if (role == StatusRole) return m_list.at(index.row()).status();
     if (role == DelayRole) return m_list.at(index.row()).latency();
     return QVariant();
+}
+
+bool LinkList::setData(const QModelIndex &index, const QVariant &value,
+                       int role) {
+    if (!index.isValid()) return false;
+    if (index.row() >= m_list.size()) return false;
+    if (role == FromRole) {
+        m_list[index.row()].setFrom(value.toString());
+    } else if (role == ToRole) {
+        m_list[index.row()].setTo(value.toString());
+    } else if (role == StatusRole) {
+        m_list[index.row()].setStatus(static_cast<LinkStatus>(value.toInt()));
+    } else if (role == DelayRole) {
+        m_list[index.row()].setLatency(value.toUInt());
+    } else {
+        return false;
+    }
+    emit dataChanged(index, index, {role});
+    return true;
 }
 
 QHash<int, QByteArray> LinkList::roleNames() const {
@@ -149,6 +170,7 @@ void LinkList::syncLinks(const QString &json) {
             endInsertRows();
         }
     }
+    emit sizeChanged(rowCount(QModelIndex()));
     refreshStatus();
 }
 
@@ -175,10 +197,12 @@ void LinkList::refreshStatus() {
                         EventLevel::ERROR, reply->errorString(),
                         u"wsrx::desktop::pool"_qs));
                 }
-                m_list[i].setStatus(LinkStatus::DEAD);
+                setData(index(i), LinkStatus::DEAD, StatusRole);
             } else {
-                m_list[i].setLatency(latency);
-                m_list[i].setStatus(LinkStatus::ALIVE);
+                // m_list[i].setLatency(latency);
+                // m_list[i].setStatus(LinkStatus::ALIVE);
+                setData(index(i), latency, DelayRole);
+                setData(index(i), LinkStatus::ALIVE, StatusRole);
             }
             reply->deleteLater();
         });
@@ -189,4 +213,9 @@ void LinkList::clear() {
     beginRemoveRows(QModelIndex(), 0, m_list.size());
     m_list.clear();
     endRemoveRows();
+    emit sizeChanged(rowCount(QModelIndex()));
+}
+
+int LinkList::size() const {
+    return rowCount(QModelIndex());
 }

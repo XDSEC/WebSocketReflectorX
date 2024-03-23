@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>ConnectionsView</name>
+    <message>
+        <location filename="../../ui/ConnectionsView.qml" line="12"/>
+        <source>No connections</source>
+        <translation>没有连接</translation>
+    </message>
+</context>
+<context>
     <name>Daemon</name>
     <message>
         <location filename="../../daemon.cc" line="87"/>
@@ -63,6 +71,11 @@
         <source>Export</source>
         <translation type="vanished">导出</translation>
     </message>
+    <message>
+        <location filename="../../ui/LogsView.qml" line="12"/>
+        <source>No logs</source>
+        <translation>没有日志</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -71,12 +84,12 @@
         <translation type="vanished">(c) 2022 - 2024 回归终端。根据 MIT 协议进行分发。源代码可以在&lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt;找到。</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="168"/>
+        <location filename="../../ui/SettingsView.qml" line="165"/>
         <source>System information for bug reporting and debugging</source>
         <translation>系统调试信息</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="119"/>
+        <location filename="../../ui/SettingsView.qml" line="116"/>
         <source>Running in system tray when closed</source>
         <translation>关闭窗口后继续在系统托盘中运行</translation>
     </message>
@@ -91,33 +104,33 @@
         <translation>界面显示语言 / Language</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="173"/>
+        <location filename="../../ui/SettingsView.qml" line="171"/>
         <source>Please include the following information when reporting bugs or asking for help.</source>
         <translation>请在反馈Bug或者提问时，附上这里的系统信息，以便于我们复现与解决。</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="200"/>
-        <location filename="../../ui/SettingsView.qml" line="217"/>
+        <location filename="../../ui/SettingsView.qml" line="198"/>
+        <location filename="../../ui/SettingsView.qml" line="215"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="206"/>
+        <location filename="../../ui/SettingsView.qml" line="204"/>
         <source>Copied!</source>
         <translation>已复制！</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="138"/>
+        <location filename="../../ui/SettingsView.qml" line="135"/>
         <source>Export network logs</source>
         <translation>导出网络日志</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="149"/>
+        <location filename="../../ui/SettingsView.qml" line="146"/>
         <source>Export</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="238"/>
+        <location filename="../../ui/SettingsView.qml" line="236"/>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
         <translation>(c) 2022 - 2024 回归终端，根据 MIT 协议进行分发。源代码可以在&lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt;找到。</translation>
     </message>

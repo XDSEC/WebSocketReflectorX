@@ -34,7 +34,7 @@ Daemon::Daemon(QObject *parent) : QObject(parent) {
     m_links = new LinkList(this);
     m_links->setLogs(m_logs);
     m_refreshTimer = new QTimer(this);
-    m_refreshTimer->setInterval(5000);
+    m_refreshTimer->setInterval(30 * 1000);
     m_refreshTimer->start();
 
     connect(m_refreshTimer, &QTimer::timeout, this, [this]() { syncPool(); });
@@ -112,7 +112,23 @@ Q_INVOKABLE void Daemon::requestConnect(const QString &address,
 }
 
 Q_INVOKABLE void Daemon::requestDisconnect(const QString &local_address) {
-    return Q_INVOKABLE void();
+    auto url = QUrl(m_apiRoot + "pool");
+    auto request = QNetworkRequest(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    auto json = QJsonObject();
+    json["key"] = local_address;
+    auto reply = m_network->sendCustomRequest(request, "DELETE", QJsonDocument(json).toJson());
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            // qDebug() << reply->errorString();
+            emit disconnected(false, reply->readAll());
+        } else {
+            // qDebug() << reply->readAll();
+            emit disconnected(true, reply->readAll());
+        }
+        syncPool();
+        reply->deleteLater();
+    });
 }
 
 QString Daemon::systemInfo() const {

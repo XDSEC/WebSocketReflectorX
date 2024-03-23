@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
 #include <QAbstractListModel>
+#include <QObject>
 
 enum EventLevel { INFO, WARNING, ERROR, SUCCESS };
 
@@ -54,6 +54,7 @@ Q_DECLARE_METATYPE(Log)
 
 class LogList : public QAbstractListModel {
     Q_OBJECT
+    Q_PROPERTY(int size READ size NOTIFY sizeChanged)
 
    private:
     QVector<Log> m_list{};
@@ -82,4 +83,9 @@ class LogList : public QAbstractListModel {
     void appendLog(const Log &log);
 
     QVector<Log> *logs() const;
+
+    [[nodiscard]] int size() const;
+   
+   signals:
+    void sizeChanged(int n);
 };
