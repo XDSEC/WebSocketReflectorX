@@ -121,10 +121,16 @@ Item {
             height: 40
             placeholderText: qsTr("Port")
             text: "0"
+            hoverEnabled: true
+
+            validator: IntValidator {
+                bottom: 0
+                top: 65535
+            }
 
             ToolTip {
                 parent: portEdit
-                visible: portEdit.state === "Focus"
+                visible: portEdit.hovered
                 text: qsTr("Use 0 to get random available port.")
             }
 
@@ -214,9 +220,21 @@ Item {
                 }
             }
 
+            ToolTip {
+                id: errorTip
+
+                parent: urlTextEdit
+                timeout: 5000
+                visible: false
+                contentColor: Style.palette.error
+                y: parent.height + 8
+            }
+
         }
 
         Button {
+            id: connectButton
+
             display: AbstractButton.IconOnly
             height: 40
             icon.source: "qrc:/resources/assets/send.svg"
@@ -224,8 +242,52 @@ Item {
             icon.height: 20
             borderWidth: 0
             onClicked: {
+                if (connectTimer.running)
+                    return ;
+
                 daemon.requestConnect(urlTextEdit.text, addressCombo.currentText, portEdit.text);
+                connectButton.icon.color = Style.palette.button;
+                connectTimer.running = true;
+                connectingSpinner.running = true;
+                connectingSpinner.opacity = 1;
             }
+
+            Loading {
+                id: connectingSpinner
+
+                anchors.centerIn: parent
+                radius: 8
+                running: false
+                opacity: 0
+            }
+
+        }
+
+        Timer {
+            id: connectTimer
+
+            interval: 1000
+            running: false
+            repeat: false
+            onTriggered: {
+                connectButton.icon.color = Style.palette.buttonText;
+                connectButton.icon.source = "qrc:/resources/assets/send.svg";
+                connectingSpinner.running = false;
+                connectingSpinner.opacity = 0;
+            }
+        }
+
+        Connections {
+            function onConnected(success, message) {
+                if (!success) {
+                    errorTip.text = message;
+                    errorTip.visible = true;
+                } else {
+                    errorTip.visible = false;
+                }
+            }
+
+            target: daemon
         }
 
     }

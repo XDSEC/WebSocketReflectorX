@@ -5,6 +5,9 @@ import Rx.Widgets
 T.ToolTip {
     id: control
 
+    property color color: Style.palette.toolTipBase
+    property color contentColor: Style.palette.toolTipText
+
     bottomPadding: padding - 1
     closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutsideParent | T.Popup.CloseOnReleaseOutsideParent
     delay: Qt.styleHints.mousePressAndHoldInterval
@@ -20,12 +23,12 @@ T.ToolTip {
     background: Rectangle {
         border.color: Style.palette.mid
         border.width: 1
-        color: Style.palette.toolTipBase
+        color: control.color
         radius: 6
     }
 
     contentItem: Text {
-        color: Style.palette.toolTipText
+        color: control.contentColor
         font: control.font
         opacity: enabled ? 1 : 0.2
         text: control.text

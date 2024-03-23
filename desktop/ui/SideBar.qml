@@ -6,6 +6,8 @@ import Rx.Widgets
 Rectangle {
     id: root
 
+    property int page: 0
+
     color: Style.palette.midlight
 
     Button {
@@ -55,9 +57,9 @@ Rectangle {
             text: qsTr("Get Started")
             width: parent.width
             height: 36
-            isCurrent: ui.page === 0
+            isCurrent: root.page === 0
             onClicked: {
-                ui.page = 0;
+                root.page = 0;
             }
         }
 
@@ -68,9 +70,9 @@ Rectangle {
             text: qsTr("Connections")
             width: parent.width
             height: 36
-            isCurrent: ui.page === 1
+            isCurrent: root.page === 1
             onClicked: {
-                ui.page = 1;
+                root.page = 1;
             }
         }
 
@@ -81,9 +83,9 @@ Rectangle {
             text: qsTr("Network Logs")
             width: parent.width
             height: 36
-            isCurrent: ui.page === 2
+            isCurrent: root.page === 2
             onClicked: {
-                ui.page = 2;
+                root.page = 2;
             }
 
             Button {
@@ -122,9 +124,9 @@ Rectangle {
             text: qsTr("Permitted Websites")
             width: parent.width
             height: 36
-            isCurrent: ui.page === 3
+            isCurrent: root.page === 3
             onClicked: {
-                ui.page = 3;
+                root.page = 3;
             }
         }
 
@@ -142,9 +144,9 @@ Rectangle {
         text: qsTr("Settings")
         width: parent.width
         height: 36
-        isCurrent: ui.page === 4
+        isCurrent: root.page === 4
         onClicked: {
-            ui.page = 4;
+            root.page = 4;
         }
     }
 

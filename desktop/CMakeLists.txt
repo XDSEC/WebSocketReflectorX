@@ -12,6 +12,10 @@ include_directories(${GENERATED_FILE_PATH})
 set(
   SOURCES
   main.cc
+  log.cc
+  log.h
+  pool.cc
+  pool.h
   daemon.cc
   daemon.h
   ui.cc

@@ -41,6 +41,17 @@ FramelessWindow {
                     SplitView.preferredWidth: 280
                     SplitView.minimumWidth: 200
                     SplitView.maximumWidth: 400
+
+                    Connections {
+                        function onConnected(success, message) {
+                            if (success)
+                                sideBar.page = 1;
+
+                        }
+
+                        target: daemon
+                    }
+
                 }
 
                 Item {
@@ -52,14 +63,17 @@ FramelessWindow {
                         anchors.right: parent.right
                     }
 
-                    StackLayout {
+                    SwipeView {
                         id: stack
 
+                        clip: true
                         anchors.bottom: parent.bottom
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: titleBar.bottom
-                        currentIndex: ui.page
+                        currentIndex: sideBar.page
+                        orientation: Qt.Vertical
+                        interactive: false
 
                         GetStartedView {
                             id: getStartedView

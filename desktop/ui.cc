@@ -7,6 +7,8 @@
 #include <QQuickWindow>
 #include <QTranslator>
 #include "daemon.h"
+#include "log.h"
+#include "pool.h"
 
 Ui::Ui(QObject *parent) : QObject(parent) {
     m_uiEngine = new QQmlEngine(this);
@@ -21,6 +23,7 @@ Ui::Ui(QObject *parent) : QObject(parent) {
     m_uiEngine->rootContext()->setContextProperty("ui", this);
     m_uiEngine->rootContext()->setContextProperty("daemon", m_daemon);
     m_uiEngine->rootContext()->setContextProperty("logs", m_daemon->logs());
+    m_uiEngine->rootContext()->setContextProperty("links", m_daemon->links());
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));
@@ -28,16 +31,6 @@ Ui::Ui(QObject *parent) : QObject(parent) {
 }
 
 Ui::~Ui() = default;
-
-quint8 Ui::page() const { return m_page; }
-
-void Ui::setPage(quint8 page) {
-    if (m_page == page)
-        return;
-    m_page = page;
-    emit pageChanged(page);
-}
-
 
 void Ui::requestToQuit() {
     m_window->close();

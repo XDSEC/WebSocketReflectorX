@@ -90,6 +90,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
                     )
                 })
                 .on_request(())
+                .on_failure(())
                 .on_response(|response: &Response, latency: Duration, _span: &Span| {
                     debug!(
                         "API Request [{}] in {}ms",
@@ -110,20 +111,20 @@ struct TunnelRequest {
 async fn launch_tunnel(
     State(connections): State<Arc<RwLock<HashMap<String, Tunnel>>>>,
     axum::Json(req): axum::Json<TunnelRequest>,
-) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+) -> Result<impl IntoResponse, (StatusCode, String)> {
     let mut pool = connections.write().await;
     // pool.insert(req.from, req.to);
     let mut tcp_addr_obj = req.from.to_socket_addrs().map_err(|err| {
         error!("Failed to parse from address: {err}");
-        (StatusCode::BAD_REQUEST, "failed to parse from address")
+        (StatusCode::BAD_REQUEST, "failed to parse from address".to_owned())
     })?;
     let tcp_addr_obj = tcp_addr_obj
         .next()
-        .ok_or((StatusCode::BAD_REQUEST, "failed to get socket addr"))?;
+        .ok_or((StatusCode::BAD_REQUEST, "failed to get socket addr".to_owned()))?;
     let listener = TcpListener::bind(tcp_addr_obj)
         .await.map_err(|err| {
             error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
-            (StatusCode::INTERNAL_SERVER_ERROR, "failed to bind tcp address")
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("failed to bind tcp address {tcp_addr_obj:?}: {err}"))
         })?;
     info!(
         "CREATE tcp server: {} <--wsrx--> {}",
@@ -164,7 +165,7 @@ async fn launch_tunnel(
         error!("Failed to serialize tunnel: {e:?}");
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            "failed to serialize tunnel",
+            format!("Failed to serialize tunnel: {e:?}"),
         )
     });
     pool.insert(tunnel.from.clone(), tunnel);
