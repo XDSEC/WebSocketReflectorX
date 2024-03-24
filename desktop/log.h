@@ -11,29 +11,28 @@ class Log : public QObject {
     Q_PROPERTY(EventLevel level READ level WRITE setLevel)
     Q_PROPERTY(QString message READ message WRITE setMessage)
     Q_PROPERTY(QString target READ target WRITE setTarget)
-   private:
+  private:
     QString m_timestamp;
     EventLevel m_level;
     QString m_message;
     QString m_target;
 
-   public:
-    Log(const QString &timestamp, EventLevel level, const QString &message,
-        const QString &target);
+  public:
+    Log(const QString& timestamp, EventLevel level, const QString& message, const QString& target);
 
-    Log(const Log &other);
+    Log(const Log& other);
 
     Log();
 
     ~Log() override;
 
-    Log &operator=(const Log &other);
+    Log& operator=(const Log& other);
 
-    static Log fromJson(const QString &json);
+    static Log fromJson(const QString& json);
 
     [[nodiscard]] QString timestamp() const;
 
-    void setTimestamp(const QString &timestamp);
+    void setTimestamp(const QString& timestamp);
 
     [[nodiscard]] EventLevel level() const;
 
@@ -43,11 +42,11 @@ class Log : public QObject {
 
     [[nodiscard]] QString message() const;
 
-    void setMessage(const QString &message);
+    void setMessage(const QString& message);
 
     [[nodiscard]] QString target() const;
 
-    void setTarget(const QString &target);
+    void setTarget(const QString& target);
 };
 
 Q_DECLARE_METATYPE(Log)
@@ -56,36 +55,30 @@ class LogList : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int size READ size NOTIFY sizeChanged)
 
-   private:
+  private:
     QVector<Log> m_list{};
 
-   public:
-    enum LogListRoles {
-        LevelRole = Qt::UserRole + 1,
-        TimestampRole,
-        MessageRole,
-        TargetRole
-    };
+  public:
+    enum LogListRoles { LevelRole = Qt::UserRole + 1, TimestampRole, MessageRole, TargetRole };
 
-    explicit LogList(QObject *parent = nullptr);
+    explicit LogList(QObject* parent = nullptr);
 
     ~LogList() override;
 
-    [[nodiscard]] int rowCount(const QModelIndex &parent) const override;
+    [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
 
-    [[nodiscard]] QVariant data(const QModelIndex &index,
-                                int role) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
 
     [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
-    void appendLogs(const QString &json);
+    void appendLogs(const QString& json);
 
-    void appendLog(const Log &log);
+    void appendLog(const Log& log);
 
-    QVector<Log> *logs() const;
+    QVector<Log>* logs() const;
 
     [[nodiscard]] int size() const;
-   
-   signals:
+
+  signals:
     void sizeChanged(int n);
 };

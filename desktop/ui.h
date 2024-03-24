@@ -16,12 +16,12 @@ class Ui : public QObject {
     Q_PROPERTY(bool isDark READ isDark WRITE setIsDark NOTIFY isDarkChanged)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
   private:
-    QQmlEngine *m_uiEngine;
-    QQmlComponent *m_uiComponent;
-    QQuickWindow *m_window{};
-    QTranslator *m_translator{};
-    Daemon *m_daemon;
-    ToastList *m_toasts;
+    QQmlEngine* m_uiEngine;
+    QQmlComponent* m_uiComponent;
+    QQuickWindow* m_window{};
+    QTranslator* m_translator{};
+    Daemon* m_daemon;
+    ToastList* m_toasts;
     bool m_runningInTray = false;
     bool m_isDark = false;
     QString m_language = "zh_CN";
@@ -32,7 +32,7 @@ class Ui : public QObject {
     void saveSettings();
 
   public:
-    explicit Ui(QObject *parent = nullptr);
+    explicit Ui(QObject* parent = nullptr);
 
     ~Ui() override;
 
@@ -46,7 +46,7 @@ class Ui : public QObject {
 
     [[nodiscard]] QString language() const;
 
-    void setLanguage(const QString &language);
+    void setLanguage(const QString& language);
 
   public slots:
     Q_INVOKABLE void show();
@@ -60,5 +60,5 @@ class Ui : public QObject {
 
     void isDarkChanged(bool isDark);
 
-    void languageChanged(const QString &language);
+    void languageChanged(const QString& language);
 };

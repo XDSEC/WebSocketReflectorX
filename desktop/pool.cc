@@ -9,11 +9,10 @@
 
 #include "log.h"
 
-Link::Link(const QString &from, const QString &to, LinkStatus status,
-           quint32 latency)
+Link::Link(const QString& from, const QString& to, LinkStatus status, quint32 latency)
     : m_from(from), m_to(to), m_status(status), m_latency(latency) {}
 
-Link::Link(const Link &other) {
+Link::Link(const Link& other) {
     m_from = other.m_from;
     m_to = other.m_to;
     m_status = other.m_status;
@@ -29,7 +28,7 @@ Link::Link() {
 
 Link::~Link() = default;
 
-Link &Link::operator=(const Link &other) {
+Link& Link::operator=(const Link& other) {
     if (this == &other) return *this;
     m_from = other.m_from;
     m_to = other.m_to;
@@ -38,7 +37,7 @@ Link &Link::operator=(const Link &other) {
     return *this;
 }
 
-bool Link::operator<(const Link &other) const {
+bool Link::operator<(const Link& other) const {
     if (m_status == other.m_status) {
         if (m_latency == other.m_latency) {
             if (m_from == other.m_from) {
@@ -51,7 +50,7 @@ bool Link::operator<(const Link &other) const {
     return m_status < other.m_status;
 }
 
-Link Link::fromJson(const QString &json) {
+Link Link::fromJson(const QString& json) {
     auto doc = QJsonDocument::fromJson(json.toUtf8());
     auto obj = doc.object();
     auto from = obj["from"].toString();
@@ -61,14 +60,14 @@ Link Link::fromJson(const QString &json) {
 
 QString Link::from() const { return m_from; }
 
-void Link::setFrom(const QString &from) {
+void Link::setFrom(const QString& from) {
     if (m_from == from) return;
     m_from = from;
 }
 
 QString Link::to() const { return m_to; }
 
-void Link::setTo(const QString &to) {
+void Link::setTo(const QString& to) {
     if (m_to == to) return;
     m_to = to;
 }
@@ -87,22 +86,21 @@ void Link::setLatency(quint32 latency) {
     m_latency = latency;
 }
 
-LinkList::LinkList(QObject *parent) : QAbstractListModel(parent) {
+LinkList::LinkList(QObject* parent) : QAbstractListModel(parent) {
     m_network = new QNetworkAccessManager(this);
-    connect(this, &LogList::dataChanged, this,
-            [=]() { emit sizeChanged(rowCount(QModelIndex())); });
+    connect(this, &LogList::dataChanged, this, [=]() { emit sizeChanged(rowCount(QModelIndex())); });
 }
 
 LinkList::~LinkList() = default;
 
-void LinkList::setLogs(LogList *logs) { m_logs = logs; }
+void LinkList::setLogs(LogList* logs) { m_logs = logs; }
 
-int LinkList::rowCount(const QModelIndex &parent) const {
+int LinkList::rowCount(const QModelIndex& parent) const {
     if (parent.isValid()) return 0;
     return m_list.size();
 }
 
-QVariant LinkList::data(const QModelIndex &index, int role) const {
+QVariant LinkList::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return QVariant();
     if (index.row() >= m_list.size()) return QVariant();
     if (role == FromRole) return m_list.at(index.row()).from();
@@ -112,8 +110,7 @@ QVariant LinkList::data(const QModelIndex &index, int role) const {
     return QVariant();
 }
 
-bool LinkList::setData(const QModelIndex &index, const QVariant &value,
-                       int role) {
+bool LinkList::setData(const QModelIndex& index, const QVariant& value, int role) {
     if (!index.isValid()) return false;
     if (index.row() >= m_list.size()) return false;
     if (role == FromRole) {
@@ -140,12 +137,12 @@ QHash<int, QByteArray> LinkList::roleNames() const {
     return roles;
 }
 
-void LinkList::syncLinks(const QString &json) {
+void LinkList::syncLinks(const QString& json) {
     // qDebug() << "syncLinks" << json;
     auto doc = QJsonDocument::fromJson(json.toUtf8());
     auto arr = doc.object();
     auto newLinks = QVector<Link>{};
-    for (const auto &val : arr.keys()) {
+    for (const auto& val : arr.keys()) {
         auto obj = arr.value(val).toObject();
         // qDebug() << "obj" << obj;
         auto from = obj["from"].toString();
@@ -155,9 +152,8 @@ void LinkList::syncLinks(const QString &json) {
     // remove old links from m_list which are not in newLinks
     for (auto i = 0; i < m_list.size(); ++i) {
         auto found = false;
-        for (const auto &link : newLinks) {
-            if (m_list.at(i).from() == link.from() &&
-                m_list.at(i).to() == link.to()) {
+        for (const auto& link : newLinks) {
+            if (m_list.at(i).from() == link.from() && m_list.at(i).to() == link.to()) {
                 found = true;
                 break;
             }
@@ -169,9 +165,9 @@ void LinkList::syncLinks(const QString &json) {
         }
     }
     // add new links to m_list which are not in m_list
-    for (const auto &link : newLinks) {
+    for (const auto& link : newLinks) {
         auto found = false;
-        for (const auto &oldLink : m_list) {
+        for (const auto& oldLink : m_list) {
             if (oldLink.from() == link.from() && oldLink.to() == link.to()) {
                 found = true;
                 break;
@@ -208,10 +204,8 @@ void LinkList::refreshStatus() {
             auto latency = timer.elapsed();
             if (reply->error() != QNetworkReply::NoError) {
                 if (m_logs) {
-                    m_logs->appendLog(Log(
-                        QDateTime::currentDateTimeUtc().toString(Qt::ISODate),
-                        EventLevel::ERROR, reply->errorString(),
-                        u"wsrx::desktop::pool"_qs));
+                    m_logs->appendLog(Log(QDateTime::currentDateTimeUtc().toString(Qt::ISODate), EventLevel::ERROR,
+                                          reply->errorString(), u"wsrx::desktop::pool"_qs));
                 }
                 setData(index(i), LinkStatus::DEAD, StatusRole);
             } else {
@@ -232,6 +226,4 @@ void LinkList::clear() {
     emit sizeChanged(rowCount(QModelIndex()));
 }
 
-int LinkList::size() const {
-    return rowCount(QModelIndex());
-}
+int LinkList::size() const { return rowCount(QModelIndex()); }

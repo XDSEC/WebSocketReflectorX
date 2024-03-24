@@ -4,10 +4,10 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-Log::Log(const QString &timestamp, EventLevel level, const QString &message, const QString &target)
+Log::Log(const QString& timestamp, EventLevel level, const QString& message, const QString& target)
     : m_timestamp(timestamp), m_level(level), m_message(message), m_target(target) {}
 
-Log::Log(const Log &other) {
+Log::Log(const Log& other) {
     m_timestamp = other.m_timestamp;
     m_level = other.m_level;
     m_message = other.m_message;
@@ -23,7 +23,7 @@ Log::Log() {
 
 Log::~Log() = default;
 
-Log &Log::operator=(const Log &other) {
+Log& Log::operator=(const Log& other) {
     if (this == &other) return *this;
     m_timestamp = other.m_timestamp;
     m_level = other.m_level;
@@ -31,7 +31,7 @@ Log &Log::operator=(const Log &other) {
     return *this;
 }
 
-Log Log::fromJson(const QString &json) {
+Log Log::fromJson(const QString& json) {
     auto doc = QJsonDocument::fromJson(json.toUtf8());
     auto obj = doc.object();
     auto timestamp = obj["timestamp"].toString();
@@ -56,26 +56,26 @@ Log Log::fromJson(const QString &json) {
 
 QString Log::timestamp() const { return m_timestamp; }
 
-void Log::setTimestamp(const QString &timestamp) {
+void Log::setTimestamp(const QString& timestamp) {
     if (m_timestamp == timestamp) return;
     m_timestamp = timestamp;
 }
 
 EventLevel Log::level() const { return m_level; }
 
-QString Log::levelString() const { 
+QString Log::levelString() const {
     switch (m_level) {
-        case EventLevel::INFO:
-            return "INFO";
-        case EventLevel::WARNING:
-            return "WARN";
-        case EventLevel::ERROR:
-            return "ERROR";
-        case EventLevel::SUCCESS:
-            return "SUCCESS";
+    case EventLevel::INFO:
+        return "INFO";
+    case EventLevel::WARNING:
+        return "WARN";
+    case EventLevel::ERROR:
+        return "ERROR";
+    case EventLevel::SUCCESS:
+        return "SUCCESS";
     }
     return "INFO";
- }
+}
 
 void Log::setLevel(EventLevel level) {
     if (m_level == level) return;
@@ -84,31 +84,27 @@ void Log::setLevel(EventLevel level) {
 
 QString Log::message() const { return m_message; }
 
-void Log::setMessage(const QString &message) {
+void Log::setMessage(const QString& message) {
     if (m_message == message) return;
     m_message = message;
 }
 
-QString Log::target() const {
-    return m_target;
-}
+QString Log::target() const { return m_target; }
 
-void Log::setTarget(const QString &target) {
+void Log::setTarget(const QString& target) {
     if (m_target == target) return;
     m_target = target;
 }
 
-LogList::LogList(QObject *parent) : QAbstractListModel(parent) {
-  connect(this, &LogList::dataChanged, this, [=]() {
-    emit sizeChanged(rowCount(QModelIndex()));
-  });
+LogList::LogList(QObject* parent) : QAbstractListModel(parent) {
+    connect(this, &LogList::dataChanged, this, [=]() { emit sizeChanged(rowCount(QModelIndex())); });
 }
 
 LogList::~LogList() = default;
 
-int LogList::rowCount(const QModelIndex &parent) const { return m_list.size(); }
+int LogList::rowCount(const QModelIndex& parent) const { return m_list.size(); }
 
-QVariant LogList::data(const QModelIndex &index, int role) const {
+QVariant LogList::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         return {};
     }
@@ -118,16 +114,16 @@ QVariant LogList::data(const QModelIndex &index, int role) const {
     }
 
     switch (role) {
-        case LevelRole:
-            return m_list.at(index.row()).level();
-        case TimestampRole:
-            return m_list.at(index.row()).timestamp();
-        case MessageRole:
-            return m_list.at(index.row()).message();
-        case TargetRole:
-            return m_list.at(index.row()).target();
-        default:
-            return {};
+    case LevelRole:
+        return m_list.at(index.row()).level();
+    case TimestampRole:
+        return m_list.at(index.row()).timestamp();
+    case MessageRole:
+        return m_list.at(index.row()).message();
+    case TargetRole:
+        return m_list.at(index.row()).target();
+    default:
+        return {};
     }
 }
 
@@ -140,9 +136,9 @@ QHash<int, QByteArray> LogList::roleNames() const {
     return roles;
 }
 
-void LogList::appendLogs(const QString &json) {
+void LogList::appendLogs(const QString& json) {
     auto logs_json = json.split("\n");
-    for (const auto &log_json : logs_json) {
+    for (const auto& log_json : logs_json) {
         if (log_json.isEmpty()) continue;
         beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
         m_list.append(Log::fromJson(log_json));
@@ -151,17 +147,13 @@ void LogList::appendLogs(const QString &json) {
     emit sizeChanged(rowCount(QModelIndex()));
 }
 
-void LogList::appendLog(const Log &log) {
+void LogList::appendLog(const Log& log) {
     beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
     m_list.append(log);
     endInsertRows();
     emit sizeChanged(rowCount(QModelIndex()));
 }
 
-QVector<Log> *LogList::logs() const {
-    return const_cast<QVector<Log> *>(&m_list);
-}
+QVector<Log>* LogList::logs() const { return const_cast<QVector<Log>*>(&m_list); }
 
-int LogList::size() const {
-    return rowCount(QModelIndex());
-}
+int LogList::size() const { return rowCount(QModelIndex()); }

@@ -14,12 +14,11 @@
 #include "log.h"
 #include "pool.h"
 
-Ui::Ui(QObject *parent) : QObject(parent) {
+Ui::Ui(QObject* parent) : QObject(parent) {
     loadSettings();
     m_uiEngine = new QQmlEngine(this);
     m_translator = new QTranslator(this);
-    auto ok =
-        m_translator->load(QString(":/resources/i18n/%1.qm").arg(m_language));
+    auto ok = m_translator->load(QString(":/resources/i18n/%1.qm").arg(m_language));
     if (!ok) {
         qWarning() << "failed to load translator";
     }
@@ -32,7 +31,7 @@ Ui::Ui(QObject *parent) : QObject(parent) {
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));
-    m_window = qobject_cast<QQuickWindow *>(m_uiComponent->create());
+    m_window = qobject_cast<QQuickWindow*>(m_uiComponent->create());
 }
 
 Ui::~Ui() = default;
@@ -88,16 +87,14 @@ void Ui::setIsDark(bool isDark) {
 
 QString Ui::language() const { return m_language; }
 
-void Ui::setLanguage(const QString &language) {
+void Ui::setLanguage(const QString& language) {
     // qDebug() << language;
     if (m_language == language) return;
     QApplication::removeTranslator(m_translator);
-    auto ok =
-        m_translator->load(QString(":/resources/i18n/%1.qm").arg(language));
+    auto ok = m_translator->load(QString(":/resources/i18n/%1.qm").arg(language));
     if (!ok) {
         qWarning() << "failed to load translator";
-        Q_UNUSED(m_translator->load(
-            QString(":/resources/i18n/%1.qm").arg(m_language)));
+        Q_UNUSED(m_translator->load(QString(":/resources/i18n/%1.qm").arg(m_language)));
         QApplication::installTranslator(m_translator);
         m_uiEngine->retranslate();
         return;

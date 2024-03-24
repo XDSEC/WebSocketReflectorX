@@ -5,7 +5,7 @@
 #include "ui.h"
 #include "variables.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     QApplication::setApplicationName("wsrx");
@@ -14,8 +14,7 @@ int main(int argc, char *argv[]) {
     QApplication::setOrganizationName("Ret2Shell");
     QApplication::setApplicationVersion(FULL_VERSION);
 
-    QFontDatabase::addApplicationFont(
-        ":/resources/fonts/sarasa-mono-sc-regular.ttf");
+    QFontDatabase::addApplicationFont(":/resources/fonts/sarasa-mono-sc-regular.ttf");
     auto defaultFont = QFont("Sarasa Mono SC");
     QApplication::setFont(defaultFont);
 

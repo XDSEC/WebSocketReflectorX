@@ -161,12 +161,6 @@ Item {
                     timer.start();
                 }
 
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: Style.midAnimationDuration
-                    }
-                }
-
                 Timer {
                     id: timer
 
@@ -176,6 +170,13 @@ Item {
                     onTriggered: {
                         copyButton.icon.source = "qrc:/resources/assets/copy.svg";
                     }
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Style.midAnimationDuration
+                    }
+
                 }
 
             }
@@ -197,7 +198,9 @@ Item {
                     NumberAnimation {
                         duration: Style.midAnimationDuration
                     }
+
                 }
+
             }
 
             Label {

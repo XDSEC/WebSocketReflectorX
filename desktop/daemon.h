@@ -11,31 +11,31 @@ class LinkList;
 
 class Daemon : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QStringList availableAddresses READ availableAddresses WRITE
-                   setAvailableAddresses NOTIFY availableAddressesChanged)
+    Q_PROPERTY(QStringList availableAddresses READ availableAddresses WRITE setAvailableAddresses NOTIFY
+                   availableAddressesChanged)
     Q_PROPERTY(QString systemInfo READ systemInfo NOTIFY systemInfoChanged)
 
-   private:
+  private:
     QStringList m_availableAddresses{"127.0.0.1", "0.0.0.0"};
-    QProcess *m_daemon;
+    QProcess* m_daemon;
     QString m_apiRoot = "http://127.0.0.1:3307/";
-    LogList *m_logs;
-    LinkList *m_links;
-    QNetworkAccessManager *m_network;
-    QTimer *m_refreshTimer;
+    LogList* m_logs;
+    LinkList* m_links;
+    QNetworkAccessManager* m_network;
+    QTimer* m_refreshTimer;
 
     void syncPool();
 
     void checkOrigins();
 
-   public:
-    explicit Daemon(QObject *parent = nullptr);
+  public:
+    explicit Daemon(QObject* parent = nullptr);
 
     ~Daemon() override;
 
     [[nodiscard]] QStringList availableAddresses() const;
 
-    void setAvailableAddresses(const QStringList &availableAddresses);
+    void setAvailableAddresses(const QStringList& availableAddresses);
 
     [[nodiscard]] QString systemInfo() const;
 
@@ -43,7 +43,7 @@ class Daemon : public QObject {
 
     LinkList* links() const;
 
-   public slots:
+  public slots:
     Q_INVOKABLE void exportLogs(const QUrl& path) const;
 
     Q_INVOKABLE void refreshAvailableAddresses();
@@ -52,12 +52,12 @@ class Daemon : public QObject {
 
     Q_INVOKABLE void requestDisconnect(const QString& local_address);
 
-   signals:
-    void availableAddressesChanged(const QStringList &availableAddresses);
+  signals:
+    void availableAddressesChanged(const QStringList& availableAddresses);
 
-    void systemInfoChanged(const QString &systemInfo);
+    void systemInfoChanged(const QString& systemInfo);
 
-    void connected(bool success, const QString &message);
+    void connected(bool success, const QString& message);
 
-    void disconnected(bool success, const QString &message);
+    void disconnected(bool success, const QString& message);
 };

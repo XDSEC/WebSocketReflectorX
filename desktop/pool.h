@@ -15,35 +15,34 @@ class Link : public QObject {
     Q_PROPERTY(LinkStatus status READ status WRITE setStatus)
     Q_PROPERTY(quint32 latency READ latency WRITE setLatency)
 
-   private:
+  private:
     QString m_from;
     QString m_to;
     LinkStatus m_status;
     quint32 m_latency;
 
-   public:
-    Link(const QString &from, const QString &to, LinkStatus status,
-         quint32 latency);
+  public:
+    Link(const QString& from, const QString& to, LinkStatus status, quint32 latency);
 
-    Link(const Link &other);
+    Link(const Link& other);
 
     Link();
 
     ~Link() override;
 
-    Link &operator=(const Link &other);
+    Link& operator=(const Link& other);
 
-    bool operator<(const Link &other) const;
+    bool operator<(const Link& other) const;
 
-    static Link fromJson(const QString &json);
+    static Link fromJson(const QString& json);
 
     [[nodiscard]] QString from() const;
 
-    void setFrom(const QString &from);
+    void setFrom(const QString& from);
 
     [[nodiscard]] QString to() const;
 
-    void setTo(const QString &to);
+    void setTo(const QString& to);
 
     [[nodiscard]] LinkStatus status() const;
 
@@ -60,33 +59,28 @@ class LinkList : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int size READ size NOTIFY sizeChanged)
 
-   private:
+  private:
     QVector<Link> m_list{};
-    QNetworkAccessManager *m_network;
+    QNetworkAccessManager* m_network;
     LogList* m_logs;
 
-   public:
-    enum LinkRoles {
-        FromRole = Qt::UserRole + 1,
-        ToRole,
-        StatusRole,
-        DelayRole
-    };
-    explicit LinkList(QObject *parent = nullptr);
+  public:
+    enum LinkRoles { FromRole = Qt::UserRole + 1, ToRole, StatusRole, DelayRole };
+    explicit LinkList(QObject* parent = nullptr);
 
     ~LinkList() override;
 
     void setLogs(LogList* logs);
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 
     QHash<int, QByteArray> roleNames() const override;
 
-    void syncLinks(const QString &json);
+    void syncLinks(const QString& json);
 
     void refreshStatus();
 
@@ -94,6 +88,6 @@ class LinkList : public QAbstractListModel {
 
     [[nodiscard]] int size() const;
 
-    signals:
+  signals:
     void sizeChanged(int n);
 };
