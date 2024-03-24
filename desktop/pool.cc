@@ -181,9 +181,6 @@ void LinkList::syncLinks(const QString& json) {
     }
     emit sizeChanged(rowCount(QModelIndex()));
     refreshStatus();
-    beginResetModel();
-    std::sort(m_list.begin(), m_list.end());
-    endResetModel();
 }
 
 void LinkList::refreshStatus() {
