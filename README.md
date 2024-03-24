@@ -2,6 +2,8 @@
 
 Controlled WS-TCP tunnel for Ret2Shell platform.
 
+[Crate Homepage](https://crates.io/crates/wsrx) | [Crate Docs](https://docs.rs/crate/wsrx/latest) | [Local daemon API Docs](docs/API.md)
+
 ## Notes
 
 WebSocket Reflector X 0.2.0 has completely rewritten the GUI in Qt/C++, it's daemon and the [crate](https://crates.io/crates/wsrx) are still written in pure safe Rust.
@@ -48,6 +50,14 @@ will show you how to use the cli daemon.
 In most cases, you just need run `wsrx connect wss://example.com:443` to start a tunnel proxy.
 
 The wsrx server is also implemented in the cli daemon, you can run `wsrx serve` and access the manage API at `http://localhost:<port>/pool`.
+
+## Further Reading
+
+If you want to know more about the daemon's API, you can read the [API Docs](docs/API.md).
+
+If you want to intergrate `wsrx` in your own server project, you can read the [crate docs](https://docs.rs/crate/wsrx/latest).
+
+Also, `wsrx` is a simple tool that using plain WebSocket protocol to tunnel TCP connections, so you can implement your own server / client in other languages you like. You can read the [Protocol Docs](docs/PROTOCOL.md) for more information.
 
 ## Desktop Preview
 
