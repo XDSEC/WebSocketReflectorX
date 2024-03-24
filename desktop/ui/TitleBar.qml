@@ -25,7 +25,7 @@ Rectangle {
         height: parent.height
         onClicked: {
             if (ui.runningInTray)
-                window.close();
+                window.hide();
             else
                 ui.requestToQuit();
         }

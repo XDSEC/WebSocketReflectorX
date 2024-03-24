@@ -41,26 +41,10 @@ set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall --std=c++17 -O3 -fPIC" )
 set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -O3 -fPIC" )
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "/source-charset:utf-8 /execution-charset:utf-8")
-endif()
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(QT_MIN_VERSION 6.6.0)
+set(QT_MIN_VERSION 6.6)
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Quick Gui QuickControls2 Widgets Network Concurrent)
 set(QT_LIBRARIES Qt6::Core Qt6::Widgets Qt6::Network Qt6::Quick Qt6::Gui Qt6::QuickControls2 Qt6::Concurrent)
-
-if(APPLE)
-  find_package(Qt6 REQUIRED COMPONENTS MacExtras)
-  list(APPEND QT_LIBRARIES Qt6::MacExtras)
-elseif(WIN32)
-  find_package(Qt6 REQUIRED COMPONENTS WinExtras)
-  list(APPEND QT_LIBRARIES Qt6::WinExtras)
-else()
-  find_package(Qt6 REQUIRED COMPONENTS DBus)
-  list(APPEND QT_LIBRARIES Qt6::DBus)
-  get_target_property(QT_DBUSXML2CPP_EXECUTABLE Qt6::qdbusxml2cpp LOCATION)
-endif()
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 

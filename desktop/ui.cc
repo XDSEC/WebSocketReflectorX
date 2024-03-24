@@ -72,6 +72,7 @@ void Ui::show() {
 bool Ui::runningInTray() const { return m_runningInTray; }
 
 void Ui::setRunningInTray(bool runningInTray) {
+    // qDebug() << runningInTray;
     if (m_runningInTray == runningInTray) return;
     m_runningInTray = runningInTray;
     emit runningInTrayChanged(runningInTray);

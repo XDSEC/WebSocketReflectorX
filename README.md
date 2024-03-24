@@ -20,7 +20,7 @@ This app is still in development now.
 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
-cmake --build /home/reverier/Code/Rust/wsrx/build --config Release --target all
+cmake --build build --config Release --target all
 ```
 
 CMake will automatically call cargo to build the daemon.

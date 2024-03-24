@@ -50,7 +50,11 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 }
 
 Daemon::~Daemon() {
+#ifdef Q_OS_WIN
+    m_daemon->kill();
+#else
     m_daemon->terminate();
+#endif
     if (!m_daemon->waitForFinished()) qWarning() << "Daemon is not terminated correctly.";
     m_daemon->deleteLater();
 }
@@ -152,6 +156,7 @@ void Daemon::exportLogs(const QUrl& path) const {
     for (const auto& log : *logs) {
         out << log.timestamp() << " [" << log.target() << "] " << log.levelString() << " " << log.message() << "\n";
     }
+    file->close();
 }
 
 void Daemon::syncPool() {
