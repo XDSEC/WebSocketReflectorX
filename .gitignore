@@ -20,5 +20,7 @@ data/*
 
 .vscode/
 .idea/
-config/sensitive_word_list.txt
 node_modules/
+target/
+Cargo.lock
+build/

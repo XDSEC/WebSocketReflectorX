@@ -1,0 +1,3 @@
+#pragma once
+
+#define FULL_VERSION "@FULL_VERSION@"
