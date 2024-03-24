@@ -1,4 +1,0 @@
-[workspace]
-members = ["cli", "lib", "desktop/src-tauri"]
-default-members = ["cli", "lib", "desktop/src-tauri"]
-resolver = "2"
