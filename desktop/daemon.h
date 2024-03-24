@@ -26,6 +26,8 @@ class Daemon : public QObject {
 
     void syncPool();
 
+    void checkOrigins();
+
    public:
     explicit Daemon(QObject *parent = nullptr);
 

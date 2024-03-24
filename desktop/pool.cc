@@ -38,6 +38,19 @@ Link &Link::operator=(const Link &other) {
     return *this;
 }
 
+bool Link::operator<(const Link &other) const {
+    if (m_status == other.m_status) {
+        if (m_latency == other.m_latency) {
+            if (m_from == other.m_from) {
+                return m_to < other.m_to;
+            }
+            return m_from < other.m_from;
+        }
+        return m_latency < other.m_latency;
+    }
+    return m_status < other.m_status;
+}
+
 Link Link::fromJson(const QString &json) {
     auto doc = QJsonDocument::fromJson(json.toUtf8());
     auto obj = doc.object();
@@ -172,6 +185,9 @@ void LinkList::syncLinks(const QString &json) {
     }
     emit sizeChanged(rowCount(QModelIndex()));
     refreshStatus();
+    beginResetModel();
+    std::sort(m_list.begin(), m_list.end());
+    endResetModel();
 }
 
 void LinkList::refreshStatus() {

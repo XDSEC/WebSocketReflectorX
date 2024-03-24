@@ -11,19 +11,19 @@ include_directories(${GENERATED_FILE_PATH})
 
 set(
   SOURCES
-  main.cc
-  log.cc
-  log.h
-  pool.cc
-  pool.h
-  daemon.cc
-  daemon.h
-  ui.cc
-  ui.h
-  components/components.qrc
-  resources/i18n.qrc
-  resources/resources.qrc
-  ui/ui.qrc
+    # Entrypoint
+    main.cc
+    # Modules
+    log.cc log.h
+    origin.cc origin.h
+    pool.cc pool.h
+    daemon.cc daemon.h
+    ui.cc ui.h
+    # Resources
+    components/components.qrc
+    resources/i18n.qrc
+    resources/resources.qrc
+    ui/ui.qrc
 )
 
 add_executable(${PROJECT_NAME}-desktop ${SOURCES})
@@ -32,12 +32,12 @@ target_link_libraries(${PROJECT_NAME}-desktop ${QT_LIBRARIES})
 
 set_target_properties(
   ${PROJECT_NAME}-desktop PROPERTIES
-  AUTOMOC ON
-  AUTORCC ON
-  AUTOUIC ON
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    AUTOMOC ON
+    AUTORCC ON
+    AUTOUIC ON
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
 include(FetchContent)

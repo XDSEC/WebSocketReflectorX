@@ -120,6 +120,11 @@
         <translation>已复制！</translation>
     </message>
     <message>
+        <location filename="../../ui/SettingsView.qml" line="236"/>
+        <source>(c) 2022 - 2024 Ret 2 Shell, distributed with &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
+        <translation>(c) 2022 - 2024 回归终端，根据 &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; 协议进行分发。源代码可以在 &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt; 找到。</translation>
+    </message>
+    <message>
         <location filename="../../ui/SettingsView.qml" line="135"/>
         <source>Export network logs</source>
         <translation>导出网络日志</translation>
@@ -130,9 +135,8 @@
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../../ui/SettingsView.qml" line="236"/>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
-        <translation>(c) 2022 - 2024 回归终端，根据 MIT 协议进行分发。源代码可以在&lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt;找到。</translation>
+        <translation type="vanished">(c) 2022 - 2024 回归终端，根据 MIT 协议进行分发。源代码可以在&lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt;找到。</translation>
     </message>
 </context>
 <context>

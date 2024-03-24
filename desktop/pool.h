@@ -33,6 +33,8 @@ class Link : public QObject {
 
     Link &operator=(const Link &other);
 
+    bool operator<(const Link &other) const;
+
     static Link fromJson(const QString &json);
 
     [[nodiscard]] QString from() const;

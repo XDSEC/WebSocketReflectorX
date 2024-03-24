@@ -233,7 +233,7 @@ ScrollView {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 16
         anchors.right: logoText.right
-        text: qsTr("(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at <a href=\"https://github.com/ret2shell/wsrx\">here</a>.")
+        text: qsTr("(c) 2022 - 2024 Ret 2 Shell, distributed with <a href=\"https://github.com/ret2shell/wsrx/blob/main/LICENSE\">MIT</a> license. Source code available at <a href=\"https://github.com/ret2shell/wsrx\">here</a>.")
         onLinkActivated: (link) => {
             return Qt.openUrlExternally(link);
         }

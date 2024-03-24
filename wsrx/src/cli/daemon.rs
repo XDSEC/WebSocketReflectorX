@@ -1,16 +1,26 @@
-use std::{collections::HashMap, net::ToSocketAddrs, sync::Arc, time::Duration};
+use std::{
+    collections::HashMap,
+    net::ToSocketAddrs,
+    sync::{Arc, RwLock as SyncRwLock},
+    time::Duration,
+};
 
 use axum::{
     body::Body,
     extract::{FromRef, Request as ExtractRequest, State},
-    http::{header::CONTENT_TYPE, Request, StatusCode},
+    http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, Method, Request, StatusCode},
     middleware::Next,
     response::{IntoResponse, Response},
     routing::get,
+    Json,
 };
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use tokio::{net::TcpListener, sync::RwLock, task::JoinHandle};
-use tower_http::trace::TraceLayer;
+use tower_http::{
+    cors::{AllowOrigin, CorsLayer},
+    trace::TraceLayer,
+};
 use tracing::{debug, error, info, Span};
 use wsrx::proxy;
 
@@ -56,15 +66,61 @@ pub struct Tunnel {
     pub handle: Option<JoinHandle<()>>,
 }
 
+static ALLOWED_ORIGINS: Lazy<Arc<SyncRwLock<Vec<String>>>> =
+    Lazy::new(|| Arc::new(SyncRwLock::new(Vec::new())));
+
+static PENDING_ORIGINS: Lazy<Arc<SyncRwLock<Vec<String>>>> =
+    Lazy::new(|| Arc::new(SyncRwLock::new(Vec::new())));
+
 fn build_router(secret: Option<String>) -> axum::Router {
     let state = GlobalState {
         secret,
         connections: Arc::new(RwLock::new(HashMap::new())),
     };
+    let cors_layer = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_origin(AllowOrigin::predicate(
+            |origin: &HeaderValue, _request_parts: &_| {
+                let allowed_origin = ALLOWED_ORIGINS.read().unwrap();
+                for o in allowed_origin.iter() {
+                    if origin.to_str().unwrap_or("").ends_with(o) {
+                        return true;
+                    }
+                }
+                false
+            },
+        ));
+    let any_origin_layer = CorsLayer::new()
+        .allow_methods([Method::POST])
+        .allow_origin(AllowOrigin::any());
     axum::Router::new()
-        .route(
-            "/pool",
-            get(get_tunnels).post(launch_tunnel).delete(close_tunnel),
+        .nest(
+            "/",
+            axum::Router::new()
+                .route(
+                    "/pool",
+                    get(get_tunnels).post(launch_tunnel).delete(close_tunnel),
+                )
+                .route(
+                    "/cors",
+                    get(get_origins)
+                        .post(add_allowed_origin)
+                        .delete(remove_allowed_origin),
+                )
+                .layer(cors_layer)
+                .with_state(state.clone()),
+        )
+        .nest(
+            "/",
+            axum::Router::new()
+                .route(
+                    "/connect",
+                    get(get_cors_status)
+                        .post(add_pending_origin)
+                        .delete(remove_pending_origin),
+                )
+                .layer(any_origin_layer)
+                .with_state(state.clone()),
         )
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
@@ -116,23 +172,32 @@ async fn launch_tunnel(
     // pool.insert(req.from, req.to);
     let mut tcp_addr_obj = req.from.to_socket_addrs().map_err(|err| {
         error!("Failed to parse from address: {err}");
-        (StatusCode::BAD_REQUEST, "failed to parse from address".to_owned())
+        (
+            StatusCode::BAD_REQUEST,
+            "failed to parse from address".to_owned(),
+        )
     })?;
-    let tcp_addr_obj = tcp_addr_obj
-        .next()
-        .ok_or((StatusCode::BAD_REQUEST, "failed to get socket addr".to_owned()))?;
-    let listener = TcpListener::bind(tcp_addr_obj)
-        .await.map_err(|err| {
-            error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("failed to bind tcp address {tcp_addr_obj:?}: {err}"))
-        })?;
+    let tcp_addr_obj = tcp_addr_obj.next().ok_or((
+        StatusCode::BAD_REQUEST,
+        "failed to get socket addr".to_owned(),
+    ))?;
+    let listener = TcpListener::bind(tcp_addr_obj).await.map_err(|err| {
+        error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("failed to bind tcp address {tcp_addr_obj:?}: {err}"),
+        )
+    })?;
     info!(
         "CREATE tcp server: {} <--wsrx--> {}",
         listener.local_addr().expect("failed to bind port"),
         req.to
     );
     let tunnel = Tunnel {
-        from: listener.local_addr().expect("failed to bind port").to_string(),
+        from: listener
+            .local_addr()
+            .expect("failed to bind port")
+            .to_string(),
         to: req.to.clone(),
         handle: Some(tokio::task::spawn(async move {
             loop {
@@ -211,4 +276,99 @@ async fn close_tunnel(
         error!("Tunnel does not exist: {}", req.key);
         Err((StatusCode::NOT_FOUND, "not found"))
     }
+}
+
+#[derive(Serialize)]
+struct OriginResponse {
+    pub allowed: Vec<String>,
+    pub waitlist: Vec<String>,
+}
+
+async fn get_origins() -> Result<impl IntoResponse, (StatusCode, String)> {
+    let allowed_origin = ALLOWED_ORIGINS.read().unwrap();
+    let waitlist = PENDING_ORIGINS.read().unwrap();
+    let resp = serde_json::to_string(&OriginResponse {
+        allowed: allowed_origin.clone(),
+        waitlist: waitlist.clone(),
+    })
+    .map_err(|e| {
+        error!("Failed to serialize origin response: {e:?}");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Failed to serialize origin response: {e:?}"),
+        )
+    })?;
+    Ok(Json(resp))
+}
+
+async fn add_allowed_origin(
+    axum::Json(req): axum::Json<String>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let mut allowed_origin = ALLOWED_ORIGINS.write().map_err(|_| {
+        error!("Failed to lock allowed origin");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock allowed origin",
+        )
+    })?;
+    allowed_origin.push(req);
+    Ok(StatusCode::OK)
+}
+
+async fn remove_allowed_origin(
+    axum::Json(req): axum::Json<String>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let mut allowed_origin = ALLOWED_ORIGINS.write().map_err(|_| {
+        error!("Failed to lock allowed origin");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock allowed origin",
+        )
+    })?;
+    allowed_origin.retain(|o| o != &req);
+    Ok(StatusCode::OK)
+}
+
+async fn get_cors_status(headers: HeaderMap) -> impl IntoResponse {
+    let allowed_origin = ALLOWED_ORIGINS
+        .read()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let origin = headers.get("origin").map(|o| o.to_str().unwrap_or(""));
+    let resp = match origin {
+        Some(origin) => {
+            if allowed_origin.contains(&origin.to_string()) {
+                Ok(StatusCode::ACCEPTED)
+            } else {
+                Err(StatusCode::FORBIDDEN)
+            }
+        }
+        None => Ok(StatusCode::ACCEPTED),
+    };
+    resp
+}
+
+async fn add_pending_origin(
+    axum::Json(req): axum::Json<String>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock origin waitlist",
+        )
+    })?;
+    waitlist.push(req);
+    Ok(StatusCode::OK)
+}
+
+async fn remove_pending_origin(
+    axum::Json(req): axum::Json<String>,
+) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock origin waitlist",
+        )
+    })?;
+    waitlist.retain(|o| o != &req);
+    Ok(StatusCode::OK)
 }

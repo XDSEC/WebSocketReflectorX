@@ -112,6 +112,11 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../../ui/SettingsView.qml" line="236"/>
+        <source>(c) 2022 - 2024 Ret 2 Shell, distributed with &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../../ui/SettingsView.qml" line="135"/>
         <source>Export network logs</source>
         <translation></translation>
@@ -119,11 +124,6 @@
     <message>
         <location filename="../../ui/SettingsView.qml" line="146"/>
         <source>Export</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../ui/SettingsView.qml" line="236"/>
-        <source>(c) 2022 - 2024 Ret 2 Shell, distributed with MIT license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
         <translation></translation>
     </message>
 </context>

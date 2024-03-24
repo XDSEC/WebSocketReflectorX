@@ -117,7 +117,8 @@ Q_INVOKABLE void Daemon::requestDisconnect(const QString &local_address) {
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     auto json = QJsonObject();
     json["key"] = local_address;
-    auto reply = m_network->sendCustomRequest(request, "DELETE", QJsonDocument(json).toJson());
+    auto reply = m_network->sendCustomRequest(request, "DELETE",
+                                              QJsonDocument(json).toJson());
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
             // qDebug() << reply->errorString();
@@ -181,3 +182,5 @@ void Daemon::syncPool() {
         reply->deleteLater();
     });
 }
+
+void Daemon::checkOrigins() {}
