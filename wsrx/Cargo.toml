@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.2.0-alpha.1"
+version = "0.2.0-alpha.2"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
@@ -13,7 +13,7 @@ license = "MPL-2.0"
 resolver = "2"
 
 [features]
-default = ["binary"]
+default = []
 server = ["dep:axum"]
 client = ["dep:tokio-tungstenite"]
 binary = [
