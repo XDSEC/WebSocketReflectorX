@@ -1,6 +1,6 @@
 # WebSocket Reflector X
 
-Controlled WS-TCP tunnel for Ret2Shell platform.
+Controlled TCP-over-WebSocket forwarding tunnel.
 
 [Crate Homepage](https://crates.io/crates/wsrx) | [Crate Docs](https://docs.rs/crate/wsrx/latest) | [Local daemon API Docs](docs/API.md)
 
