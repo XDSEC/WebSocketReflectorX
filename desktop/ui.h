@@ -7,6 +7,9 @@ class QQmlEngine;
 class QQmlComponent;
 class QQuickWindow;
 class QTranslator;
+#ifdef Q_OS_UNIX
+class QSocketNotifier;
+#endif
 class Daemon;
 class ToastList;
 
@@ -16,6 +19,7 @@ class Ui : public QObject {
     Q_PROPERTY(bool isDark READ isDark WRITE setIsDark NOTIFY isDarkChanged)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
   private:
+    static Ui* m_instance;
     QQmlEngine* m_uiEngine;
     QQmlComponent* m_uiComponent;
     QQuickWindow* m_window{};
@@ -25,16 +29,27 @@ class Ui : public QObject {
     bool m_runningInTray = false;
     bool m_isDark = false;
     QString m_language = "zh_CN";
-
+#ifdef Q_OS_UNIX
+    static int sighupFd[2];
+    static int sigtermFd[2];
+    static int sigsegvFd[2];
+    static int sigintFd[2];
+    QSocketNotifier* snHup;
+    QSocketNotifier* snTerm;
+    QSocketNotifier* snSegv;
+    QSocketNotifier* snInt;
+#endif
   protected:
     void loadSettings();
 
     void saveSettings();
 
-  public:
     explicit Ui(QObject* parent = nullptr);
 
     ~Ui() override;
+
+  public:
+    static Ui* instance(QObject* parent = nullptr);
 
     [[nodiscard]] bool runningInTray() const;
 
@@ -47,6 +62,26 @@ class Ui : public QObject {
     [[nodiscard]] QString language() const;
 
     void setLanguage(const QString& language);
+
+#ifdef Q_OS_UNIX
+
+    static void sigtermSigHandler(int);
+
+    static void sighupSigHandler(int);
+
+    static void sigsegvSigHandler(int);
+
+    static void sigintSigHandler(int);
+
+    public slots:
+    void sigtermHandler();
+
+    void sighupHandler();
+
+    void sigsegvHandler();
+
+    void sigintHandler();
+#endif
 
   public slots:
     Q_INVOKABLE void show();
