@@ -73,7 +73,7 @@ class Ui : public QObject {
 
     static void sigintSigHandler(int);
 
-    public slots:
+  public slots:
     void sigtermHandler();
 
     void sighupHandler();

@@ -35,8 +35,9 @@ pub enum Error {
 }
 
 /// A enum for different type of WebSocket message.
-/// 
-/// Just Binary message will be tunneled, other type of websocket message will just be discarded.
+///
+/// Just Binary message will be tunneled, other type of websocket message will
+/// just be discarded.
 pub enum Message {
     Binary(Vec<u8>),
     Others,
@@ -67,9 +68,10 @@ impl From<AxMessage> for Message {
 }
 
 /// A enum for different type of WebSocket stream.
-/// 
+///
 /// honestly, this is a bit of a hack, but it works.
-/// The WebSocketStream in axum is derived from tungstenite, but axum does not expose the tungstenite stream.
+/// The WebSocketStream in axum is derived from tungstenite, but axum does not
+/// expose the tungstenite stream.
 pub enum WsStream {
     /// Tungstenite WebSocket stream.
     #[cfg(feature = "client")]
@@ -202,7 +204,7 @@ impl Sink<Message> for WrappedWsStream {
 }
 
 /// Proxies two streams.
-/// 
+///
 /// * `s1` - The first stream.
 /// * `s2` - The second stream.
 pub async fn proxy_stream<S, T>(s1: S, s2: T) -> Result<(), Error>
@@ -257,8 +259,9 @@ impl Encoder<Message> for MessageCodec {
 }
 
 /// Proxies a WebSocket stream with a TCP stream.
-/// 
-/// * `ws` - The WebSocket stream, either axum's stream or tungstenite stream are supported.
+///
+/// * `ws` - The WebSocket stream, either axum's stream or tungstenite stream
+///   are supported.
 /// * `tcp` - The TCP stream.
 pub async fn proxy(ws: WrappedWsStream, tcp: TcpStream) -> Result<(), Error> {
     let framed_tcp_stream = Framed::new(tcp, MessageCodec::new());

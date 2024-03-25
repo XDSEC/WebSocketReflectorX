@@ -149,7 +149,6 @@ void Ui::setLanguage(const QString& language) {
 }
 
 #ifdef Q_OS_UNIX
-
 void Ui::sigtermHandler() {
     snTerm->setEnabled(false);
     char tmp;
@@ -207,5 +206,4 @@ void Ui::sigintSigHandler(int) {
     char a = 1;
     ::write(sigintFd[0], &a, sizeof(a));
 }
-
 #endif

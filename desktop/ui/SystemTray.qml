@@ -6,10 +6,10 @@ SystemTrayIcon {
 
     icon.source: "qrc:/resources/assets/logo.svg"
     visible: true
-    onActivated: function (reason) {
-        if (reason === SystemTrayIcon.Context)
+    onActivated: function(reason) {
+        if (reason === SystemTrayIcon.Context) {
             menu.open();
-        else {
+        } else {
             window.show();
             window.raise();
             window.requestActivate();
@@ -55,5 +55,7 @@ SystemTrayIcon {
             text: qsTr("Quit")
             onTriggered: ui.requestToQuit()
         }
+
     }
+
 }

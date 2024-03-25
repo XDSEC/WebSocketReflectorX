@@ -7,9 +7,9 @@
 
 #ifdef Q_OS_UNIX
 #include <QSocketNotifier>
+#include <signal.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <signal.h>
 
 static int setup_unix_signal_handlers() {
     struct sigaction hup, term, segv, intr;
