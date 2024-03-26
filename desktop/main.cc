@@ -60,9 +60,9 @@ int main(int argc, char* argv[]) {
     QFontDatabase::addApplicationFont(":/resources/fonts/sarasa-mono-sc-regular.ttf");
     auto defaultFont = QFont("Sarasa Mono SC");
     QApplication::setFont(defaultFont);
-
+#ifdef Q_OS_UNIX
     setup_unix_signal_handlers();
-
+#endif
     Ui::instance()->show();
 
     return QApplication::exec();
