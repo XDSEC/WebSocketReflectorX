@@ -18,7 +18,7 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use tokio::{net::TcpListener, sync::RwLock, task::JoinHandle};
 use tower_http::{
-    cors::{AllowOrigin, CorsLayer},
+    cors::{AllowOrigin, Any, CorsLayer},
     trace::TraceLayer,
 };
 use tracing::{debug, error, info, Span};
@@ -79,6 +79,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
     };
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_headers(Any)
         .allow_origin(AllowOrigin::predicate(
             |origin: &HeaderValue, _request_parts: &_| {
                 let allowed_origin = ALLOWED_ORIGINS.read().unwrap();
@@ -92,7 +93,8 @@ fn build_router(secret: Option<String>) -> axum::Router {
         ));
     let any_origin_layer = CorsLayer::new()
         .allow_methods([Method::POST])
-        .allow_origin(AllowOrigin::any());
+        .allow_headers(Any)
+        .allow_origin(Any);
     axum::Router::new()
         .nest(
             "/",
@@ -102,7 +104,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
                     get(get_tunnels).post(launch_tunnel).delete(close_tunnel),
                 )
                 .route(
-                    "/cors",
+                    "/access",
                     get(get_origins)
                         .post(add_allowed_origin)
                         .delete(remove_allowed_origin),
@@ -113,12 +115,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
         .nest(
             "/",
             axum::Router::new()
-                .route(
-                    "/connect",
-                    get(get_cors_status)
-                        .post(add_pending_origin)
-                        .delete(remove_pending_origin),
-                )
+                .route("/connect", get(get_cors_status).post(add_pending_origin))
                 .layer(any_origin_layer)
                 .with_state(state.clone()),
         )
@@ -281,23 +278,16 @@ async fn close_tunnel(
 #[derive(Serialize)]
 struct OriginResponse {
     pub allowed: Vec<String>,
-    pub waitlist: Vec<String>,
+    pub pending: Vec<String>,
 }
 
 async fn get_origins() -> Result<impl IntoResponse, (StatusCode, String)> {
     let allowed_origin = ALLOWED_ORIGINS.read().unwrap();
-    let waitlist = PENDING_ORIGINS.read().unwrap();
-    let resp = serde_json::to_string(&OriginResponse {
+    let pending = PENDING_ORIGINS.read().unwrap();
+    let resp = OriginResponse {
         allowed: allowed_origin.clone(),
-        waitlist: waitlist.clone(),
-    })
-    .map_err(|e| {
-        error!("Failed to serialize origin response: {e:?}");
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Failed to serialize origin response: {e:?}"),
-        )
-    })?;
+        pending: pending.clone(),
+    };
     Ok(Json(resp))
 }
 
@@ -311,6 +301,16 @@ async fn add_allowed_origin(
             "failed to lock allowed origin",
         )
     })?;
+    let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
+        error!("Failed to lock origin waitlist");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock origin waitlist",
+        )
+    })?;
+    if waitlist.contains(&req) {
+        waitlist.retain(|o| o != &req);
+    }
     allowed_origin.push(req);
     Ok(StatusCode::OK)
 }
@@ -325,6 +325,16 @@ async fn remove_allowed_origin(
             "failed to lock allowed origin",
         )
     })?;
+    let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
+        error!("Failed to lock origin waitlist");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock origin waitlist",
+        )
+    })?;
+    if waitlist.contains(&req) {
+        waitlist.retain(|o| o != &req);
+    }
     allowed_origin.retain(|o| o != &req);
     Ok(StatusCode::OK)
 }
@@ -350,25 +360,25 @@ async fn get_cors_status(headers: HeaderMap) -> impl IntoResponse {
 async fn add_pending_origin(
     axum::Json(req): axum::Json<String>,
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
+    let allowed_origin = ALLOWED_ORIGINS.read().map_err(|_| {
+        error!("Failed to lock allowed origin");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "failed to lock allowed origin",
+        )
+    })?;
+    if allowed_origin.contains(&req) {
+        return Ok(StatusCode::OK);
+    }
     let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             "failed to lock origin waitlist",
         )
     })?;
+    if waitlist.contains(&req) {
+        return Ok(StatusCode::OK);
+    }
     waitlist.push(req);
-    Ok(StatusCode::OK)
-}
-
-async fn remove_pending_origin(
-    axum::Json(req): axum::Json<String>,
-) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
-    let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            "failed to lock origin waitlist",
-        )
-    })?;
-    waitlist.retain(|o| o != &req);
     Ok(StatusCode::OK)
 }

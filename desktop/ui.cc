@@ -21,6 +21,7 @@
 #include "daemon.h"
 #include "log.h"
 #include "pool.h"
+#include "cors.h"
 
 Ui* Ui::m_instance = nullptr;
 
@@ -65,10 +66,12 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     }
     QApplication::installTranslator(m_translator);
     m_daemon = new Daemon(this);
+    m_websites = new WebsiteList(this);
     m_uiEngine->rootContext()->setContextProperty("ui", this);
     m_uiEngine->rootContext()->setContextProperty("daemon", m_daemon);
     m_uiEngine->rootContext()->setContextProperty("logs", m_daemon->logs());
     m_uiEngine->rootContext()->setContextProperty("links", m_daemon->links());
+    m_uiEngine->rootContext()->setContextProperty("websites", m_websites);
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));

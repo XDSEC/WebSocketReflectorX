@@ -15,8 +15,8 @@ set(
     main.cc
     # Modules
     log.cc log.h
-    origin.cc origin.h
     pool.cc pool.h
+    cors.cc cors.h
     daemon.cc daemon.h
     ui.cc ui.h
     # Resources

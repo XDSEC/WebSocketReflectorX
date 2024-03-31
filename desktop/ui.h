@@ -12,6 +12,7 @@ class QSocketNotifier;
 #endif
 class Daemon;
 class ToastList;
+class WebsiteList;
 
 class Ui : public QObject {
     Q_OBJECT
@@ -26,6 +27,7 @@ class Ui : public QObject {
     QTranslator* m_translator{};
     Daemon* m_daemon;
     ToastList* m_toasts;
+    WebsiteList* m_websites;
     bool m_runningInTray = false;
     bool m_isDark = false;
     QString m_language = "zh_CN";
