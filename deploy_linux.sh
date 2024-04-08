@@ -87,7 +87,7 @@ chmod a+x contribs/deploy/linuxdeploy-plugin-qt-x86_64.AppImage
 
 # linuxdeploy settings
 export EXTRA_QT_PLUGINS="svg;"
-export EXTRA_PLATFORM_PLUGINS="platforms/libqxcb.so;platforms/libqwayland-egl.so;libqwayland-generic.so"
+export EXTRA_PLATFORM_PLUGINS="libqxcb.so;libqwayland-egl.so;libqwayland-generic.so"
 export QML_SOURCES_PATHS="desktop/ui:desktop/components"
 ## PACKAGE (AppImage) ##########################################################
 
