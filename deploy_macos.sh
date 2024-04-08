@@ -52,8 +52,7 @@ done
 echo '---- Running make install'
 mkdir -p dist
 APP_ROOT=dist
-install -d ./build/bin/wsrx "${APP_ROOT}/wsrx"
-install -d ./build/bin/wsrx-desktop "${APP_ROOT}/wsrx-desktop"
+install -d ./build/bin/wsrx ./build/bin/wsrx-desktop "${APP_ROOT}/"
 
 ## DEPLOY ######################################################################
 
