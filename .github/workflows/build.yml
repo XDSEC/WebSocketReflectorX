@@ -42,7 +42,7 @@
         # Install dependencies (from package manager)
         - name: Install dependencies (from package manager)
           run: |
-               sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev -y;
+               sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev fuse libfuse-dev libwayland-dev -y;
                sudo apt-get install cmake ninja-build pkgconf libtool -y;
                sudo apt-get install appstream -y;
   
