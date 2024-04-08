@@ -12,12 +12,12 @@
 <context>
     <name>Daemon</name>
     <message>
-        <location filename="../../daemon.cc" line="87"/>
+        <location filename="../../daemon.cc" line="86"/>
         <source>Invalid URL format.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../daemon.cc" line="91"/>
+        <location filename="../../daemon.cc" line="89"/>
         <source>Invalid scheme, only `ws` and `wss` are supported.</source>
         <translation></translation>
     </message>
@@ -113,7 +113,7 @@
     </message>
     <message>
         <location filename="../../ui/SettingsView.qml" line="236"/>
-        <source>(c) 2022 - 2024 Ret 2 Shell, distributed with &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
+        <source>(c) 2022 - 2024 XDSEC, distributed with &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX&quot;&gt;here&lt;/a&gt;.</source>
         <translation></translation>
     </message>
     <message>
@@ -168,23 +168,31 @@
 <context>
     <name>SystemTray</name>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="21"/>
+        <location filename="../../ui/SystemTray.qml" line="25"/>
         <source>Tunnels</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="31"/>
+        <location filename="../../ui/SystemTray.qml" line="35"/>
         <source>Network Logs</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="41"/>
+        <location filename="../../ui/SystemTray.qml" line="45"/>
         <source>Permitted Websites</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="51"/>
+        <location filename="../../ui/SystemTray.qml" line="55"/>
         <source>Quit</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>WebsitesView</name>
+    <message>
+        <location filename="../../ui/WebsitesView.qml" line="12"/>
+        <source>No permitted websites</source>
         <translation></translation>
     </message>
 </context>

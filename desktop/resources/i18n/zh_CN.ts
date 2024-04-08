@@ -12,12 +12,12 @@
 <context>
     <name>Daemon</name>
     <message>
-        <location filename="../../daemon.cc" line="87"/>
+        <location filename="../../daemon.cc" line="86"/>
         <source>Invalid URL format.</source>
         <translation>URL 格式错误。</translation>
     </message>
     <message>
-        <location filename="../../daemon.cc" line="91"/>
+        <location filename="../../daemon.cc" line="89"/>
         <source>Invalid scheme, only `ws` and `wss` are supported.</source>
         <translation>不支持此协议，仅支持连接到ws或wss协议。</translation>
     </message>
@@ -121,8 +121,12 @@
     </message>
     <message>
         <location filename="../../ui/SettingsView.qml" line="236"/>
+        <source>(c) 2022 - 2024 XDSEC, distributed with &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX&quot;&gt;here&lt;/a&gt;.</source>
+        <translation>(c) 2022 - 2024 XDSEC, 使用 &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; 协议进行发布。源代码可以在 &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX&quot;&gt;这里&lt;/a&gt; 找到。</translation>
+    </message>
+    <message>
         <source>(c) 2022 - 2024 Ret 2 Shell, distributed with &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;here&lt;/a&gt;.</source>
-        <translation>(c) 2022 - 2024 回归终端，根据 &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; 协议进行分发。源代码可以在 &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt; 找到。</translation>
+        <translation type="vanished">(c) 2022 - 2024 回归终端，根据 &lt;a href=&quot;https://github.com/ret2shell/wsrx/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; 协议进行分发。源代码可以在 &lt;a href=&quot;https://github.com/ret2shell/wsrx&quot;&gt;这里&lt;/a&gt; 找到。</translation>
     </message>
     <message>
         <location filename="../../ui/SettingsView.qml" line="135"/>
@@ -184,22 +188,22 @@
 <context>
     <name>SystemTray</name>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="21"/>
+        <location filename="../../ui/SystemTray.qml" line="25"/>
         <source>Tunnels</source>
         <translation>连接状态</translation>
     </message>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="31"/>
+        <location filename="../../ui/SystemTray.qml" line="35"/>
         <source>Network Logs</source>
         <translation>网络日志</translation>
     </message>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="41"/>
+        <location filename="../../ui/SystemTray.qml" line="45"/>
         <source>Permitted Websites</source>
         <translation>授权网站</translation>
     </message>
     <message>
-        <location filename="../../ui/SystemTray.qml" line="51"/>
+        <location filename="../../ui/SystemTray.qml" line="55"/>
         <source>Quit</source>
         <translation>退出程序</translation>
     </message>
@@ -221,6 +225,14 @@
     <message>
         <source>Paste</source>
         <translation type="vanished">粘贴</translation>
+    </message>
+</context>
+<context>
+    <name>WebsitesView</name>
+    <message>
+        <location filename="../../ui/WebsitesView.qml" line="12"/>
+        <source>No permitted websites</source>
+        <translation>没有已授权网站</translation>
     </message>
 </context>
 </TS>

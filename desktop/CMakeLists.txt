@@ -21,12 +21,12 @@ set(
     ui.cc ui.h
     # Resources
     components/components.qrc
-    resources/i18n.qrc
-    resources/resources.qrc
     ui/ui.qrc
 )
 
-add_executable(${PROJECT_NAME}-desktop ${SOURCES})
+qt_add_big_resources(RESOURCES resources/i18n.qrc resources/resources.qrc)
+
+add_executable(${PROJECT_NAME}-desktop ${SOURCES} ${RESOURCES})
 
 target_link_libraries(${PROJECT_NAME}-desktop ${QT_LIBRARIES})
 
