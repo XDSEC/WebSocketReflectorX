@@ -5,6 +5,8 @@
   name: "Desktop CI builds (cmake)"
   on:
     push:
+      paths-ignore:
+        - '**/README.md'
     pull_request:
     workflow_dispatch:
 

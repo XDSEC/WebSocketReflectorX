@@ -12,9 +12,39 @@ The daemon (cli) could be used standalone.
 
 New desktop app using HTTP API to communicate with the daemon, and stream logs from daemon's stdout. The daemon is running as a child process of the desktop app.
 
-This app is still in development now.
-
 ## Usage
+
+Download from [Releases](https://github.com/XDSEC/WebSocketReflectorX/releases) page and run it.
+
+### Command Line Tools
+
+This release contains the desktop GUI application and the cli daemon, so it's size may too big for some users.
+
+you can just install the command-line tool from Cargo:
+
+```
+cargo install wsrx --features=binary
+```
+
+then you can use `wsrx` directly without desktop application.
+
+### Linux users
+
+AppImage packaging tool has an incomplete support for wayland, in some wayland platforms you will see the desktop application outputs some errors and start the GUI in XWayland, this is an upstream issue, not related to WSRX itself, so do not post issues here.
+
+For Arch Linux users, the better choice maybe:
+
+```bash
+yay -S wsrx-git
+# or you use paru
+paru -S wsrx-git
+```
+
+then you can use WSRX desktop application with native wayland support.
+
+## **PRs about GitHub CI for other linux distro are welcome!**
+
+## Development
 
 ### Compile
 
