@@ -67,7 +67,7 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
-  
+
     ## macOS build ###############################################################
     build-mac:
       name: "macOS CI build"
@@ -112,7 +112,7 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
-  
+
     ## macOS build ###############################################################
     build-mac-arm:
       name: "macOS ARM CI build"
@@ -157,7 +157,7 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
-  
+
     ## Windows build #############################################################
     build-windows:
       name: "Windows CI build"
@@ -211,11 +211,10 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
-  
+
         # Upload NSIS installer
         - name: Upload NSIS installer
           uses: actions/upload-artifact@v4
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
-  
