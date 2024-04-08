@@ -44,16 +44,13 @@ done
 
 ## APP INSTALL #################################################################
 
-if [[ $make_install = true ]] ; then
-  echo '---- Running make install'
-  mkdir -p dist
-  APP_ROOT=dist
-  cp ./build/bin/wsrx.exe "${APP_ROOT}/wsrx.exe"
-  cp ./build/bin/wsrx-desktop.exe "${APP_ROOT}/wsrx-desktop.exe"
-
-  #echo '---- Installation directory content recap (after make install):'
-  #find bin/
-fi
+echo '---- Running make install'
+mkdir -p dist
+APP_ROOT=dist
+cp ./build/bin/wsrx.exe "${APP_ROOT}/wsrx.exe"
+cp ./build/bin/wsrx-desktop.exe "${APP_ROOT}/wsrx-desktop.exe"
+#echo '---- Installation directory content recap (after make install):'
+#find bin/
 
 ## DEPLOY ######################################################################
 

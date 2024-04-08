@@ -26,7 +26,13 @@ set(
 
 qt_add_big_resources(RESOURCES resources/i18n.qrc resources/resources.qrc)
 
+if(WIN32)
+add_executable(${PROJECT_NAME}-desktop WIN32 ${SOURCES} ${RESOURCES})
+elseif(APPLE)
+add_executable(${PROJECT_NAME}-desktop MACOSX_BUNDLE ${SOURCES} ${RESOURCES})
+else()
 add_executable(${PROJECT_NAME}-desktop ${SOURCES} ${RESOURCES})
+endif()
 
 target_link_libraries(${PROJECT_NAME}-desktop ${QT_LIBRARIES})
 
