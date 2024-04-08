@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=WebSocketReflector X
-GenericName=WebSocketReflector X
+Name=WebSocketReflectorX
+GenericName=WebSocketReflectorX
 Comment=Controlled TCP-over-WebSocket forwarding tunnel.
 Exec=wsrx-desktop %U
 TryExec=wsrx-desktop
