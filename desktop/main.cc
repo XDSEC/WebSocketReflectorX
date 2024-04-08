@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QFont>
 #include <QFontDatabase>
+#include <QIcon>
 
 #include "ui.h"
 #include "variables.h"
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationDisplayName("WebSocket Reflector X");
     QApplication::setOrganizationDomain("tech.woooo.wsrx");
     QApplication::setOrganizationName("Ret2Shell");
+    QApplication::setWindowIcon(QIcon(":/resources/assets/logo-bg.ico"));
     QApplication::setApplicationVersion(FULL_VERSION);
 
     QFontDatabase::addApplicationFont(":/resources/fonts/sarasa-mono-sc-regular.ttf");
