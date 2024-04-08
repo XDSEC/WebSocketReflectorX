@@ -49,16 +49,11 @@ done
 
 ## APP INSTALL #################################################################
 
-if [[ $make_install = true ]] ; then
-  echo '---- Running make install'
-  mkdir -p dist
-  APP_ROOT=dist
-  install -D ./build/bin/wsrx "${APP_ROOT}/wsrx"
-  install -D ./build/bin/wsrx-desktop "${APP_ROOT}/wsrx-desktop"
-
-  #echo '---- Installation directory content recap (after make install):'
-  #find bin/
-fi
+echo '---- Running make install'
+mkdir -p dist
+APP_ROOT=dist
+install -D ./build/bin/wsrx "${APP_ROOT}/wsrx"
+install -D ./build/bin/wsrx-desktop "${APP_ROOT}/wsrx-desktop"
 
 ## DEPLOY ######################################################################
 
@@ -69,7 +64,9 @@ else
 fi
 
 echo '---- Running macdeployqt'
-macdeployqt bin/$APP_NAME.app -qmldir=desktop/components -qmldir=desktop/ui -hardened-runtime -timestamp -appstore-compliant
+cd $APP_ROOT
+macdeployqt $APP_NAME.app -qmldir=../desktop/components -qmldir=../desktop/ui -hardened-runtime -timestamp -appstore-compliant -dmg
+cd ..
 
 #echo '---- Installation directory content recap (after macdeployqt):'
 #find bin/
@@ -78,7 +75,7 @@ macdeployqt bin/$APP_NAME.app -qmldir=desktop/components -qmldir=desktop/ui -har
 
 if [[ $create_package = true ]] ; then
   echo '---- Compressing package'
-  cd bin/
+  cd $APP_ROOT
   zip -r -y -X ../$APP_NAME-$APP_VERSION-macos.zip $APP_NAME.app
   cd ..
 fi

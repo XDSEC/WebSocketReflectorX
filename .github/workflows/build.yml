@@ -68,50 +68,50 @@
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
   
-    # ## macOS build ###############################################################
-    # build-mac:
-    #   name: "macOS CI build"
-    #   runs-on: macos-12
-    #   steps:
-    #     # Checkout repository (and submodules)
-    #     - name: Checkout repository (and submodules)
-    #       uses: actions/checkout@v4
-    #       with:
-    #         submodules: recursive
+    ## macOS build ###############################################################
+    build-mac:
+      name: "macOS CI build"
+      runs-on: macos-12
+      steps:
+        # Checkout repository (and submodules)
+        - name: Checkout repository (and submodules)
+          uses: actions/checkout@v4
+          with:
+            submodules: recursive
   
-    #     # Install dependencies (from package manager)
-    #     #- name: Install dependencies (from package manager)
-    #     #  run: |
-    #     #       brew install qt6 cmake
+        # Install dependencies (from package manager)
+        #- name: Install dependencies (from package manager)
+        #  run: |
+        #       brew install qt6 cmake
   
-    #     # Install Qt
-    #     - name: Install Qt
-    #       uses: jurplel/install-qt-action@v3
-    #       with:
-    #         version: ${{env.QT_VERSION}}
+        # Install Qt
+        - name: Install Qt
+          uses: jurplel/install-qt-action@v3
+          with:
+            version: ${{env.QT_VERSION}}
   
-    #     # Setup env
-    #     - name: Setup env
-    #       run: |
-    #            cmake --version
+        # Setup env
+        - name: Setup env
+          run: |
+               cmake --version
   
-    #     # Build application
-    #     - name: Build application
-    #       run: |
-    #            export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-    #            cmake -B build/ -DCMAKE_BUILD_TYPE=Release
-    #            cmake --build build/ --config Release --target all
+        # Build application
+        - name: Build application
+          run: |
+               export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
+               cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+               cmake --build build/ --config Release --target all
   
-    #     # Deploy application
-    #     - name: Deploy application
-    #       run: ./deploy_macos.sh -c -p
+        # Deploy application
+        - name: Deploy application
+          run: ./deploy_macos.sh -c -p
   
-    #     # Upload application ZIP
-    #     - name: Upload application ZIP
-    #       uses: actions/upload-artifact@v4
-    #       with:
-    #         name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
-    #         path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
+        # Upload application ZIP
+        - name: Upload application ZIP
+          uses: actions/upload-artifact@v4
+          with:
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
   
     ## Windows build #############################################################
     build-windows:

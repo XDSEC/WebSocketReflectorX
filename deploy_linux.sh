@@ -13,10 +13,10 @@ if [ "$(id -u)" == "0" ]; then
   exit 1
 fi
 
-# if [ ${PWD##*/} != $APP_NAME ]; then
-#   echo "This script MUST be run from the $APP_NAME/ directory"
-#   exit 1
-# fi
+if [ ${PWD##*/} != $APP_NAME ]; then
+  echo "This script MUST be run from the $APP_NAME/ directory"
+  exit 1
+fi
 
 ## SETTINGS ####################################################################
 
