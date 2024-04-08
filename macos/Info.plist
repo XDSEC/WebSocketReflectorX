@@ -12,7 +12,7 @@
 	<string>WebSocketReflectorX</string>
 
 	<key>CFBundleExecutable</key>
-	<string>WebSocketReflectorX</string>
+	<string>wsrx-desktop</string>
 
 	<key>CFBundleIdentifier</key>
 	<string>com.emeric.WebSocketReflectorX</string>
