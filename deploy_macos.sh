@@ -57,6 +57,8 @@ install -D ./build/bin/wsrx-desktop "${APP_ROOT}/wsrx-desktop"
 
 ## DEPLOY ######################################################################
 
+CPU_ARCH=$(uname -m)
+
 if [[ $use_contribs = true ]] ; then
   export LD_LIBRARY_PATH=$(pwd)/contribs/src/env/macOS_x86_64/usr/lib/
 else
@@ -76,7 +78,7 @@ cd ..
 if [[ $create_package = true ]] ; then
   echo '---- Compressing package'
   cd $APP_ROOT
-  zip -r -y -X ../$APP_NAME-$APP_VERSION-macos.zip $APP_NAME.app
+  zip -r -y -X ../$APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.zip $APP_NAME.app
   cd ..
 fi
 
@@ -84,6 +86,6 @@ fi
 
 if [[ $upload_package = true ]] ; then
   printf "---- Uploading to transfer.sh"
-  curl --upload-file $APP_NAME*.zip https://transfer.sh/$APP_NAME.$APP_VERSION-git$GIT_VERSION-macOS.zip
+  curl --upload-file $APP_NAME*.zip https://transfer.sh/$APP_NAME.$APP_VERSION-git$GIT_VERSION-macOS-$CPU_ARCH.zip
   printf "\n"
 fi

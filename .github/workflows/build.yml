@@ -110,8 +110,8 @@
         - name: Upload application ZIP
           uses: actions/upload-artifact@v4
           with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
   
     ## macOS build ###############################################################
     build-mac-arm:
@@ -155,8 +155,8 @@
         - name: Upload application ZIP
           uses: actions/upload-artifact@v4
           with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS.zip
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
   
     ## Windows build #############################################################
     build-windows:
