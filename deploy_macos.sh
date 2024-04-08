@@ -60,7 +60,7 @@ fi
 echo '---- Running macdeployqt'
 cp build/bin/wsrx build/bin/wsrx-desktop.app/Contents/MacOS/wsrx
 cp -r build/bin/wsrx-desktop.app $APP_NAME.app
-macdeployqt $APP_NAME.app -qmldir=../desktop/components -qmldir=../desktop/ui -hardened-runtime -timestamp -appstore-compliant -dmg
+macdeployqt $APP_NAME.app -qmldir=./desktop/components -qmldir=./desktop/ui -hardened-runtime -timestamp -appstore-compliant -dmg
 
 #echo '---- Installation directory content recap (after macdeployqt):'
 #find bin/

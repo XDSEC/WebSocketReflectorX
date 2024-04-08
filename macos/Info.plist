@@ -15,7 +15,7 @@
 	<string>wsrx-desktop</string>
 
 	<key>CFBundleIdentifier</key>
-	<string>com.emeric.WebSocketReflectorX</string>
+	<string>tech.woooo.wsrx</string>
 
 	<key>CFBundleVersion</key>
 	<string>0.2.1</string>

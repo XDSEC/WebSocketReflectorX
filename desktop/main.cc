@@ -50,6 +50,9 @@ static int setup_unix_signal_handlers() {
 #endif
 
 int main(int argc, char* argv[]) {
+#ifdef Q_OS_MAC
+    QCoreApplication::addLibraryPath("PlugIns");
+#endif
     QApplication app(argc, argv);
 
     QApplication::setApplicationName("wsrx");
