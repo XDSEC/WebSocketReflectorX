@@ -92,7 +92,7 @@ export EXTRA_QT_PLUGINS="svg;"
 
 if [[ $create_package = true ]] ; then
   echo '---- Running AppImage packager'
-  ./contribs/deploy/linuxdeploy-x86_64.AppImage --appdir build/bin --plugin qt --output appimage
+  ./contribs/deploy/linuxdeploy-x86_64.AppImage --appdir $APP_ROOT --plugin qt --output appimage
   mv $APP_NAME-x86_64.AppImage $APP_NAME-$APP_VERSION-linux64.AppImage
 
   #echo '---- Installation directory content recap (after linuxdeploy):'
