@@ -47,13 +47,6 @@ esac
 shift # skip argument or value
 done
 
-## APP INSTALL #################################################################
-
-echo '---- Running make install'
-mkdir -p dist
-APP_ROOT=dist
-install ./build/bin/wsrx ./build/bin/wsrx-desktop "${APP_ROOT}/"
-
 ## DEPLOY ######################################################################
 
 CPU_ARCH=$(uname -m)
@@ -65,9 +58,9 @@ else
 fi
 
 echo '---- Running macdeployqt'
-cd $APP_ROOT
+cp build/bin/wsrx build/bin/wsrx-desktop.app/Contents/MacOS/wsrx
+cp -r build/bin/wsrx-desktop.app $APP_NAME.app
 macdeployqt $APP_NAME.app -qmldir=../desktop/components -qmldir=../desktop/ui -hardened-runtime -timestamp -appstore-compliant -dmg
-cd ..
 
 #echo '---- Installation directory content recap (after macdeployqt):'
 #find bin/
@@ -76,9 +69,7 @@ cd ..
 
 if [[ $create_package = true ]] ; then
   echo '---- Compressing package'
-  cd $APP_ROOT
-  zip -r -y -X ../$APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.zip $APP_NAME.app
-  cd ..
+  zip -r -y -X $APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.zip $APP_NAME.app
 fi
 
 ## UPLOAD ######################################################################
