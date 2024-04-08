@@ -25,7 +25,7 @@
     ## GNU/Linux build ###########################################################
     build-linux:
       name: "Linux CI build"
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-22.04
       steps:
         # Checkout repository (and submodules)
         - name: Checkout repository (and submodules)
