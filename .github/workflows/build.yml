@@ -116,7 +116,7 @@
     ## macOS build ###############################################################
     build-mac-arm:
       name: "macOS ARM CI build"
-      runs-on: macos-13-xlarge
+      runs-on: macos-14
       steps:
         # Checkout repository (and submodules)
         - name: Checkout repository (and submodules)
