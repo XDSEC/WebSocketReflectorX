@@ -13,10 +13,10 @@ if [ "$(id -u)" == "0" ]; then
   exit 1
 fi
 
-if [ ${PWD##*/} != $APP_NAME ]; then
-  echo "This script MUST be run from the $APP_NAME/ directory"
-  exit 1
-fi
+# if [ ${PWD##*/} != $APP_NAME ]; then
+#   echo "This script MUST be run from the $APP_NAME/ directory"
+#   exit 1
+# fi
 
 ## SETTINGS ####################################################################
 
@@ -87,16 +87,14 @@ chmod a+x contribs/deploy/linuxdeploy-plugin-qt-x86_64.AppImage
 
 # linuxdeploy settings
 export EXTRA_QT_PLUGINS="svg;"
-
+export EXTRA_PLATFORM_PLUGINS="platforms/libqxcb.so;platforms/libqwayland-egl.so;libqwayland-generic.so"
+export QML_SOURCES_PATHS="desktop/ui:desktop/components"
 ## PACKAGE (AppImage) ##########################################################
 
 if [[ $create_package = true ]] ; then
   echo '---- Running AppImage packager'
   ./contribs/deploy/linuxdeploy-x86_64.AppImage --appdir $APP_ROOT --plugin qt --output appimage
   mv $APP_NAME-x86_64.AppImage $APP_NAME-$APP_VERSION-linux64.AppImage
-
-  #echo '---- Installation directory content recap (after linuxdeploy):'
-  #find bin/
 fi
 
 ## UPLOAD ######################################################################
