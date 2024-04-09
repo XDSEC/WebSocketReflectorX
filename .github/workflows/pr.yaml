@@ -114,6 +114,13 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+ 
+        # Upload application DMG
+        - name: Upload application DMG
+          uses: actions/upload-artifact@v4
+          with:
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
 
     ## macOS build ###############################################################
     build-mac-arm:
@@ -159,6 +166,13 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
+ 
+        # Upload application DMG
+        - name: Upload application DMG
+          uses: actions/upload-artifact@v4
+          with:
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
 
     ## Windows build #############################################################
     build-windows:

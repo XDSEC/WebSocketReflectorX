@@ -69,8 +69,8 @@ macdeployqt $APP_NAME.app -qmldir=./desktop/components -qmldir=./desktop/ui -har
 
 if [[ $create_package = true ]] ; then
   echo '---- Compressing package'
-  ls -al
   zip -r -y -X $APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.zip $APP_NAME.app
+  mv $APP_NAME.dmg $APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.dmg
 fi
 
 ## UPLOAD ######################################################################
@@ -78,5 +78,6 @@ fi
 if [[ $upload_package = true ]] ; then
   printf "---- Uploading to transfer.sh"
   curl --upload-file $APP_NAME*.zip https://transfer.sh/$APP_NAME.$APP_VERSION-git$GIT_VERSION-macOS-$CPU_ARCH.zip
+  curl --upload-file $APP_NAME*.dmg https://transfer.sh/$APP_NAME.$APP_VERSION-git$GIT_VERSION-macOS-$CPU_ARCH.dmg
   printf "\n"
 fi

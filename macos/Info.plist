@@ -22,6 +22,9 @@
 
 	<key>CFBundleShortVersionString</key>
 	<string>0.2</string>
+	
+	<key>CFBundleSignature</key>
+	<string>????</string>
 
 	<key>CFBundleIconFile</key>
 	<string>WebSocketReflectorX.icns</string>

@@ -117,12 +117,21 @@
           with:
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+  
+        # Upload application DMG
+        - name: Upload application DMG
+          uses: actions/upload-artifact@v4
+          with:
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
 
         - name: Release
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
           with:
-            files: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+            files: |
+              ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+              ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
   
     ## macOS build ###############################################################
     build-mac-arm:
@@ -169,11 +178,20 @@
             name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
             path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
 
+        # Upload application DMG
+        - name: Upload application DMG
+          uses: actions/upload-artifact@v4
+          with:
+            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
+            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
+
         - name: Release
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
           with:
-            files: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
+            files: |
+              ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
+              ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
   
     ## Windows build #############################################################
     build-windows:
