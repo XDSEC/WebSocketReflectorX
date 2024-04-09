@@ -27,11 +27,17 @@ set(
 qt_add_big_resources(RESOURCES resources/i18n.qrc resources/resources.qrc)
 
 if(WIN32)
-add_executable(${PROJECT_NAME}-desktop WIN32 ${SOURCES} ${RESOURCES})
+  add_executable(${PROJECT_NAME}-desktop WIN32 ${SOURCES} ${RESOURCES})
 elseif(APPLE)
-add_executable(${PROJECT_NAME}-desktop MACOSX_BUNDLE ${SOURCES} ${RESOURCES})
+  set(CMAKE_XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "tech.woooo.wsrx")
+  set(CMAKE_XCODE_ATTRIBUTE_MARKETING_VERSION "${FULL_VERSION}")
+  set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
+  set(CMAKE_XCODE_ATTRIBUTE_INFOPLIST_FILE "${CMAKE_SOURCE_DIR}/macos/Info.plist")
+  set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/macos/WebSocketReflectorX.entitlements")
+  add_executable(${PROJECT_NAME}-desktop MACOSX_BUNDLE ${SOURCES} ${RESOURCES})
 else()
-add_executable(${PROJECT_NAME}-desktop ${SOURCES} ${RESOURCES})
+  add_executable(${PROJECT_NAME}-desktop ${SOURCES} ${RESOURCES})
 endif()
 
 target_link_libraries(${PROJECT_NAME}-desktop ${QT_LIBRARIES})
@@ -67,18 +73,3 @@ set_target_properties(
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
-
-
-if(APPLE)
-    set(CMAKE_XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "io.emeric.qmlapptemplate")
-    set(CMAKE_XCODE_ATTRIBUTE_MARKETING_VERSION "${PROJECT_VERSION}")
-
-    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")
-    set(CMAKE_XCODE_ATTRIBUTE_INFOPLIST_FILE "${CMAKE_SOURCE_DIR}/macos/Info.plist")
-    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/macos/WebSocketReflectorX.entitlements")
-
-    set_target_properties(${PROJECT_NAME}-desktop PROPERTIES
-        MACOSX_BUNDLE ON
-    )
-endif()
