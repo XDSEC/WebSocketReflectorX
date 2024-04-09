@@ -55,7 +55,10 @@ Daemon::~Daemon() {
 #else
     m_daemon->terminate();
 #endif
-    if (!m_daemon->waitForFinished()) qWarning() << "Daemon is not terminated correctly.";
+    if (!m_daemon->waitForFinished()) {
+        qWarning() << "Daemon is not terminated correctly by SIGTERM, try SIGKILL.";
+        m_daemon->kill();
+    }
     m_daemon->deleteLater();
 }
 

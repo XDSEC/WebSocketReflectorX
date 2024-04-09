@@ -19,6 +19,7 @@ class Ui : public QObject {
     Q_PROPERTY(bool runningInTray READ runningInTray WRITE setRunningInTray NOTIFY runningInTrayChanged)
     Q_PROPERTY(bool isDark READ isDark WRITE setIsDark NOTIFY isDarkChanged)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(bool isMac READ isMac WRITE setIsMac NOTIFY isMacChanged)
   private:
     static Ui* m_instance;
     QQmlEngine* m_uiEngine;
@@ -31,6 +32,7 @@ class Ui : public QObject {
     bool m_runningInTray = false;
     bool m_isDark = false;
     QString m_language = "zh_CN";
+    bool m_isMac = false;
 #ifdef Q_OS_UNIX
     static int sighupFd[2];
     static int sigtermFd[2];
@@ -65,6 +67,10 @@ class Ui : public QObject {
 
     void setLanguage(const QString& language);
 
+    [[nodiscard]] bool isMac() const;
+
+    void setIsMac(bool isMac);
+
 #ifdef Q_OS_UNIX
 
     static void sigtermSigHandler(int);
@@ -98,4 +104,6 @@ class Ui : public QObject {
     void isDarkChanged(bool isDark);
 
     void languageChanged(const QString& language);
+
+    void isMacChanged(bool isMac);
 };

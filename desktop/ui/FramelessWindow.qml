@@ -25,6 +25,7 @@ Window {
         acceptedButtons: Qt.NoButton // don't handle actual events
         // resize window mouse area
         anchors.fill: parent
+        enabled: !ui.isMac
         cursorShape: {
             if (root.state !== Window.Maximized) {
                 const p = Qt.point(mouseX, mouseY);
@@ -50,7 +51,7 @@ Window {
 
             }
         }
-        hoverEnabled: true
+        hoverEnabled: !ui.isMac
     }
 
     DragHandler {
@@ -58,6 +59,7 @@ Window {
 
         grabPermissions: TapHandler.TakeOverForbidden
         target: null
+        enabled: !ui.isMac
         onActiveChanged: {
             if (active && root.state !== Window.Maximized) {
                 const p = resizeHandler.centroid.position;

@@ -26,14 +26,14 @@ FramelessWindow {
         id: centralWidget
 
         anchors.fill: parent
-        anchors.margins: window.visibility === Window.Windowed ? 10 : 0
+        anchors.margins: ui.isMac ? 0 : (window.visibility === Window.Windowed ? 10 : 0)
         border.color: Style.palette.mid
-        border.width: window.visibility === Window.Windowed ? 1 : 0
+        border.width: ui.isMac ? 0 : (window.visibility === Window.Windowed ? 1 : 0)
         color: Style.palette.window
 
         Item {
             anchors.fill: parent
-            anchors.margins: window.visibility === Window.Windowed ? 1 : 0
+            anchors.margins: ui.isMac ? 0 : (window.visibility === Window.Windowed ? 1 : 0)
 
             SplitView {
                 anchors.fill: parent

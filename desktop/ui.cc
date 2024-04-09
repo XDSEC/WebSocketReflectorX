@@ -57,6 +57,9 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     snInt = new QSocketNotifier(sigintFd[1], QSocketNotifier::Read, this);
     connect(snInt, SIGNAL(activated(QSocketDescriptor)), this, SLOT(sigintHandler()));
 #endif
+#ifdef Q_OS_MACOS
+    setIsMac(true);
+#endif
     loadSettings();
     m_uiEngine = new QQmlEngine(this);
     m_translator = new QTranslator(this);
@@ -149,6 +152,14 @@ void Ui::setLanguage(const QString& language) {
     m_uiEngine->retranslate();
     m_language = language;
     emit languageChanged(language);
+}
+
+bool Ui::isMac() const { return m_isMac; }
+
+void Ui::setIsMac(bool isMac) {
+    if (m_isMac == isMac) return;
+    m_isMac = isMac;
+    emit isMacChanged(isMac);
 }
 
 #ifdef Q_OS_UNIX
