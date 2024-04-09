@@ -69,6 +69,7 @@ macdeployqt $APP_NAME.app -qmldir=./desktop/components -qmldir=./desktop/ui -har
 
 if [[ $create_package = true ]] ; then
   echo '---- Compressing package'
+  ls -al
   zip -r -y -X $APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.zip $APP_NAME.app
 fi
 
