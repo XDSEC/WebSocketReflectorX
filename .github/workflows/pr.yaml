@@ -2,235 +2,235 @@
 # Workflow configuration
 #-------------------------------------------------------------------------------
 
-  name: "Desktop CI builds (cmake)"
-  on:
-    push:
-      paths-ignore:
-        - '**/README.md'
-    pull_request:
-    workflow_dispatch:
+name: "Desktop CI builds (cmake)"
+on:
+  push:
+    paths-ignore:
+      - '**/README.md'
+  pull_request:
+  workflow_dispatch:
 
-  #-------------------------------------------------------------------------------
-  # Define application name & version
-  #-------------------------------------------------------------------------------
-  
-  env:
-    APP_NAME: "WebSocketReflectorX"
-    APP_VERSION: "0.2.2"
-    QT_VERSION: "6.6.2"
-  
-  #-------------------------------------------------------------------------------
-  # Workflow jobs
-  #-------------------------------------------------------------------------------
-  
-  jobs:
-    ## GNU/Linux build ###########################################################
-    build-linux:
-      name: "Linux CI build"
-      runs-on: ubuntu-22.04
-      steps:
-        # Checkout repository (and submodules)
-        - name: Checkout repository (and submodules)
-          uses: actions/checkout@v4
-          with:
-            submodules: recursive
-  
-        # Install Qt
-        - name: Install Qt
-          uses: jurplel/install-qt-action@v3
-          with:
-            version: ${{env.QT_VERSION}}
-  
-        # Install dependencies (from package manager)
-        - name: Install dependencies (from package manager)
-          run: |
-               sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev fuse libfuse-dev libwayland-dev -y;
-               sudo apt-get install cmake ninja-build pkgconf libtool -y;
-               sudo apt-get install appstream -y;
-  
-        # Setup env
-        - name: Setup env
-          run: |
-               cmake --version
-  
-        # Build application
-        - name: Build application
-          run: |
-               cmake -B build/ -G Ninja -DCMAKE_BUILD_TYPE=Release -G Ninja
-               cmake --build build/ --config Release
-  
-        # Deploy application
-        - name: Deploy application
-          run: ./deploy_linux.sh -c -i -p
-        
-        # Upload AppImage
-        - name: Upload AppImage
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
+#-------------------------------------------------------------------------------
+# Define application name & version
+#-------------------------------------------------------------------------------
 
-    ## macOS build ###############################################################
-    build-mac:
-      name: "macOS CI build"
-      runs-on: macos-12
-      steps:
-        # Checkout repository (and submodules)
-        - name: Checkout repository (and submodules)
-          uses: actions/checkout@v4
-          with:
-            submodules: recursive
-  
-        # Install dependencies (from package manager)
-        #- name: Install dependencies (from package manager)
-        #  run: |
-        #       brew install qt6 cmake
-  
-        # Install Qt
-        - name: Install Qt
-          uses: jurplel/install-qt-action@v3
-          with:
-            version: ${{env.QT_VERSION}}
-  
-        # Setup env
-        - name: Setup env
-          run: |
-               cmake --version
-  
-        # Build application
-        - name: Build application
-          run: |
-               export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-               cmake -B build/ -DCMAKE_BUILD_TYPE=Release
-               cmake --build build/ --config Release --target all
-  
-        # Deploy application
-        - name: Deploy application
-          run: ./deploy_macos.sh -c -p
-  
-        # Upload application ZIP
-        - name: Upload application ZIP
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
- 
-        # Upload application DMG
-        - name: Upload application DMG
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
+env:
+  APP_NAME: "WebSocketReflectorX"
+  APP_VERSION: "0.2.2"
+  QT_VERSION: "6.6.2"
 
-    ## macOS build ###############################################################
-    build-mac-arm:
-      name: "macOS ARM CI build"
-      runs-on: macos-14
-      steps:
-        # Checkout repository (and submodules)
-        - name: Checkout repository (and submodules)
-          uses: actions/checkout@v4
-          with:
-            submodules: recursive
-  
-        # Install dependencies (from package manager)
-        #- name: Install dependencies (from package manager)
-        #  run: |
-        #       brew install qt6 cmake
-  
-        # Install Qt
-        - name: Install Qt
-          uses: jurplel/install-qt-action@v3
-          with:
-            version: ${{env.QT_VERSION}}
-  
-        # Setup env
-        - name: Setup env
-          run: |
-               cmake --version
-  
-        # Build application
-        - name: Build application
-          run: |
-               export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-               cmake -B build/ -DCMAKE_BUILD_TYPE=Release
-               cmake --build build/ --config Release --target all
-  
-        # Deploy application
-        - name: Deploy application
-          run: ./deploy_macos.sh -c -p
-  
-        # Upload application ZIP
-        - name: Upload application ZIP
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
- 
-        # Upload application DMG
-        - name: Upload application DMG
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
+#-------------------------------------------------------------------------------
+# Workflow jobs
+#-------------------------------------------------------------------------------
 
-    ## Windows build #############################################################
-    build-windows:
-      name: "Windows CI build"
-      runs-on: windows-2022
-      steps:
-        # Checkout repository (and submodules)
-        - name: Checkout repository (and submodules)
-          uses: actions/checkout@v4
-          with:
-            submodules: recursive
-  
-        # Configure MSVC
-        - name: Configure MSVC
-          uses: ilammy/msvc-dev-cmd@v1
-          with:
-            arch: x64
-            spectre: true
-  
-        # Install Qt
-        - name: Install Qt
-          uses: jurplel/install-qt-action@v3
-          with:
-            version: ${{env.QT_VERSION}}
-  
-        # Install NSIS (already installed in 'windows-2022')
-        #- name: Install NSIS
-        #  run: |
-        #       Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-        #       scoop bucket add extras
-        #       scoop install nsis
-  
-        # Setup env
-        - name: Setup env
-          run: |
-               cmake --version
-  
-        # Build application
-        - name: Build application
-          run: |
-               mkdir build && cd build/
-               cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
-               nmake
-  
-        # Deploy application
-        - name: Deploy application
-          run: sh deploy_windows.sh -c -p
-  
-        # Upload application ZIP
-        - name: Upload application ZIP
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
+jobs:
+  ## GNU/Linux build ###########################################################
+  build-linux:
+    name: "Linux CI build"
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-        # Upload NSIS installer
-        - name: Upload NSIS installer
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
-            path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
+      # Install Qt
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{env.QT_VERSION}}
+
+      # Install dependencies (from package manager)
+      - name: Install dependencies (from package manager)
+        run: |
+             sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev fuse libfuse-dev libwayland-dev -y;
+             sudo apt-get install cmake ninja-build pkgconf libtool -y;
+             sudo apt-get install appstream -y;
+
+      # Setup env
+      - name: Setup env
+        run: |
+             cmake --version
+
+      # Build application
+      - name: Build application
+        run: |
+             cmake -B build/ -G Ninja -DCMAKE_BUILD_TYPE=Release -G Ninja
+             cmake --build build/ --config Release
+
+      # Deploy application
+      - name: Deploy application
+        run: ./deploy_linux.sh -c -i -p
+      
+      # Upload AppImage
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-linux64.AppImage
+
+  ## macOS build ###############################################################
+  build-mac:
+    name: "macOS CI build"
+    runs-on: macos-12
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Install dependencies (from package manager)
+      #- name: Install dependencies (from package manager)
+      #  run: |
+      #       brew install qt6 cmake
+
+      # Install Qt
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{env.QT_VERSION}}
+
+      # Setup env
+      - name: Setup env
+        run: |
+             cmake --version
+
+      # Build application
+      - name: Build application
+        run: |
+             export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+             cmake --build build/ --config Release --target all
+
+      # Deploy application
+      - name: Deploy application
+        run: ./deploy_macos.sh -c -p
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
+
+      # Upload application DMG
+      - name: Upload application DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
+
+  ## macOS build ###############################################################
+  build-mac-arm:
+    name: "macOS ARM CI build"
+    runs-on: macos-14
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Install dependencies (from package manager)
+      #- name: Install dependencies (from package manager)
+      #  run: |
+      #       brew install qt6 cmake
+
+      # Install Qt
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{env.QT_VERSION}}
+
+      # Setup env
+      - name: Setup env
+        run: |
+             cmake --version
+
+      # Build application
+      - name: Build application
+        run: |
+             export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+             cmake --build build/ --config Release --target all
+
+      # Deploy application
+      - name: Deploy application
+        run: ./deploy_macos.sh -c -p
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
+
+      # Upload application DMG
+      - name: Upload application DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
+
+  ## Windows build #############################################################
+  build-windows:
+    name: "Windows CI build"
+    runs-on: windows-2022
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Configure MSVC
+      - name: Configure MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          spectre: true
+
+      # Install Qt
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{env.QT_VERSION}}
+
+      # Install NSIS (already installed in 'windows-2022')
+      #- name: Install NSIS
+      #  run: |
+      #       Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+      #       scoop bucket add extras
+      #       scoop install nsis
+
+      # Setup env
+      - name: Setup env
+        run: |
+             cmake --version
+
+      # Build application
+      - name: Build application
+        run: |
+             mkdir build && cd build/
+             cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
+             nmake
+
+      # Deploy application
+      - name: Deploy application
+        run: sh deploy_windows.sh -c -p
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
+
+      # Upload NSIS installer
+      - name: Upload NSIS installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
+          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe

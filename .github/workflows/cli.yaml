@@ -1,0 +1,169 @@
+#-------------------------------------------------------------------------------
+# Workflow configuration
+#-------------------------------------------------------------------------------
+
+name: "CLI CI builds (cmake)"
+on:
+  release:
+    types: [published]
+
+#-------------------------------------------------------------------------------
+# Define application name & version
+#-------------------------------------------------------------------------------
+
+env:
+  APP_NAME: "WebSocketReflectorX"
+  APP_VERSION: "0.2.2"
+
+#-------------------------------------------------------------------------------
+# Workflow jobs
+#-------------------------------------------------------------------------------
+
+jobs:
+  ## GNU/Linux build ###########################################################
+  build-linux:
+    name: "Linux CI build"
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      # Build application
+      - name: Build application
+        run: cargo build --release --features=binary
+
+      # Deploy application
+      - name: Compress Binaries
+        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz target/release/wsrx
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+          path: wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+
+  ## macOS build ###############################################################
+  build-mac:
+    name: "macOS CI build"
+    runs-on: macos-12
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      # Build application
+      - name: Build application
+        run: cargo build --release --features=binary
+
+      # Deploy application
+      - name: Compress Binaries
+        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.tar.gz target/release/wsrx
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.tar.gz
+          path: wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.tar.gz
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.tar.gz
+
+  ## macOS build ###############################################################
+  build-mac-arm:
+    name: "macOS ARM CI build"
+    runs-on: macos-14
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      # Build application
+      - name: Build application
+        run: cargo build --release --features=binary
+
+      # Deploy application
+      - name: Compress Binaries
+        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-macOS-arm64.tar.gz target/release/wsrx
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{env.APP_VERSION}}-macOS-arm64.tar.gz
+          path: wsrx-cli-${{env.APP_VERSION}}-macOS-arm64.tar.gz
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: wsrx-cli-${{env.APP_VERSION}}-macOS-arm64.tar.gz
+
+  ## Windows build #############################################################
+  build-windows:
+    name: "Windows CI build"
+    runs-on: windows-2022
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      # Build application
+      - name: Build application
+        run: cargo build --release --features=binary
+
+      # Deploy application
+      - name: Compress Binaries
+        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-win64.tar.gz target/release/wsrx.exe
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{env.APP_VERSION}}-win64.tar.gz
+          path: wsrx-cli-${{env.APP_VERSION}}-win64.tar.gz
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: wsrx-cli-${{env.APP_VERSION}}-win64.tar.gz
