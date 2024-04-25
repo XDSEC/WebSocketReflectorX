@@ -366,14 +366,19 @@ async fn remove_allowed_origin(
 }
 
 async fn get_cors_status(headers: HeaderMap) -> impl IntoResponse {
-    let allowed_origin = ALLOWED_ORIGINS
+    let allowed_origins = ALLOWED_ORIGINS
+        .read()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let pending_origins = PENDING_ORIGINS
         .read()
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     let origin = headers.get("origin").map(|o| o.to_str().unwrap_or(""));
     let resp = match origin {
         Some(origin) => {
-            if allowed_origin.contains(&origin.to_string()) {
+            if allowed_origins.contains(&origin.to_string()) {
                 Ok(StatusCode::ACCEPTED)
+            } else if pending_origins.contains(&origin.to_string()) {
+                Err(StatusCode::CREATED)
             } else {
                 Err(StatusCode::FORBIDDEN)
             }
@@ -394,7 +399,7 @@ async fn add_pending_origin(
         )
     })?;
     if allowed_origin.contains(&req) {
-        return Ok(StatusCode::OK);
+        return Ok(StatusCode::ACCEPTED);
     }
     let mut waitlist = PENDING_ORIGINS.write().map_err(|_| {
         (
@@ -403,10 +408,10 @@ async fn add_pending_origin(
         )
     })?;
     if waitlist.contains(&req) {
-        return Ok(StatusCode::OK);
+        return Ok(StatusCode::CREATED);
     }
     waitlist.push(req);
-    Ok(StatusCode::OK)
+    Ok(StatusCode::CREATED)
 }
 
 async fn update_heartbeat() -> impl IntoResponse {
