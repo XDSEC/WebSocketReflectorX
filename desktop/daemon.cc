@@ -23,15 +23,19 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 #ifdef Q_OS_WIN
     daemon_path += ".exe";
 #endif
+    m_logs = new LogList(this);
+    m_links = new LinkList(this);
+
     auto args = QStringList{"daemon", "-l", "true", "-p", "3307"};
     m_daemon = new QProcess(this);
     m_daemon->start(daemon_path, args);
     if (!m_daemon->waitForStarted()) {
         qWarning() << "Daemon is not started correctly.";
+        m_logs->appendLog(
+            Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR,
+                tr("Failed to start daemon: ") + m_daemon->errorString() + " " + m_daemon->readAllStandardError(),
+                "wsrx::desktop::connector"));
     }
-
-    m_logs = new LogList(this);
-    m_links = new LinkList(this);
     m_links->setLogs(m_logs);
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(30 * 1000);
@@ -41,8 +45,12 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
     connect(m_daemon, &QProcess::readyReadStandardOutput, this,
             [this]() { m_logs->appendLogs(m_daemon->readAllStandardOutput()); });
-    connect(m_daemon, &QProcess::readyReadStandardError, this,
-            [this]() { qWarning() << m_daemon->readAllStandardError(); });
+    connect(m_daemon, &QProcess::readyReadStandardError, this, [this]() {
+        auto errorString = m_daemon->readAllStandardError();
+        qWarning() << errorString;
+        m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR, errorString,
+                              "wsrx::desktop::connector"));
+    });
     connect(this, &Daemon::connected, this, [this](bool success, const QString& _message) {
         if (success) syncPool();
     });
