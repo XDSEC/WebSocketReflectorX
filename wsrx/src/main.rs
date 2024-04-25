@@ -20,6 +20,10 @@ enum WsrxCli {
         /// Log in json format.
         #[clap(short, long)]
         log_json: Option<bool>,
+        /// The heartbeat interval in seconds.
+        /// If not set, the daemon will not automatically exit when heartbeat timeout.
+        #[clap(long)]
+        heartbeat: Option<u64>,
     },
     /// Launch wsrx client.
     Connect {
@@ -60,7 +64,8 @@ async fn main() {
             port,
             secret,
             log_json,
-        } => cli::daemon::launch(host, port, secret, log_json).await,
+            heartbeat,
+        } => cli::daemon::launch(host, port, secret, log_json, heartbeat).await,
         WsrxCli::Connect {
             address,
             host,

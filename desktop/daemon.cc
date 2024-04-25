@@ -26,7 +26,7 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
     m_logs = new LogList(this);
     m_links = new LinkList(this);
 
-    auto args = QStringList{"daemon", "-l", "true", "-p", "3307"};
+    auto args = QStringList{"daemon", "-l", "true", "-p", "3307", "--heartbeat", "3"};
     m_daemon = new QProcess(this);
     m_daemon->start(daemon_path, args);
     if (!m_daemon->waitForStarted()) {
@@ -40,8 +40,12 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(30 * 1000);
     m_refreshTimer->start();
+    m_heartbeatTimer = new QTimer(this);
+    m_heartbeatTimer->setInterval(1 * 1000);
+    m_heartbeatTimer->start();
 
     connect(m_refreshTimer, &QTimer::timeout, this, [this]() { syncPool(); });
+    connect(m_heartbeatTimer, &QTimer::timeout, this, [this]() { heartbeat(); });
 
     connect(m_daemon, &QProcess::readyReadStandardOutput, this,
             [this]() { m_logs->appendLogs(m_daemon->readAllStandardOutput()); });
@@ -181,6 +185,21 @@ void Daemon::syncPool() {
         } else {
             // qDebug() << reply->readAll();
             m_links->syncLinks(reply->readAll());
+        }
+        reply->deleteLater();
+    });
+}
+
+void Daemon::heartbeat() {
+    auto url = QUrl(m_apiRoot + "heartbeat");
+    auto request = QNetworkRequest(url);
+    auto reply = m_network->get(request);
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            qWarning() << reply->errorString();
+            qWarning() << reply->readAll();
+        } else {
+            // qDebug() << reply->readAll();
         }
         reply->deleteLater();
     });

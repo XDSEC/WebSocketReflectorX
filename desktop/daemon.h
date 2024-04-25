@@ -23,8 +23,11 @@ class Daemon : public QObject {
     LinkList* m_links;
     QNetworkAccessManager* m_network;
     QTimer* m_refreshTimer;
+    QTimer* m_heartbeatTimer;
 
     void syncPool();
+
+    void heartbeat();
 
     void checkOrigins();
 

@@ -14,6 +14,7 @@ use axum::{
     routing::get,
     Json,
 };
+use chrono::{DateTime, Utc};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use tokio::{net::TcpListener, sync::RwLock, task::JoinHandle};
@@ -28,6 +29,7 @@ use crate::cli::logger::init_logger;
 
 pub async fn launch(
     host: Option<String>, port: Option<u16>, secret: Option<String>, log_json: Option<bool>,
+    heartbeat: Option<u64>,
 ) {
     let log_json = log_json.unwrap_or(false);
     init_logger(log_json);
@@ -47,6 +49,9 @@ pub async fn launch(
         "you can access manage api at http://{}/pool",
         listener.local_addr().expect("failed to bind port")
     );
+    if let Some(interval) = heartbeat {
+        tokio::spawn(heartbeat_watchdog(interval));
+    }
     axum::serve(listener, router)
         .await
         .expect("failed to launch server");
@@ -71,6 +76,26 @@ static ALLOWED_ORIGINS: Lazy<Arc<SyncRwLock<Vec<String>>>> =
 
 static PENDING_ORIGINS: Lazy<Arc<SyncRwLock<Vec<String>>>> =
     Lazy::new(|| Arc::new(SyncRwLock::new(Vec::new())));
+
+static HEARTBEAT_TIME: Lazy<Arc<SyncRwLock<DateTime<Utc>>>> =
+    Lazy::new(|| Arc::new(SyncRwLock::new(Utc::now())));
+
+async fn heartbeat_watchdog(interval: u64) {
+    loop {
+        tokio::time::sleep(Duration::from_secs(interval)).await;
+        let last_heartbeat = HEARTBEAT_TIME.read().ok();
+        if last_heartbeat.is_none() {
+            continue;
+        }
+        let last_heartbeat = last_heartbeat.unwrap();
+        if Utc::now().signed_duration_since(*last_heartbeat).num_seconds() > interval as i64 {
+            error!("Heartbeat timeout, last active at {last_heartbeat}, exiting.");
+            std::process::exit(0);
+        } else {
+            info!("Heartbeat check passed, last active at {last_heartbeat}.");
+        }
+    }
+}
 
 fn build_router(secret: Option<String>) -> axum::Router {
     let state = GlobalState {
@@ -103,6 +128,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
                     "/pool",
                     get(get_tunnels).post(launch_tunnel).delete(close_tunnel),
                 )
+                .route("/heartbeat", get(update_heartbeat))
                 .route(
                     "/access",
                     get(get_origins)
@@ -381,4 +407,10 @@ async fn add_pending_origin(
     }
     waitlist.push(req);
     Ok(StatusCode::OK)
+}
+
+async fn update_heartbeat() -> impl IntoResponse {
+    let mut last_heartbeat = HEARTBEAT_TIME.write().unwrap();
+    *last_heartbeat = Utc::now();
+    StatusCode::OK
 }
