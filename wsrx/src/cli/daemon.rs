@@ -92,7 +92,7 @@ async fn heartbeat_watchdog(interval: u64) {
             error!("Heartbeat timeout, last active at {last_heartbeat}, exiting.");
             std::process::exit(0);
         } else {
-            info!("Heartbeat check passed, last active at {last_heartbeat}.");
+            debug!("Heartbeat check passed, last active at {last_heartbeat}.");
         }
     }
 }

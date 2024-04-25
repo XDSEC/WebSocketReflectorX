@@ -134,6 +134,10 @@ Q_INVOKABLE void Daemon::requestDisconnect(const QString& local_address) {
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
             // qDebug() << reply->errorString();
+            auto errors = QString("Failed to disconnect %1 from daemon: %2 %3").arg(local_address, reply->errorString(), reply->readAll());
+            qWarning() << errors;
+            m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR, errors,
+                                  "wsrx::desktop::connector"));
             emit disconnected(false, reply->readAll());
         } else {
             // qDebug() << reply->readAll();
@@ -180,8 +184,10 @@ void Daemon::syncPool() {
     auto reply = m_network->get(request);
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
-            qWarning() << reply->errorString();
-            qWarning() << reply->readAll();
+            auto errors = QString("Failed to sync pool: %1 %2").arg(reply->errorString(), reply->readAll());
+            qWarning() << errors;
+            m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR, errors,
+                                  "wsrx::desktop::connector"));
         } else {
             // qDebug() << reply->readAll();
             m_links->syncLinks(reply->readAll());
