@@ -11,11 +11,23 @@
 #include <QNetworkReply>
 #include <QProcess>
 #include <QSysInfo>
+#include <QTcpServer>
 #include <QTimer>
 
 #include "log.h"
 #include "pool.h"
 #include "variables.h"
+
+quint16 getAvailablePort(quint16 prefered) {
+    auto tcpServer = QTcpServer();
+    auto ok = tcpServer.listen(QHostAddress::Any, prefered);
+    if (!ok) {
+        tcpServer.listen(QHostAddress::Any, 0);
+    }
+    auto result = tcpServer.serverPort();
+    tcpServer.close();
+    return result;
+}
 
 Daemon::Daemon(QObject* parent) : QObject(parent) {
     refreshAvailableAddresses();
@@ -26,7 +38,9 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
     m_logs = new LogList(this);
     m_links = new LinkList(this);
 
-    auto args = QStringList{"daemon", "-l", "true", "-p", "3307", "--heartbeat", "3"};
+    setApiPort(getAvailablePort(apiPort()));
+
+    auto args = QStringList{"daemon", "-l", "true", "-p", QString::asprintf("%d", apiPort()), "--heartbeat", "3"};
     m_daemon = new QProcess(this);
     m_daemon->start(daemon_path, args);
     if (!m_daemon->waitForStarted()) {
@@ -82,6 +96,14 @@ void Daemon::setAvailableAddresses(const QStringList& availableAddresses) {
     emit availableAddressesChanged(availableAddresses);
 }
 
+quint16 Daemon::apiPort() const { return m_apiPort; }
+
+void Daemon::setApiPort(const quint16 apiPort) {
+    if (m_apiPort == apiPort) return;
+    m_apiPort = apiPort;
+    emit apiPortChanged(apiPort);
+}
+
 Q_INVOKABLE void Daemon::refreshAvailableAddresses() {
     auto addresses = QNetworkInterface::allAddresses();
     QStringList availableAddresses;
@@ -104,8 +126,7 @@ Q_INVOKABLE void Daemon::requestConnect(const QString& address, const QString& h
         emit connected(false, tr("Invalid scheme, only `ws` and `wss` are supported."));
         return;
     }
-    auto url = QUrl(m_apiRoot + "pool");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("pool"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     auto json = QJsonObject();
     json["to"] = address;
@@ -125,8 +146,7 @@ Q_INVOKABLE void Daemon::requestConnect(const QString& address, const QString& h
 }
 
 Q_INVOKABLE void Daemon::requestDisconnect(const QString& local_address) {
-    auto url = QUrl(m_apiRoot + "pool");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("pool"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     auto json = QJsonObject();
     json["key"] = local_address;
@@ -134,7 +154,8 @@ Q_INVOKABLE void Daemon::requestDisconnect(const QString& local_address) {
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
             // qDebug() << reply->errorString();
-            auto errors = QString("Failed to disconnect %1 from daemon: %2 %3").arg(local_address, reply->errorString(), reply->readAll());
+            auto errors = QString("Failed to disconnect %1 from daemon: %2 %3")
+                              .arg(local_address, reply->errorString(), reply->readAll());
             qWarning() << errors;
             m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR, errors,
                                   "wsrx::desktop::connector"));
@@ -164,6 +185,10 @@ LogList* Daemon::logs() const { return m_logs; }
 
 LinkList* Daemon::links() const { return m_links; }
 
+QString Daemon::apiRoot() const { return QString::asprintf("http://127.0.0.1:%d/", apiPort()); }
+
+QUrl Daemon::service(const QString& name) const { return QUrl(apiRoot() + name); }
+
 void Daemon::exportLogs(const QUrl& path) const {
     auto file = new QFile(path.toLocalFile());
     if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -179,8 +204,7 @@ void Daemon::exportLogs(const QUrl& path) const {
 }
 
 void Daemon::syncPool() {
-    auto url = QUrl(m_apiRoot + "pool");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("pool"));
     auto reply = m_network->get(request);
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
@@ -197,8 +221,7 @@ void Daemon::syncPool() {
 }
 
 void Daemon::heartbeat() {
-    auto url = QUrl(m_apiRoot + "heartbeat");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("heartbeat"));
     auto reply = m_network->get(request);
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {

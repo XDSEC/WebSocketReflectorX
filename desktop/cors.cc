@@ -46,7 +46,12 @@ bool Website::passed() const { return m_passed; }
 
 void Website::setPassed(bool passed) { m_passed = passed; }
 
-WebsiteList::WebsiteList(QObject* parent) : QAbstractListModel(parent) {
+QString WebsiteList::apiRoot() { return QString::asprintf("http://127.0.0.1:%d/", m_apiPort); }
+
+QUrl WebsiteList::service(const QString& name) { return QUrl(apiRoot() + name); }
+
+WebsiteList::WebsiteList(QObject* parent, quint16 apiPort) : QAbstractListModel(parent) {
+    m_apiPort = apiPort;
     m_network = new QNetworkAccessManager(this);
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(1000);
@@ -93,8 +98,7 @@ QHash<int, QByteArray> WebsiteList::roleNames() const {
 qsizetype WebsiteList::size() const { return m_list.size(); }
 
 void WebsiteList::pass(const QString& domain) {
-    auto url = QUrl(m_apiRoot + "access");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("access"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     auto reply = m_network->post(request, QString("\"%1\"").arg(domain).toUtf8());
     connect(reply, &QNetworkReply::finished, this, [=]() {
@@ -109,8 +113,7 @@ void WebsiteList::pass(const QString& domain) {
 }
 
 void WebsiteList::deny(const QString& domain) {
-    auto url = QUrl(m_apiRoot + "access");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("access"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     auto reply = m_network->sendCustomRequest(request, "DELETE", QString("\"%1\"").arg(domain).toUtf8());
     connect(reply, &QNetworkReply::finished, this, [=]() {
@@ -125,8 +128,7 @@ void WebsiteList::deny(const QString& domain) {
 }
 
 void WebsiteList::syncSites() {
-    auto url = QUrl(m_apiRoot + "access");
-    auto request = QNetworkRequest(url);
+    auto request = QNetworkRequest(service("access"));
     auto reply = m_network->get(request);
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() != QNetworkReply::NoError) {

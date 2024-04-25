@@ -14,7 +14,6 @@ class Website : public QObject {
   private:
     QString m_domain;
     bool m_passed;
-    QString m_apiRoot = "http://127.0.0.1:3307/";
 
   public:
     Website(const QString& domain, bool passed);
@@ -48,13 +47,17 @@ class WebsiteList : public QAbstractListModel {
   private:
     QVector<Website> m_list{};
     QNetworkAccessManager* m_network;
-    QString m_apiRoot = "http://127.0.0.1:3307/";
+    quint16 m_apiPort;
     QTimer* m_refreshTimer;
+
+    QString apiRoot();
+
+    QUrl service(const QString& name);
 
   public:
     enum WebsiteRoles { DomainRole = Qt::UserRole + 1, PassedRole };
 
-    explicit WebsiteList(QObject* parent = nullptr);
+    explicit WebsiteList(QObject* parent = nullptr, quint16 apiPort = 3307);
 
     ~WebsiteList() override;
 
@@ -73,6 +76,6 @@ class WebsiteList : public QAbstractListModel {
 
     void deny(const QString& domain);
 
-    signals:
+  signals:
     void sizeChanged(qsizetype n);
 };

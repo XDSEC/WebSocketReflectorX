@@ -18,10 +18,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+#include "cors.h"
 #include "daemon.h"
 #include "log.h"
 #include "pool.h"
-#include "cors.h"
 
 Ui* Ui::m_instance = nullptr;
 
@@ -69,7 +69,7 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     }
     QApplication::installTranslator(m_translator);
     m_daemon = new Daemon(this);
-    m_websites = new WebsiteList(this);
+    m_websites = new WebsiteList(this, m_daemon->apiPort());
     m_uiEngine->rootContext()->setContextProperty("ui", this);
     m_uiEngine->rootContext()->setContextProperty("daemon", m_daemon);
     m_uiEngine->rootContext()->setContextProperty("logs", m_daemon->logs());
