@@ -8,10 +8,9 @@ Keeps the Primary Instance of your Application and kills each subsequent
 instances. It can (if enabled) spawn secondary (non-related to the primary)
 instances and can send data to the primary instance from secondary instances.
 
-## Documentation
+# [Documentation](https://itay-grudev.github.io/SingleApplication/)
 
-You can find the full usage
-reference [here](https://itay-grudev.github.io/SingleApplication/classSingleApplication.html).
+You can find the full usage reference and examples [here](https://itay-grudev.github.io/SingleApplication/classSingleApplication.html).
 
 ## Usage
 
@@ -61,6 +60,50 @@ add_subdirectory(src/third-party/singleapplication)
 target_link_libraries(${PROJECT_NAME} SingleApplication::SingleApplication)
 ```
 
+Directly including this repository as a Git submodule, or even just a shallow copy of the
+source code into new projects might not be ideal when using CMake.
+Another option is using CMake's `FetchContent` module, available since version `3.11`.
+```cmake
+
+# Define the minumun CMake version, as an example 3.24
+cmake_minimum_required(VERSION 3.24)
+
+# Include the module
+include(FetchContent)
+
+# If using Qt6, override DEFAULT_MAJOR_VERSION
+set(QT_DEFAULT_MAJOR_VERSION 6 CACHE STRING "Qt version to use, defaults to 6")
+
+# Set QAPPLICATION_CLASS
+set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
+
+
+# Declare how is the source going to be obtained
+FetchContent_Declare(
+  SingleApplication
+  GIT_REPOSITORY https://github.com/itay-grudev/SingleApplication
+  GIT_TAG        master
+  #GIT_TAG        e22a6bc235281152b0041ce39d4827b961b66ea6
+)
+
+# Fetch the repository and make it available to the build
+FetchContent_MakeAvailable(SingleApplication)
+
+# Then simply use find_package as usual
+find_package(SingleApplication)
+
+# Finally add it to the target_link_libraries() section
+target_link_libraries(ClientePOS PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Sql
+
+    SingleApplication::SingleApplication
+)
+
+```
+
+
 The library sets up a `QLocalServer` and a `QSharedMemory` block. The first
 instance of your Application is your Primary Instance. It would check if the
 shared memory block exists and if not it will start a `QLocalServer` and listen
@@ -99,6 +142,7 @@ program.
 _Note:_ On Windows the ability to bring the application windows to the
 foreground is restricted. See [Windows specific implementations](Windows.md)
 for a workaround and an example implementation.
+
 
 ## Secondary Instances
 
@@ -143,12 +187,9 @@ will replace the Primary one even if the Secondary flag has been set.*
 
 There are three examples provided in this repository:
 
-* Basic example that prevents a secondary instance from
-  starting [`examples/basic`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/basic)
-* An example of a graphical application raising it's parent
-  window [`examples/calculator`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/calculator)
-* A console application sending the primary instance it's command line
-  parameters [`examples/sending_arguments`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/sending_arguments)
+* Basic example that prevents a secondary instance from starting [`examples/basic`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/basic)
+* An example of a graphical application raising it's parent window [`examples/calculator`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/calculator)
+* A console application sending the primary instance it's command line parameters [`examples/sending_arguments`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/sending_arguments)
 
 ## Versioning
 
@@ -171,6 +212,11 @@ instances running.
 
 ## License
 
-This library and it's supporting documentation are released under
-`The MIT License (MIT)` with the exception of the Qt calculator examples which
-is distributed under the BSD license.
+This library and it's supporting documentation, with the exception of the Qt 
+calculator examples which is distributed under the BSD license, are released
+under the terms of `The MIT License (MIT)` with an extra condition, that:
+
+```txt
+Permission is not granted to use this software or any of the associated files
+as sample data for the purposes of building machine learning models.
+```

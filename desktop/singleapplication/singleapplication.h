@@ -1,6 +1,4 @@
-// The MIT License (MIT)
-//
-// Copyright (c) Itay Grudev 2015 - 2018
+// Copyright (c) Itay Grudev 2015 - 2023
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -8,6 +6,9 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// Permission is not granted to use this software or any of the associated files
+// as sample data for the purposes of building machine learning models.
 //
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
@@ -26,13 +27,11 @@
 #include <QtCore/QtGlobal>
 #include <QtNetwork/QLocalSocket>
 
-
 #ifndef QAPPLICATION_CLASS
-#define QAPPLICATION_CLASS QCoreApplication
+  #define QAPPLICATION_CLASS QCoreApplication
 #endif
 
 #include QT_STRINGIFY(QAPPLICATION_CLASS)
-
 
 class SingleApplicationPrivate;
 
@@ -41,12 +40,13 @@ class SingleApplicationPrivate;
  * Application
  * @see QCoreApplication
  */
-class SingleApplication : public QAPPLICATION_CLASS {
-   Q_OBJECT
+class SingleApplication : public QAPPLICATION_CLASS
+{
+    Q_OBJECT
 
     using app_t = QAPPLICATION_CLASS;
 
-   public:
+public:
     /**
      * @brief Mode of operation of `SingleApplication`.
      * Whether the block should be user-wide or system-wide and whether the
@@ -78,7 +78,6 @@ class SingleApplication : public QAPPLICATION_CLASS {
          */
         ExcludeAppPath = 1 << 4
     };
-
     Q_DECLARE_FLAGS(Options, Mode)
 
     /**
@@ -101,13 +100,7 @@ class SingleApplication : public QAPPLICATION_CLASS {
      * Usually 4*timeout would be the worst case (fail) scenario.
      * @see See the corresponding `QAPPLICATION_CLASS` constructor for reference
      */
-    explicit SingleApplication(int& argc,
-                               char* argv[],
-                               bool allowSecondary = false,
-                               Options options = Mode::User,
-                               int timeout = 1000,
-                               const QString& userData = {});
-
+    explicit SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 1000, const QString &userData = {} );
     ~SingleApplication() override;
 
     /**
@@ -162,7 +155,7 @@ class SingleApplication : public QAPPLICATION_CLASS {
      * @returns `true` on success
      * @note sendMessage() will return false if invoked from the primary instance
      */
-    bool sendMessage(const QByteArray& message, int timeout = 100, SendMode sendMode = NonBlocking);
+    bool sendMessage( const QByteArray &message, int timeout = 100, SendMode sendMode = NonBlocking );
 
     /**
      * @brief Get the set user data.
@@ -170,8 +163,7 @@ class SingleApplication : public QAPPLICATION_CLASS {
      */
     QStringList userData() const;
 
-   Q_SIGNALS:
-
+Q_SIGNALS:
     /**
      * @brief Triggered whenever a new instance had been started,
      * except for secondary instances if the `Mode::SecondaryNotification` flag is not specified
@@ -181,13 +173,11 @@ class SingleApplication : public QAPPLICATION_CLASS {
     /**
      * @brief Triggered whenever there is a message received from a secondary instance
      */
-    void receivedMessage(quint32 instanceId, QByteArray message);
+    void receivedMessage( quint32 instanceId, QByteArray message );
 
-   private:
-    SingleApplicationPrivate* d_ptr;
-
+private:
+    SingleApplicationPrivate *d_ptr;
     Q_DECLARE_PRIVATE(SingleApplication)
-
     void abortSafely();
 };
 
