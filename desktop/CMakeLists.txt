@@ -61,7 +61,7 @@ set_target_properties(
 if (APPLE)
   set_target_properties(
     ${PROJECT_NAME}-desktop PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/Info.plist
   )
 endif()
 
