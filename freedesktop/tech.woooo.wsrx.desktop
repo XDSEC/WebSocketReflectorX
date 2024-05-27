@@ -9,4 +9,4 @@ TryExec=wsrx-desktop
 Icon=tech.woooo.wsrx
 Terminal=false
 Categories=Network;Qt;
-StartupWMClass=wsrx
+StartupWMClass=wsrx-desktop

@@ -58,6 +58,13 @@ set_target_properties(
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
+if (APPLE)
+  set_target_properties(
+    ${PROJECT_NAME}-desktop PROPERTIES
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist
+  )
+endif()
+
 include(FetchContent)
 
 FetchContent_Declare(
