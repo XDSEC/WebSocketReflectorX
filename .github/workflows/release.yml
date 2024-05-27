@@ -104,7 +104,7 @@ jobs:
       - name: Build application
         run: |
              export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-             cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES=x86_64
              cmake --build build/ --config Release --target all
 
       # Deploy application
@@ -164,7 +164,7 @@ jobs:
       - name: Build application
         run: |
              export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-             cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES=arm64
              cmake --build build/ --config Release --target all
 
       # Deploy application
