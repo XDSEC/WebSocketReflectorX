@@ -14,7 +14,7 @@ on:
 env:
   APP_NAME: "WebSocketReflectorX"
   APP_VERSION: "0.2.8"
-  QT_VERSION: "6.6.2"
+  QT_VERSION: "6.7.1"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -34,7 +34,7 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
 
@@ -91,7 +91,7 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
 
@@ -151,7 +151,7 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
 
@@ -213,7 +213,7 @@ jobs:
 
       # Install Qt
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{env.QT_VERSION}}
 
