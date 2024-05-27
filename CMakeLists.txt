@@ -56,6 +56,8 @@ add_definitions(${QT_DEFINITIONS})
 
 qt_standard_project_setup()
 
+set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
+
 add_subdirectory(desktop)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)

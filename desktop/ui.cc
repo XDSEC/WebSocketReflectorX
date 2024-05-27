@@ -112,6 +112,15 @@ void Ui::requestToQuit() {
     QApplication::exit(0);
 }
 
+Q_INVOKABLE void Ui::onSecondaryInstanceMessageReceived(quint32 instanceId, const QByteArray& message) {
+    const QString link = message;
+    m_daemon->requestConnect(link, "127.0.0.1", 0);
+}
+
+Q_INVOKABLE void Ui::onSecondaryInstanceStarted() {
+    m_window->show();
+}
+
 void Ui::show() {
     if (m_uiComponent->isError()) qWarning() << m_uiComponent->errors();
     m_window->show();

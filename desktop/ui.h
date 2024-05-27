@@ -96,6 +96,11 @@ class Ui : public QObject {
 
     Q_INVOKABLE void requestToQuit();
 
+    Q_INVOKABLE void onSecondaryInstanceMessageReceived(
+        quint32 instanceId, const QByteArray& message);
+
+    Q_INVOKABLE void onSecondaryInstanceStarted();
+
   signals:
     void pageChanged(quint8 page);
 

@@ -9,6 +9,8 @@ configure_file("${IN_FILE}" "${OUT_FILE}" @ONLY)
 
 include_directories(${GENERATED_FILE_PATH})
 
+add_subdirectory(singleapplication)
+
 set(
   SOURCES
     # Entrypoint
@@ -40,7 +42,11 @@ else()
   add_executable(${PROJECT_NAME}-desktop ${SOURCES} ${RESOURCES})
 endif()
 
-target_link_libraries(${PROJECT_NAME}-desktop ${QT_LIBRARIES})
+target_link_libraries(
+  ${PROJECT_NAME}-desktop
+  ${QT_LIBRARIES} 
+  SingleApplication::SingleApplication
+)
 
 set_target_properties(
   ${PROJECT_NAME}-desktop PROPERTIES
