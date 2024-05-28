@@ -7,6 +7,8 @@ on:
   push:
     paths-ignore:
       - '**/README.md'
+    branches:
+      - 'master'
   pull_request:
   workflow_dispatch:
 
@@ -16,7 +18,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.9"
+  APP_VERSION: "0.2.10"
   QT_VERSION: "6.7.1"
 
 #-------------------------------------------------------------------------------
