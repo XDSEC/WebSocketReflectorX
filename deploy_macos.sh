@@ -24,7 +24,8 @@ strip build/bin/wsrx
 cp build/bin/wsrx build/bin/wsrx-desktop.app/Contents/MacOS/wsrx
 cp -r build/bin/wsrx-desktop.app $APP_NAME.app
 macdeployqt $APP_NAME.app -qmldir=./desktop/components -qmldir=./desktop/ui -hardened-runtime -timestamp
-find $APP_NAME.app/ -name "*.dSYM"|xargs rm -rf
-hdiutil create $APP_NAME-tmp.dmg -ov -volname "WebSocketReflectorX" -fs HFS+ -srcfolder ./$APP_NAME.app
+find $APP_NAME.app/ -name "*.dSYM" | xargs rm -rf
+sleep 3
+hdiutil create $APP_NAME-tmp.dmg -ov -volname $APP_NAME -fs HFS+ -srcfolder ./$APP_NAME.app
 hdiutil convert $APP_NAME-tmp.dmg -format UDZO -o $APP_NAME.dmg
 mv $APP_NAME.dmg $APP_NAME-$APP_VERSION-macOS-$CPU_ARCH.dmg
