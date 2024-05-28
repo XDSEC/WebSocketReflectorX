@@ -13,7 +13,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.9"
+  APP_VERSION: "0.2.10"
   QT_VERSION: "6.7.1"
 
 #-------------------------------------------------------------------------------
@@ -111,13 +111,6 @@ jobs:
       - name: Deploy application
         run: ./deploy_macos.sh -c -p
 
-      # Upload application ZIP
-      - name: Upload application ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
-
       # Upload application DMG
       - name: Upload application DMG
         uses: actions/upload-artifact@v4
@@ -130,7 +123,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.zip
             ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-x86_64.dmg
 
   ## macOS build ###############################################################
@@ -171,13 +163,6 @@ jobs:
       - name: Deploy application
         run: ./deploy_macos.sh -c -p
 
-      # Upload application ZIP
-      - name: Upload application ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
-
       # Upload application DMG
       - name: Upload application DMG
         uses: actions/upload-artifact@v4
@@ -190,7 +175,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.zip
             ${{env.APP_NAME}}-${{env.APP_VERSION}}-macOS-arm64.dmg
 
   ## Windows build #############################################################
@@ -240,13 +224,6 @@ jobs:
       - name: Deploy application
         run: sh deploy_windows.sh -c -p
 
-      # Upload application ZIP
-      - name: Upload application ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
-          path: ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip
-
       # Upload NSIS installer
       - name: Upload NSIS installer
         uses: actions/upload-artifact@v4
@@ -260,4 +237,3 @@ jobs:
         with:
           files: |
             ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.exe
-            ${{env.APP_NAME}}-${{env.APP_VERSION}}-win64.zip

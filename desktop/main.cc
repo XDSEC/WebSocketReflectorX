@@ -72,8 +72,11 @@ int main(int argc, char* argv[]) {
     parser.addPositionalArgument(QObject::tr("link"), QObject::tr("The websocket link to connect to."));
     parser.process(app);
 
-    QFontDatabase::addApplicationFont(":/resources/fonts/sarasa-mono-sc-regular.ttf");
-    auto defaultFont = QFont("Sarasa Mono SC");
+    QFontDatabase::addApplicationFont(":/resources/fonts/reverier-mono-regular.ttf");
+    auto defaultFont = QFont();
+    auto fontFamilies = QStringList() << "Reverier Mono" << "Noto Sans CJK SC" << "PingFang SC" << "Microsoft YaHei" << "Hiragino Sans GB" << "Source Han Sans CN" << "Noto Sans";
+    defaultFont.setFamilies(fontFamilies);
+    
     QApplication::setFont(defaultFont);
     QString link = parser.positionalArguments().isEmpty() ? "" : parser.positionalArguments().first();
 #ifdef Q_OS_UNIX

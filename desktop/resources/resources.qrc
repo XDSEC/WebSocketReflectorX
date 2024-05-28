@@ -42,6 +42,6 @@
     <file>assets/flash-on.svg</file>
     <file>assets/checkmark-circle.svg</file>
     <file>assets/error-circle.svg</file>
-    <file>fonts/sarasa-mono-sc-regular.ttf</file>
+    <file>fonts/reverier-mono-regular.ttf</file>
   </qresource>
 </RCC>

@@ -26,6 +26,13 @@ set(
     ui/ui.qrc
 )
 
+if (APPLE)
+    # And the following tells CMake where to find and install the file itself.
+    set(APPLE_ICON "${CMAKE_SOURCE_DIR}/macos/WebSocketReflectorX.icns")
+    set_source_files_properties(${APPLE_ICON} PROPERTIES
+           MACOSX_PACKAGE_LOCATION "Resources")
+endif()
+
 qt_add_big_resources(RESOURCES resources/i18n.qrc resources/resources.qrc)
 
 if(WIN32)
@@ -34,10 +41,8 @@ elseif(APPLE)
   set(CMAKE_XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "tech.woooo.wsrx")
   set(CMAKE_XCODE_ATTRIBUTE_MARKETING_VERSION "${FULL_VERSION}")
   # set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "12.7")
-  set(CMAKE_XCODE_ATTRIBUTE_INFOPLIST_FILE "${CMAKE_SOURCE_DIR}/macos/Info.plist")
-  set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/macos/WebSocketReflectorX.entitlements")
-  add_executable(${PROJECT_NAME}-desktop MACOSX_BUNDLE ${SOURCES} ${RESOURCES})
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
+  add_executable(${PROJECT_NAME}-desktop MACOSX_BUNDLE ${SOURCES} ${RESOURCES} ${APPLE_ICON})
 else()
   add_executable(${PROJECT_NAME}-desktop ${SOURCES} ${RESOURCES})
 endif()
@@ -61,8 +66,17 @@ set_target_properties(
 if (APPLE)
   set_target_properties(
     ${PROJECT_NAME}-desktop PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/Info.plist
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/Info.plist.in
   )
+  set(MACOSX_BUNDLE_DISPLAY_NAME "WebSocket Reflector X")
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER "tech.woooo.wsrx")
+  set(MACOSX_BUNDLE_BUNDLE_NAME "wsrx")
+  set(MACOSX_BUNDLE_ICON_FILE WebSocketReflectorX.icns)
+  set(MACOSX_BUNDLE_INFO_STRING "WebSocket Reflector X - Controlled WebSocket-TCP tunnel.")
+  set(MACOSX_BUNDLE_LONG_VERSION_STRING "wsrx ${FULL_VERSION}")
+  set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}")
+  set(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+  set(MACOSX_BUNDLE_COPYRIGHT "2021-2024 XDSEC Developers")
 endif()
 
 include(FetchContent)
