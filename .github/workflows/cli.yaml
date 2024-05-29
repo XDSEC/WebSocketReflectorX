@@ -76,7 +76,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+            wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz
             wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz
 
   ## macOS build ###############################################################
