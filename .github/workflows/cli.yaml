@@ -31,6 +31,10 @@ jobs:
         with:
           submodules: recursive
       
+      # Install musl-gcc
+      - name: Install musl-gcc
+        run: sudo apt-get install musl-tools musl-dev -y
+      
       # Setup Rust
       - uses: actions-rs/toolchain@v1
         with:
