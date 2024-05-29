@@ -74,8 +74,9 @@ int main(int argc, char* argv[]) {
 
     QFontDatabase::addApplicationFont(":/resources/fonts/reverier-mono-regular.ttf");
     auto defaultFont = QFont();
-    auto fontFamilies = QStringList() << "Reverier Mono" << "Noto Sans CJK SC" << "PingFang SC" << "Microsoft YaHei" << "Hiragino Sans GB" << "Source Han Sans CN" << "Noto Sans";
+    auto fontFamilies = QStringList() << "Reverier Mono" << "Source Han Sans CN" << "Noto Sans CJK SC" << "PingFang SC" << "Microsoft YaHei" << "Hiragino Sans GB" << "Noto Sans";
     defaultFont.setFamilies(fontFamilies);
+    defaultFont.setPixelSize(16);
     
     QApplication::setFont(defaultFont);
     QString link = parser.positionalArguments().isEmpty() ? "" : parser.positionalArguments().first();
