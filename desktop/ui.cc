@@ -87,10 +87,10 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     m_networkManager = new QNetworkAccessManager(this);
     setNewVersion("");
     setHasNewVersion(true);
-    // setUpdateUrl("");
-    setUpdateUrl("https://github.com//XDSEC/WebSocketReflectorX/releases/latest");
+    setUpdateUrl("");
+    // setUpdateUrl("https://github.com//XDSEC/WebSocketReflectorX/releases/latest");
     setVersion(VERSION);
-    // checkUpdates();
+    checkUpdates();
 }
 
 Ui::~Ui() = default;
