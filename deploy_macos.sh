@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export APP_NAME="WebSocketReflectorX"
-export APP_VERSION=0.2.10
+export APP_VERSION=0.2.11
 export GIT_VERSION=$(git rev-parse --short HEAD)
 
 echo "> $APP_NAME packager (macOS x86_64) [v$APP_VERSION]"

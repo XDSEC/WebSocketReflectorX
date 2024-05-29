@@ -1,10 +1,15 @@
 #include "ui.h"
+#include "variables.h"
 
 #include <QApplication>
 #include <QLocale>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QNetworkInterface>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -79,6 +84,13 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
     m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));
     m_window = qobject_cast<QQuickWindow*>(m_uiComponent->create());
+    m_networkManager = new QNetworkAccessManager(this);
+    setNewVersion("");
+    setHasNewVersion(true);
+    // setUpdateUrl("");
+    setUpdateUrl("https://github.com//XDSEC/WebSocketReflectorX/releases/latest");
+    setVersion(VERSION);
+    // checkUpdates();
 }
 
 Ui::~Ui() = default;
@@ -169,6 +181,61 @@ void Ui::setIsMac(bool isMac) {
     if (m_isMac == isMac) return;
     m_isMac = isMac;
     emit isMacChanged(isMac);
+}
+
+QString Ui::version() const { return m_version; }
+
+void Ui::setVersion(const QString& version) {
+    if (m_version == version) return;
+    m_version = version;
+    emit versionChanged(version);
+}
+
+bool Ui::hasNewVersion() const { return m_hasNewVersion; }
+
+void Ui::setHasNewVersion(bool hasNewVersion) {
+    if (m_hasNewVersion == hasNewVersion) return;
+    m_hasNewVersion = hasNewVersion;
+    emit hasNewVersionChanged(hasNewVersion);
+}
+
+QString Ui::newVersion() const { return m_newVersion; }
+
+void Ui::setNewVersion(const QString& newVersion) {
+    if (m_newVersion == newVersion) return;
+    m_newVersion = newVersion;
+    emit newVersionChanged(newVersion);
+}
+
+QString Ui::updateUrl() const { return m_updateUrl; }
+
+void Ui::setUpdateUrl(const QString& updateUrl) {
+    if (m_updateUrl == updateUrl) return;
+    m_updateUrl = updateUrl;
+    emit updateUrlChanged(updateUrl);
+}
+
+void Ui::checkUpdates() {
+    auto url = QUrl("https://api.github.com/repos/XDSEC/WebSocketReflectorX/releases/latest");
+    auto request = QNetworkRequest(url);
+    request.setRawHeader("Accept", "application/vnd.github+json");
+    request.setRawHeader("X-GitHub-Api-Version", "2022-11-28");
+    auto reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            qWarning() << reply->errorString();
+            return;
+        }
+        auto data = reply->readAll();
+        auto json = QJsonDocument::fromJson(data).object();
+        auto version = json["tag_name"].toString();
+        auto current = QString(VERSION);
+        if (version > current) {
+            setHasNewVersion(true);
+            setNewVersion(version);
+            setUpdateUrl(json["html_url"].toString());
+        }
+    });
 }
 
 #ifdef Q_OS_UNIX

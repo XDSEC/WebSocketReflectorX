@@ -7,6 +7,7 @@ class QQmlEngine;
 class QQmlComponent;
 class QQuickWindow;
 class QTranslator;
+class QNetworkAccessManager;
 #ifdef Q_OS_UNIX
 class QSocketNotifier;
 #endif
@@ -20,6 +21,10 @@ class Ui : public QObject {
     Q_PROPERTY(bool isDark READ isDark WRITE setIsDark NOTIFY isDarkChanged)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(bool isMac READ isMac WRITE setIsMac NOTIFY isMacChanged)
+    Q_PROPERTY(QString version READ version NOTIFY versionChanged)
+    Q_PROPERTY(bool hasNewVersion READ hasNewVersion NOTIFY hasNewVersionChanged)
+    Q_PROPERTY(QString newVersion READ newVersion NOTIFY newVersionChanged)
+    Q_PROPERTY(QString updateUrl READ updateUrl NOTIFY updateUrlChanged)
   private:
     static Ui* m_instance;
     QQmlEngine* m_uiEngine;
@@ -33,6 +38,12 @@ class Ui : public QObject {
     bool m_isDark = false;
     QString m_language = "zh_CN";
     bool m_isMac = false;
+    QNetworkAccessManager* m_networkManager;
+    QString m_version;
+    QString m_newVersion;
+    QString m_updateUrl;
+    bool m_hasNewVersion = false;
+
 #ifdef Q_OS_UNIX
     static int sighupFd[2];
     static int sigtermFd[2];
@@ -71,6 +82,22 @@ class Ui : public QObject {
 
     void setIsMac(bool isMac);
 
+    [[nodiscard]] QString version() const;
+
+    void setVersion(const QString& version);
+
+    [[nodiscard]] bool hasNewVersion() const;
+
+    void setHasNewVersion(bool hasNewVersion);
+
+    [[nodiscard]] QString newVersion() const;
+
+    void setNewVersion(const QString& newVersion);
+
+    [[nodiscard]] QString updateUrl() const;
+
+    void setUpdateUrl(const QString& updateUrl);
+
 #ifdef Q_OS_UNIX
 
     static void sigtermSigHandler(int);
@@ -101,6 +128,8 @@ class Ui : public QObject {
 
     Q_INVOKABLE void onSecondaryInstanceStarted();
 
+    Q_INVOKABLE void checkUpdates();
+
   signals:
     void pageChanged(quint8 page);
 
@@ -111,4 +140,12 @@ class Ui : public QObject {
     void languageChanged(const QString& language);
 
     void isMacChanged(bool isMac);
+
+    void versionChanged(const QString& version);
+
+    void hasNewVersionChanged(bool hasNewVersion);
+
+    void newVersionChanged(const QString& newVersion);
+
+    void updateUrlChanged(const QString& updateUrl);
 };

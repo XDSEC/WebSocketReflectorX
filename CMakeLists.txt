@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 10)
+set(VERSION_PATCH 11)
 
 execute_process(
   COMMAND git describe --always --dirty
@@ -11,6 +11,7 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(FULL_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.g${GIT_VERSION}")
 message(STATUS "Current build version: ${FULL_VERSION}")
 

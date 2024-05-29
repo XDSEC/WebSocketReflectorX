@@ -13,7 +13,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.10"
+  APP_VERSION: "0.2.11"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -35,27 +35,45 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: x86_64-unknown-linux-musl
 
-      # Build application
-      - name: Build application
+      # Build Glibc application
+      - name: Build Glibc application
         run: cargo build --release --features=binary
 
-      # Deploy application
-      - name: Compress Binaries
-        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz target/release/wsrx
+      # Build musl application
+      - name: Build musl application
+        run: cargo build --release --features=binary --target x86_64-unknown-linux-musl
+
+      # Deploy Glibc application
+      - name: Compress Glibc Binaries
+        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz target/release/wsrx
+
+      # Deploy musl application
+      - name: Compress musl Binaries
+        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz target/x86_64-unknown-linux-musl/release/wsrx
 
       # Upload application ZIP
       - name: Upload application ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
-          path: wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+          name: wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz
+          path: wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz
+
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz
+          path: wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz
 
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+          files: |
+            wsrx-cli-${{env.APP_VERSION}}-linux64.tar.gz
+            wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz
 
   ## macOS build ###############################################################
   build-mac:

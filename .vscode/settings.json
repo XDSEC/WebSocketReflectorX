@@ -3,10 +3,13 @@
   "files.associations": {
     "*.qrc": "xml",
     "qmldir": "plaintext",
+    "*.rx": "rune",
     "qqmlcomponent": "cpp",
     "qnetworkinterface": "cpp",
     "chrono": "cpp",
     "typeindex": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "qnetworkreply": "cpp",
+    "qjsondocument": "cpp"
   }
 }

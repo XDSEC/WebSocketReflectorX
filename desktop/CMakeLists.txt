@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+string(TIMESTAMP BUILD_TIME UTC)
+
 set(IN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/variables.h.in")
 set(GENERATED_FILE_PATH "${CMAKE_BINARY_DIR}/GeneratedFiles")
 set(OUT_FILE "${GENERATED_FILE_PATH}/variables.h")

@@ -18,6 +18,21 @@ Item {
         sourceSize: Qt.size(160, 160)
     }
 
+    Button {
+        id: updatesButton
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 6
+        visible: ui.hasNewVersion
+        display: AbstractButton.TextBesideIcon
+        text: qsTr("Updates Available")
+        icon.source: "qrc:/resources/assets/wand.svg"
+        icon.color: Style.palette.warning
+        onClicked: {
+            Qt.openUrlExternally(ui.updateUrl);
+        }
+    }
+
     Label {
         id: logoTitle
 

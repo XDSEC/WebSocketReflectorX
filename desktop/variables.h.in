@@ -1,3 +1,6 @@
 #pragma once
 
 #define FULL_VERSION "@FULL_VERSION@"
+#define VERSION "@VERSION@"
+
+#define BUILD_TIME "@BUILD_TIME@"
