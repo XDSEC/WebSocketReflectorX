@@ -36,7 +36,7 @@ class Ui : public QObject {
     WebsiteList* m_websites;
     bool m_runningInTray = false;
     bool m_isDark = false;
-    QString m_language = "zh_CN";
+    QString m_language = "en_US";
     bool m_isMac = false;
     QNetworkAccessManager* m_networkManager;
     QString m_version;
