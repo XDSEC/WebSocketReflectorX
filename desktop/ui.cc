@@ -68,10 +68,6 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     loadSettings();
     m_uiEngine = new QQmlEngine(this);
     m_translator = new QTranslator(this);
-    auto locale = QLocale::system();
-    auto language = locale.name();
-    if (language.startsWith("zh")) m_language = "zh_CN";
-    else m_language = "en_US";
     auto ok = m_translator->load(QString(":/resources/i18n/%1.qm").arg(m_language));
     if (!ok) {
         qWarning() << "failed to load translator";
