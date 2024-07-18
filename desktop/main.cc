@@ -84,6 +84,7 @@ int main(int argc, char* argv[]) {
     setup_unix_signal_handlers();
 #endif
     if (app.isSecondary()) {
+        qDebug() << "Secondary instance reported with link: " << link;
         app.sendMessage(link.toUtf8(), 3000);
         return 0;
     }

@@ -21,6 +21,15 @@ FramelessWindow {
 
     SystemTray {
     }
+    
+    KeyTapEvent {
+        id: exitAppEvent
+
+        customKey: "Ctrl+Q"
+        onClicked: {
+            ui.requestToQuit();
+        }
+    }
 
     Rectangle {
         id: centralWidget

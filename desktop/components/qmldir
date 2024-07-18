@@ -23,3 +23,4 @@ SwitchIndicator 1.0 SwitchIndicator.qml
 TextArea 1.0 TextArea.qml
 TextField 1.0 TextField.qml
 ToolTip 1.0 ToolTip.qml
+KeyTapEvent 1.0 KeyTapEvent.qml

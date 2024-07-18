@@ -5,6 +5,7 @@
         <file>ComboBox.qml</file>
         <file>Frame.qml</file>
         <file>ItemDelegate.qml</file>
+        <file>KeyTapEvent.qml</file>
         <file>Label.qml</file>
         <file>Loading.qml</file>
         <file>Menu.qml</file>

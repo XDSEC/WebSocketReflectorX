@@ -61,6 +61,7 @@ WebsiteList::WebsiteList(QObject* parent, quint16 apiPort) : QAbstractListModel(
 }
 
 WebsiteList::~WebsiteList() {
+    
     if (m_network) {
         m_network->deleteLater();
     }
@@ -96,6 +97,23 @@ QHash<int, QByteArray> WebsiteList::roleNames() const {
 }
 
 qsizetype WebsiteList::size() const { return m_list.size(); }
+
+QString WebsiteList::toJson() const {
+    QJsonArray array;
+    for (const auto& site : m_list) {
+        array.append(site.domain());
+    }
+    return QJsonDocument(array).toJson();
+}
+
+void WebsiteList::fromJson(const QString& json) {
+    auto array = QJsonDocument::fromJson(json.toUtf8()).array();
+    for (const auto& site : array) {
+        pass(site.toString());
+        m_list.append(Website(site.toString(), false));
+    }
+    emit sizeChanged(size());
+}
 
 void WebsiteList::pass(const QString& domain) {
     auto request = QNetworkRequest(service("access"));

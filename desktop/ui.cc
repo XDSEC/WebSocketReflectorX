@@ -65,16 +65,16 @@ Ui::Ui(QObject* parent) : QObject(parent) {
 #ifdef Q_OS_MACOS
     setIsMac(true);
 #endif
-    loadSettings();
+    m_daemon = new Daemon(this);
+    m_websites = new WebsiteList(this, m_daemon->apiPort());
     m_uiEngine = new QQmlEngine(this);
     m_translator = new QTranslator(this);
+    loadSettings();
     auto ok = m_translator->load(QString(":/resources/i18n/%1.qm").arg(m_language));
     if (!ok) {
         qWarning() << "failed to load translator";
     }
     QApplication::installTranslator(m_translator);
-    m_daemon = new Daemon(this);
-    m_websites = new WebsiteList(this, m_daemon->apiPort());
     m_uiEngine->rootContext()->setContextProperty("ui", this);
     m_uiEngine->rootContext()->setContextProperty("daemon", m_daemon);
     m_uiEngine->rootContext()->setContextProperty("logs", m_daemon->logs());
@@ -101,6 +101,7 @@ void Ui::loadSettings() {
     settings.beginGroup("ui");
     setRunningInTray(settings.value("runningInTray", false).toBool());
     setIsDark(settings.value("isDark", true).toBool());
+    m_websites->fromJson(settings.value("websites", "[]").toString());
     m_language = settings.value("language", locale.name()).toString();
     settings.endGroup();
 }
@@ -111,6 +112,7 @@ void Ui::saveSettings() {
     settings.setValue("runningInTray", runningInTray());
     settings.setValue("isDark", isDark());
     settings.setValue("language", language());
+    settings.setValue("websites", m_websites->toJson());
     settings.endGroup();
 }
 

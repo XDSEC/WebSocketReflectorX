@@ -69,6 +69,10 @@ class WebsiteList : public QAbstractListModel {
 
     [[nodiscard]] qsizetype size() const;
 
+    [[nodiscard]] QString toJson() const;
+
+    void fromJson(const QString& json);
+
   public slots:
     Q_INVOKABLE void syncSites();
 
