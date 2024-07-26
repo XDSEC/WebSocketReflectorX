@@ -36,14 +36,14 @@ name = "wsrx"
 required-features = ["binary"]
 
 [dependencies]
-tokio = { version = "1.38", features = ["full"] }
+tokio = { version = "1.39", features = ["full"] }
 futures-util = { version = "0.3", features = ["sink"] }
 tokio-util = { version = "0.7", features = ["codec"] }
 thiserror = "1.0"
 
 # optional
 axum = { version = "0.7", features = ["ws", "macros"], optional = true }
-tokio-tungstenite = { version = "0.21", features = [
+tokio-tungstenite = { version = "0.23", features = [
     "rustls-tls-native-roots",
 ], optional = true }
 
