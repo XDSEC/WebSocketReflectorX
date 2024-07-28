@@ -1,4 +1,7 @@
 use clap::{command, Parser};
+use rustls::crypto;
+use std::process;
+use tracing::{error, info, warn};
 
 mod cli;
 
@@ -58,6 +61,22 @@ enum WsrxCli {
 #[tokio::main]
 async fn main() {
     let cli = WsrxCli::parse();
+    match crypto::aws_lc_rs::default_provider().install_default() {
+        Ok(_) => info!("using `AWS Libcrypto` as default crypto backend."),
+        Err(err) => {
+          error!("`AWS Libcrypto` is not available: {:?}", err);
+          warn!("try to use `ring` as default crypto backend.");
+          crypto::ring::default_provider()
+            .install_default()
+            .inspect_err(|err| {
+              error!("`ring` is not available: {:?}", err);
+              error!("All crypto backend are not available, exiting...");
+              process::exit(1);
+            })
+            .ok();
+          info!("using `ring` as default crypto backend.");
+        }
+      }
     match cli {
         WsrxCli::Daemon {
             host,

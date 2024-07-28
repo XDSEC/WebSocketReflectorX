@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.2.19"
+version = "0.2.20"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
@@ -37,6 +37,7 @@ required-features = ["binary"]
 
 [dependencies]
 tokio = { version = "1.39", features = ["full"] }
+rustls = { version = "0.23", features = ["ring"] }
 futures-util = { version = "0.3", features = ["sink"] }
 tokio-util = { version = "0.7", features = ["codec"] }
 thiserror = "1.0"
