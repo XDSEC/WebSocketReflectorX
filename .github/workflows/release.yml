@@ -13,7 +13,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.20"
+  APP_VERSION: "0.2.21"
   QT_VERSION: "6.7.1"
 
 #-------------------------------------------------------------------------------
@@ -195,6 +195,12 @@ jobs:
           arch: x64
           spectre: true
 
+      - name: Install NASM for aws-lc-rs on Windows
+        uses: ilammy/setup-nasm@v1
+  
+      - name: Install ninja-build tool for aws-lc-fips-sys on Windows
+        uses: seanmiddleditch/gha-setup-ninja@v5
+  
       # Install Qt
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
