@@ -10,6 +10,7 @@ mod cli;
 #[command(name = "wsrx")]
 #[command(bin_name = "wsrx")]
 enum WsrxCli {
+    #[clap(alias("d"))]
     /// Launch wsrx daemon.
     Daemon {
         #[clap(long)]
@@ -28,6 +29,7 @@ enum WsrxCli {
         #[clap(long)]
         heartbeat: Option<u64>,
     },
+    #[clap(alias("c"))]
     /// Launch wsrx client.
     Connect {
         /// The address to connect to.
@@ -42,6 +44,7 @@ enum WsrxCli {
         #[clap(short, long)]
         log_json: Option<bool>,
     },
+    #[clap(alias("s"))]
     /// Launch wsrx server.
     Serve {
         #[clap(long)]
