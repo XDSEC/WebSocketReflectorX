@@ -75,6 +75,7 @@ int WebsiteList::rowCount(const QModelIndex& parent) const {
 }
 
 QVariant WebsiteList::data(const QModelIndex& index, int role) const {
+    // qDebug() << "data" << index << role;
     if (!index.isValid()) {
         return QVariant();
     }
@@ -110,7 +111,7 @@ void WebsiteList::fromJson(const QString& json) {
     auto array = QJsonDocument::fromJson(json.toUtf8()).array();
     for (const auto& site : array) {
         pass(site.toString());
-        m_list.append(Website(site.toString(), false));
+        m_list.append(Website(site.toString(), true));
     }
     emit sizeChanged(size());
 }
@@ -160,11 +161,9 @@ void WebsiteList::syncSites() {
             auto waiting = json["pending"].toArray();
             auto fetchedList = QList<Website>();
             for (const auto& site : allowed) {
-                // qDebug() << site.toString();
                 fetchedList.append(Website(site.toString(), true));
             }
             for (const auto& site : waiting) {
-                // qDebug() << site.toString();
                 fetchedList.append(Website(site.toString(), false));
             }
             auto oldList = m_list;
@@ -180,7 +179,7 @@ void WebsiteList::syncSites() {
             // add new one
             for (const auto& site : fetchedList) {
                 if (!oldList.contains(site)) {
-                    beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
+                    beginInsertRows(QModelIndex(), 0, 0);
                     m_list.append(site);
                     endInsertRows();
                 }

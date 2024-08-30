@@ -22,36 +22,95 @@ Window {
     }
 
     MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
         acceptedButtons: Qt.NoButton // don't handle actual events
-        // resize window mouse area
-        anchors.fill: parent
-        enabled: !ui.isMac
-        cursorShape: {
-            if (root.state !== Window.Maximized) {
-                const p = Qt.point(mouseX, mouseY);
-                const b = 10;
-                // Increase the corner size slightly
-                if (p.x < b && p.y < b)
-                    return Qt.SizeFDiagCursor;
+        hoverEnabled: true
+        cursorShape: Qt.SizeFDiagCursor
+        anchors.left: parent.left
+        anchors.top: parent.top
+        width: 10
+        height: 10
+    }
 
-                if (p.x >= width - b && p.y >= height - b)
-                    return Qt.SizeFDiagCursor;
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeFDiagCursor
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        width: 10
+        height: 10
+    }
 
-                if (p.x >= width - b && p.y < b)
-                    return Qt.SizeBDiagCursor;
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeBDiagCursor
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        width: 10
+        height: 10
+    }
 
-                if (p.x < b && p.y >= height - b)
-                    return Qt.SizeBDiagCursor;
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeBDiagCursor
+        anchors.right: parent.right
+        anchors.top: parent.top
+        width: 10
+        height: 10
+    }
 
-                if (p.x < b || p.x >= width - b)
-                    return Qt.SizeHorCursor;
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeHorCursor
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        width: 10
+        height: parent.height - 20
+    }
 
-                if (p.y < b || p.y >= height - b)
-                    return Qt.SizeVerCursor;
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeHorCursor
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        width: 10
+        height: parent.height - 20
+    }
 
-            }
-        }
-        hoverEnabled: !ui.isMac
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeVerCursor
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        width: parent.width - 20
+        height: 10
+    }
+
+    MouseArea {
+        enabled: root.state === Window.Normal && !ui.isMac
+        acceptedButtons: Qt.NoButton // don't handle actual events
+        hoverEnabled: true
+        cursorShape: Qt.SizeVerCursor
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        width: parent.width - 20
+        height: 10
     }
 
     DragHandler {

@@ -96,6 +96,8 @@ Item {
             color: Style.palette.buttonText
             icon.source: "qrc:/resources/assets/shield.svg"
             icon.color: passed ? Style.palette.success : Style.palette.warning
+            icon.height: 16
+            icon.width: 16
 
             HoverHandler {
                 id: hoverHandler
