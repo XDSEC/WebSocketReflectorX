@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 23)
+set(VERSION_PATCH 24)
 
 execute_process(
   COMMAND git describe --always --dirty
@@ -40,10 +40,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (UNIX OR LINUX)
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall --std=c++17 -O3 -fPIC" )
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -Wall -fPIC" )
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall --std=c++17 -O3 -fPIC" )
+  set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -Wall -fPIC" )
 elseif(WIN32)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
