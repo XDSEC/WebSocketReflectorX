@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.2.24"
+version = "0.2.25"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
@@ -44,13 +44,13 @@ thiserror = "1.0"
 
 # optional
 axum = { version = "0.7", features = ["ws", "macros"], optional = true }
-tokio-tungstenite = { version = "0.23", features = [
+tokio-tungstenite = { version = "0.24", features = [
     "rustls-tls-native-roots",
 ], optional = true }
 
 # binary cli only
 clap = { version = "4.5", features = ["derive"], optional = true }
-once_cell = { version = "1.19", optional = true }
+once_cell = { version = "1.20", optional = true }
 tracing = { version = "0.1", optional = true }
 tracing-subscriber = { version = "0.3", features = [
     "env-filter",

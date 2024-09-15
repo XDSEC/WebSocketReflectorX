@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 24)
+set(VERSION_PATCH 25)
 
 execute_process(
   COMMAND git describe --always --dirty
