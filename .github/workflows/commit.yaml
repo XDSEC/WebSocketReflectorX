@@ -18,7 +18,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.27"
+  APP_VERSION: "0.2.28"
   QT_VERSION: "6.7.1"
 
 #-------------------------------------------------------------------------------
