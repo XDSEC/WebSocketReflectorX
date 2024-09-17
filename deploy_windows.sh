@@ -29,5 +29,6 @@ echo '---- Compressing package'
 
 echo '---- Creating installer'
 mv $APP_NAME windows/$APP_NAME
+cp windows/$APP_NAME.ico windows/$APP_NAME/$APP_NAME.ico
 makensis windows/setup.nsi
 mv windows/*.exe $APP_NAME-$APP_VERSION-win64.exe
