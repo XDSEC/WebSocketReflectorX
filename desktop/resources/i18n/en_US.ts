@@ -12,12 +12,17 @@
 <context>
     <name>Daemon</name>
     <message>
-        <location filename="../../daemon.cc" line="86"/>
+        <location filename="../../daemon.cc" line="50"/>
+        <source>Failed to start daemon: </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../daemon.cc" line="123"/>
         <source>Invalid URL format.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../daemon.cc" line="89"/>
+        <location filename="../../daemon.cc" line="126"/>
         <source>Invalid scheme, only `ws` and `wss` are supported.</source>
         <translation></translation>
     </message>
@@ -25,42 +30,47 @@
 <context>
     <name>GetStartedView</name>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="105"/>
+        <location filename="../../ui/GetStartedView.qml" line="28"/>
+        <source>Updates Available</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../ui/GetStartedView.qml" line="120"/>
         <source>Refresh available in-bound addresses and ports</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="122"/>
+        <location filename="../../ui/GetStartedView.qml" line="137"/>
         <source>Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="129"/>
+        <location filename="../../ui/GetStartedView.qml" line="144"/>
         <source>Use 0 to get random available port.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="175"/>
+        <location filename="../../ui/GetStartedView.qml" line="190"/>
         <source>Configure In-bound Address</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="192"/>
+        <location filename="../../ui/GetStartedView.qml" line="207"/>
         <source>Select All</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="198"/>
+        <location filename="../../ui/GetStartedView.qml" line="213"/>
         <source>Cut</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="204"/>
+        <location filename="../../ui/GetStartedView.qml" line="219"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../ui/GetStartedView.qml" line="210"/>
+        <location filename="../../ui/GetStartedView.qml" line="225"/>
         <source>Paste</source>
         <translation></translation>
     </message>
@@ -70,6 +80,19 @@
     <message>
         <location filename="../../ui/LogsView.qml" line="12"/>
         <source>No logs</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../../main.cc" line="72"/>
+        <source>link</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../main.cc" line="72"/>
+        <source>The websocket link to connect to.</source>
         <translation></translation>
     </message>
 </context>
@@ -113,7 +136,7 @@
     </message>
     <message>
         <location filename="../../ui/SettingsView.qml" line="236"/>
-        <source>(c) 2022 - 2024 XDSEC, distributed with &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX/blob/main/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX&quot;&gt;here&lt;/a&gt;.</source>
+        <source>(c) 2022 - 2024 XDSEC, distributed with &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX/blob/master/LICENSE&quot;&gt;MIT&lt;/a&gt; license. Source code available at &lt;a href=&quot;https://github.com/XDSEC/WebSocketReflectorX&quot;&gt;here&lt;/a&gt;.</source>
         <translation></translation>
     </message>
     <message>
