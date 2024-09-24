@@ -59,7 +59,7 @@ tracing-subscriber = { version = "0.3", features = [
 url = { version = "2.5", optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0", optional = true }
-tower-http = { version = "0.5", features = ["trace", "cors"], optional = true }
+tower-http = { version = "0.6", features = ["trace", "cors"], optional = true }
 subprocess = { version = "0.2", optional = true }
 chrono = { version = "0.4", optional = true }
 
