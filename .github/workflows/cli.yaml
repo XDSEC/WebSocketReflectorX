@@ -13,7 +13,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.28"
+  APP_VERSION: "0.2.29"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -51,11 +51,11 @@ jobs:
 
       # Deploy Glibc application
       - name: Compress Glibc Binaries
-        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz target/release/wsrx
+        run: tar --transform='s!.*/!!' -czvf wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz target/release/wsrx
 
       # Deploy musl application
       - name: Compress musl Binaries
-        run: tar --transform='s!.*/!!' -cvf wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz target/x86_64-unknown-linux-musl/release/wsrx
+        run: tar --transform='s!.*/!!' -czvf wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz target/x86_64-unknown-linux-musl/release/wsrx
 
       # Upload application ZIP
       - name: Upload application ZIP
