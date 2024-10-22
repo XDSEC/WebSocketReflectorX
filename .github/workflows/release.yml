@@ -13,8 +13,8 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.2.29"
-  QT_VERSION: "6.7.1"
+  APP_VERSION: "0.2.30"
+  QT_VERSION: "6.7.2"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
