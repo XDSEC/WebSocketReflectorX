@@ -6,7 +6,7 @@ Controlled TCP-over-WebSocket forwarding tunnel.
 
 ## Notes
 
-WebSocket Reflector X 0.2.0 has completely rewritten the GUI in Qt/C++, it's daemon and the [crate](https://crates.io/crates/wsrx) are still written in pure safe Rust.
+WebSocket Reflector X 0.2+ has completely rewritten the GUI in Qt/C++, it's daemon and the [crate](https://crates.io/crates/wsrx) are still written in pure safe Rust.
 
 The daemon (cli) could be used standalone.
 
