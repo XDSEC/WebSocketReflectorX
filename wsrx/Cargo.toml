@@ -40,7 +40,7 @@ tokio = { version = "1.41", features = ["full"] }
 rustls = { version = "0.23", features = ["ring"] }
 futures-util = { version = "0.3", features = ["sink"] }
 tokio-util = { version = "0.7", features = ["codec"] }
-thiserror = "1.0"
+thiserror = "2.0"
 
 # optional
 axum = { version = "0.7", features = ["ws", "macros"], optional = true }
