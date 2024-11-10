@@ -226,9 +226,17 @@ void Daemon::syncPool() {
 }
 
 void Daemon::heartbeat() {
-    if (m_daemon->state() != QProcess::Running) {
+    if (m_daemon->state() != QProcess::Running && m_faillock++ < 5) {
         qWarning() << "Daemon is not running, try restart it.";
+        m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::WARNING,
+                              tr("Daemon is not running, try restart it."), "wsrx::desktop::connector"));
         launch();
+        return;
+    } else if (m_faillock >= 5) {
+        qWarning() << "Daemon is not running, failed to restart it.";
+        m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR,
+                              tr("Daemon is not running and retries > 5, failed to restart it."),
+                              "wsrx::desktop::connector"));
         return;
     }
     auto request = QNetworkRequest(service("heartbeat"));

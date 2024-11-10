@@ -26,6 +26,7 @@ class Daemon : public QObject {
     QNetworkAccessManager* m_network;
     QTimer* m_refreshTimer;
     QTimer* m_heartbeatTimer;
+    int m_faillock = 0;
 
     void syncPool();
 
