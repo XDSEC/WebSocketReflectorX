@@ -109,7 +109,7 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_macos.sh -c -p
+        run: ./deploy_macos.sh -c -p --x86_64
 
       # Upload application DMG
       - name: Upload application DMG
@@ -161,7 +161,7 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_macos.sh -c -p
+        run: ./deploy_macos.sh -c -p --arm64
 
       # Upload application DMG
       - name: Upload application DMG

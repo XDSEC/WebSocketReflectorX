@@ -108,7 +108,7 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_macos.sh -c -p
+        run: ./deploy_macos.sh -c -p --x86_64
       # Upload application DMG
       - name: Upload application DMG
         uses: actions/upload-artifact@v4
@@ -152,7 +152,7 @@ jobs:
 
       # Deploy application
       - name: Deploy application
-        run: ./deploy_macos.sh -c -p
+        run: ./deploy_macos.sh -c -p --arm64
       # Upload application DMG
       - name: Upload application DMG
         uses: actions/upload-artifact@v4
