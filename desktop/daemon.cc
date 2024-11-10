@@ -226,6 +226,7 @@ void Daemon::syncPool() {
 }
 
 void Daemon::heartbeat() {
+    if (m_daemon->state() == QProcess::Starting) return;
     if (m_daemon->state() != QProcess::Running && m_faillock++ < 5) {
         qWarning() << "Daemon is not running, try restart it.";
         m_logs->appendLog(Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::WARNING,
