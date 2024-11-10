@@ -30,27 +30,14 @@ quint16 getAvailablePort(quint16 prefered) {
 }
 
 Daemon::Daemon(QObject* parent) : QObject(parent) {
-    refreshAvailableAddresses();
-    auto daemon_path = QCoreApplication::applicationDirPath() + "/wsrx";
-#ifdef Q_OS_WIN
-    daemon_path += ".exe";
-#endif
+
     m_logs = new LogList(this);
     m_links = new LinkList(this);
 
-    setApiPort(getAvailablePort(apiPort()));
-
-    auto args = QStringList{"daemon", "-l", "true", "-p", QString::asprintf("%d", apiPort()), "--heartbeat", "3"};
-    m_daemon = new QProcess(this);
-    m_daemon->start(daemon_path, args);
-    if (!m_daemon->waitForStarted()) {
-        qWarning() << "Daemon is not started correctly.";
-        m_logs->appendLog(
-            Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR,
-                tr("Failed to start daemon: ") + m_daemon->errorString() + " " + m_daemon->readAllStandardError(),
-                "wsrx::desktop::connector"));
-    }
     m_links->setLogs(m_logs);
+
+    m_daemon = new QProcess(this);
+
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setInterval(30 * 1000);
     m_refreshTimer->start();
@@ -73,6 +60,24 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
         if (success) syncPool();
     });
     m_network = new QNetworkAccessManager(this);
+}
+
+void Daemon::launch() {
+    auto daemon_path = QCoreApplication::applicationDirPath() + "/wsrx";
+#ifdef Q_OS_WIN
+    daemon_path += ".exe";
+#endif
+    setApiPort(getAvailablePort(apiPort()));
+    auto args = QStringList{"daemon", "-l", "true", "-p", QString::asprintf("%d", apiPort()), "--heartbeat", "3"};
+    m_daemon->start(daemon_path, args);
+    if (!m_daemon->waitForStarted()) {
+        qWarning() << "Daemon is not started correctly.";
+        m_logs->appendLog(
+            Log(QDateTime::currentDateTime().toString(Qt::ISODate), EventLevel::ERROR,
+                tr("Failed to start daemon: ") + m_daemon->errorString() + " " + m_daemon->readAllStandardError(),
+                "wsrx::desktop::connector"));
+    }
+    refreshAvailableAddresses();
 }
 
 Daemon::~Daemon() {
@@ -221,6 +226,11 @@ void Daemon::syncPool() {
 }
 
 void Daemon::heartbeat() {
+    if (m_daemon->state() != QProcess::Running) {
+        qWarning() << "Daemon is not running, try restart it.";
+        launch();
+        return;
+    }
     auto request = QNetworkRequest(service("heartbeat"));
     auto reply = m_network->get(request);
     connect(reply, &QNetworkReply::finished, this, [=]() {

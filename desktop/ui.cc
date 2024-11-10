@@ -2,14 +2,14 @@
 #include "variables.h"
 
 #include <QApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocale>
 #include <QMutex>
 #include <QMutexLocker>
-#include <QNetworkInterface>
 #include <QNetworkAccessManager>
+#include <QNetworkInterface>
 #include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -27,6 +27,8 @@
 #include "daemon.h"
 #include "log.h"
 #include "pool.h"
+
+using namespace Qt::StringLiterals;
 
 Ui* Ui::m_instance = nullptr;
 
@@ -82,7 +84,7 @@ Ui::Ui(QObject* parent) : QObject(parent) {
     m_uiEngine->rootContext()->setContextProperty("websites", m_websites);
     m_uiEngine->retranslate();
     m_uiComponent = new QQmlComponent(m_uiEngine, this);
-    m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_qs));
+    m_uiComponent->loadUrl(QUrl(u"qrc:/ui/Main.qml"_s));
     m_window = qobject_cast<QQuickWindow*>(m_uiComponent->create());
     m_networkManager = new QNetworkAccessManager(this);
     setNewVersion("");
@@ -131,13 +133,12 @@ Q_INVOKABLE void Ui::onSecondaryInstanceMessageReceived(quint32 instanceId, cons
     m_daemon->requestConnect(link, "127.0.0.1", 0);
 }
 
-Q_INVOKABLE void Ui::onSecondaryInstanceStarted() {
-    m_window->show();
-}
+Q_INVOKABLE void Ui::onSecondaryInstanceStarted() { m_window->show(); }
 
 void Ui::show() {
     if (m_uiComponent->isError()) qWarning() << m_uiComponent->errors();
     m_window->show();
+    m_daemon->launch();
 }
 
 bool Ui::runningInTray() const { return m_runningInTray; }

@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 
 #include "log.h"
+using namespace Qt::StringLiterals;
 
 Link::Link(const QString& from, const QString& to, LinkStatus status, quint32 latency)
     : m_from(from), m_to(to), m_status(status), m_latency(latency) {}
@@ -202,7 +203,7 @@ void LinkList::refreshStatus() {
             if (reply->error() != QNetworkReply::NoError) {
                 if (m_logs) {
                     m_logs->appendLog(Log(QDateTime::currentDateTimeUtc().toString(Qt::ISODate), EventLevel::ERROR,
-                                          reply->errorString(), u"wsrx::desktop::pool"_qs));
+                                          reply->errorString(), u"wsrx::desktop::pool"_s));
                 }
                 setData(index(i), LinkStatus::DEAD, StatusRole);
             } else {

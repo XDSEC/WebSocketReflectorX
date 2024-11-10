@@ -56,6 +56,8 @@ class Daemon : public QObject {
 
     QUrl service(const QString& name) const;
 
+    void launch();
+
   public slots:
     Q_INVOKABLE void exportLogs(const QUrl& path) const;
 
