@@ -127,6 +127,26 @@ Item {
 
             model: daemon.availableAddresses
             width: 360
+
+            popup.y: {
+                // Get the absolute coordinates of the combo box in the window
+                var absoluteY = addressCombo.mapToGlobal(0, 0).y;
+                // Get window height
+                var windowHeight = Window.window ? Window.window.height : Screen.height;
+                // Calculate the available space below
+                var spaceBelow = windowHeight - (absoluteY + height);
+                // Calculate the available space above
+                var spaceAbove = absoluteY;
+                // Default height of popup
+                var popupHeight = popup.height;
+
+                // If there is not enough space below and enough space above, pop it up
+                if (spaceBelow < popupHeight && spaceAbove >= popupHeight) {
+                    return -popupHeight;
+                }
+                // By default, it will pop up downwards
+                return height;
+            }
         }
 
         TextField {
