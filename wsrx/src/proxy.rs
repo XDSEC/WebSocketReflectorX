@@ -210,8 +210,7 @@ impl Sink<Message> for WrappedWsStream {
 pub async fn proxy_stream<S, T>(s1: S, s2: T) -> Result<(), Error>
 where
     S: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-{
+    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin, {
     let (s1sink, s1stream) = s1.split();
     let (s2sink, s2stream) = s2.split();
     let f1 = s1stream.forward(s2sink);

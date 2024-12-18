@@ -1,14 +1,14 @@
+use std::process;
+
 use clap::{command, Parser};
 use rustls::crypto;
-use std::process;
 use tracing::{error, info, warn};
 
 mod cli;
 
 /// wsrx is a controlled WS-TCP tunnel for Ret2Shell platform.
 #[derive(Parser)]
-#[command(name = "wsrx")]
-#[command(bin_name = "wsrx")]
+#[command(name = "wsrx", bin_name = "wsrx", version, about)]
 enum WsrxCli {
     #[clap(alias("d"))]
     /// Launch wsrx daemon.
@@ -25,7 +25,8 @@ enum WsrxCli {
         #[clap(short, long)]
         log_json: Option<bool>,
         /// The heartbeat interval in seconds.
-        /// If not set, the daemon will not automatically exit when heartbeat timeout.
+        /// If not set, the daemon will not automatically exit when heartbeat
+        /// timeout.
         #[clap(long)]
         heartbeat: Option<u64>,
     },
@@ -67,19 +68,19 @@ async fn main() {
     match crypto::aws_lc_rs::default_provider().install_default() {
         Ok(_) => info!("using `AWS Libcrypto` as default crypto backend."),
         Err(err) => {
-          error!("`AWS Libcrypto` is not available: {:?}", err);
-          warn!("try to use `ring` as default crypto backend.");
-          crypto::ring::default_provider()
-            .install_default()
-            .inspect_err(|err| {
-              error!("`ring` is not available: {:?}", err);
-              error!("All crypto backend are not available, exiting...");
-              process::exit(1);
-            })
-            .ok();
-          info!("using `ring` as default crypto backend.");
+            error!("`AWS Libcrypto` is not available: {:?}", err);
+            warn!("try to use `ring` as default crypto backend.");
+            crypto::ring::default_provider()
+                .install_default()
+                .inspect_err(|err| {
+                    error!("`ring` is not available: {:?}", err);
+                    error!("All crypto backend are not available, exiting...");
+                    process::exit(1);
+                })
+                .ok();
+            info!("using `ring` as default crypto backend.");
         }
-      }
+    }
     match cli {
         WsrxCli::Daemon {
             host,

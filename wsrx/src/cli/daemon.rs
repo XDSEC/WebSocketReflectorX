@@ -88,7 +88,11 @@ async fn heartbeat_watchdog(interval: u64) {
             continue;
         }
         let last_heartbeat = last_heartbeat.unwrap();
-        if Utc::now().signed_duration_since(*last_heartbeat).num_seconds() > interval as i64 {
+        if Utc::now()
+            .signed_duration_since(*last_heartbeat)
+            .num_seconds()
+            > interval as i64
+        {
             error!("Heartbeat timeout, last active at {last_heartbeat}, exiting.");
             std::process::exit(0);
         } else {
