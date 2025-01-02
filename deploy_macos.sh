@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export APP_NAME="WebSocketReflectorX"
-export APP_VERSION=0.3.0
+export APP_VERSION=0.3.1
 export GIT_VERSION=$(git rev-parse --short HEAD)
 
 arch=x86_64

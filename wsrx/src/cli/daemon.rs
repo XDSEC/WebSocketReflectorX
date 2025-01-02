@@ -125,8 +125,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
         .allow_headers(Any)
         .allow_origin(Any);
     axum::Router::new()
-        .nest(
-            "/",
+        .merge(
             axum::Router::new()
                 .route(
                     "/pool",
@@ -142,8 +141,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
                 .layer(cors_layer)
                 .with_state(state.clone()),
         )
-        .nest(
-            "/",
+        .merge(
             axum::Router::new()
                 .route("/connect", get(get_cors_status).post(add_pending_origin))
                 .layer(any_origin_layer)

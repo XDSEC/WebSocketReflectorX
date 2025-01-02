@@ -13,7 +13,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.3.0"
+  APP_VERSION: "0.3.1"
 
 #-------------------------------------------------------------------------------
 # Workflow jobs
@@ -78,43 +78,6 @@ jobs:
           files: |
             wsrx-cli-${{env.APP_VERSION}}-linux64-gnu.tar.gz
             wsrx-cli-${{env.APP_VERSION}}-linux64-musl.tar.gz
-
-  ## macOS build ###############################################################
-  build-mac:
-    name: "macOS CI build"
-    runs-on: macos-12
-    steps:
-      # Checkout repository (and submodules)
-      - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      
-      # Setup Rust
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
-      # Build application
-      - name: Build application
-        run: cargo build --release --features=binary
-
-      # Deploy application
-      - name: Compress Binaries
-        run: zip -r -y -X wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.zip target/release/wsrx
-
-      # Upload application ZIP
-      - name: Upload application ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.zip
-          path: wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.zip
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: wsrx-cli-${{env.APP_VERSION}}-macOS-x86_64.zip
 
   ## macOS build ###############################################################
   build-mac-arm:
