@@ -1,6 +1,6 @@
 [package]
 name = "wsrx"
-version = "0.2.32"
+version = "0.3.0"
 edition = "2021"
 authors = ["Reverier-Xu <reverier.xu@xdsec.club>"]
 description = "Controlled TCP-over-WebSocket forwarding tunnel."
@@ -43,8 +43,8 @@ tokio-util = { version = "0.7", features = ["codec"] }
 thiserror = "2.0"
 
 # optional
-axum = { version = "0.7", features = ["ws", "macros"], optional = true }
-tokio-tungstenite = { version = "0.24", features = [
+axum = { version = "0.8", features = ["ws", "macros"], optional = true }
+tokio-tungstenite = { version = "0.26", features = [
     "rustls-tls-native-roots",
 ], optional = true }
 

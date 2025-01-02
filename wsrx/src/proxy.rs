@@ -48,8 +48,8 @@ impl From<TgMessage> for Message {
     /// Converts a `TgMessage` to a `Message`.
     fn from(msg: TgMessage) -> Self {
         match msg {
-            TgMessage::Binary(data) => Message::Binary(data),
-            TgMessage::Text(data) => Message::Binary(data.into_bytes()),
+            TgMessage::Binary(data) => Message::Binary(data.into()),
+            TgMessage::Text(data) => Message::Binary(data.as_bytes().to_vec()),
             _ => Message::Others,
         }
     }
@@ -60,8 +60,8 @@ impl From<AxMessage> for Message {
     /// Converts a `AxMessage` to a `Message`.
     fn from(msg: AxMessage) -> Self {
         match msg {
-            AxMessage::Binary(data) => Message::Binary(data),
-            AxMessage::Text(data) => Message::Binary(data.into_bytes()),
+            AxMessage::Binary(data) => Message::Binary(data.into()),
+            AxMessage::Text(data) => Message::Binary(data.as_bytes().to_vec()),
             _ => Message::Others,
         }
     }
@@ -158,14 +158,14 @@ impl Sink<Message> for WrappedWsStream {
             #[cfg(feature = "client")]
             WsStream::Tungstenite(stream) => match _item {
                 Message::Binary(data) => Pin::new(stream)
-                    .start_send(TgMessage::Binary(data))
+                    .start_send(TgMessage::Binary(data.into()))
                     .map_err(|e| e.into()),
                 Message::Others => Ok(()),
             },
             #[cfg(feature = "server")]
             WsStream::AxumWebsocket(stream) => match _item {
                 Message::Binary(data) => Pin::new(stream)
-                    .start_send(AxMessage::Binary(data))
+                    .start_send(AxMessage::Binary(data.into()))
                     .map_err(|e| e.into()),
                 Message::Others => Ok(()),
             },
@@ -210,7 +210,8 @@ impl Sink<Message> for WrappedWsStream {
 pub async fn proxy_stream<S, T>(s1: S, s2: T) -> Result<(), Error>
 where
     S: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin, {
+    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
+{
     let (s1sink, s1stream) = s1.split();
     let (s2sink, s2stream) = s2.split();
     let f1 = s1stream.forward(s2sink);

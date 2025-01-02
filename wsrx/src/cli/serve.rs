@@ -144,24 +144,20 @@ async fn close_tunnel(
 
 async fn process_traffic(
     State(connections): State<Arc<RwLock<HashMap<String, String>>>>, Path(key): Path<String>,
-    ws: Option<WebSocketUpgrade>,
+    ws: WebSocketUpgrade,
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
     let pool = connections.read().await;
     if let Some(conn) = pool.get(&key) {
         let tcp_addr = conn.clone();
-        if let Some(ws) = ws {
-            Ok(ws.on_upgrade(move |socket| async move {
-                let tcp = TcpStream::connect(&tcp_addr).await;
-                if tcp.is_err() {
-                    error!("failed to connect to tcp server: {}", tcp.unwrap_err());
-                    return;
-                }
-                let tcp = tcp.unwrap();
-                proxy(socket.into(), tcp).await.ok();
-            }))
-        } else {
-            Err((StatusCode::NO_CONTENT, ""))
-        }
+        Ok(ws.on_upgrade(move |socket| async move {
+            let tcp = TcpStream::connect(&tcp_addr).await;
+            if tcp.is_err() {
+                error!("failed to connect to tcp server: {}", tcp.unwrap_err());
+                return;
+            }
+            let tcp = tcp.unwrap();
+            proxy(socket.into(), tcp).await.ok();
+        }))
     } else {
         Err((StatusCode::NOT_FOUND, "not found"))
     }

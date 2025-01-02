@@ -377,7 +377,7 @@ async fn get_cors_status(headers: HeaderMap) -> impl IntoResponse {
         .read()
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     let origin = headers.get("origin").map(|o| o.to_str().unwrap_or(""));
-    let resp = match origin {
+    match origin {
         Some(origin) => {
             if allowed_origins.contains(&origin.to_string()) {
                 Ok(StatusCode::ACCEPTED)
@@ -388,8 +388,7 @@ async fn get_cors_status(headers: HeaderMap) -> impl IntoResponse {
             }
         }
         None => Ok(StatusCode::ACCEPTED),
-    };
-    resp
+    }
 }
 
 async fn add_pending_origin(
