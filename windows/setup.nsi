@@ -10,8 +10,8 @@ Unicode True
 !define COMPANYNAME                  "XDSEC"
 !define DESCRIPTION                  "Controlled TCP-over-WebSocket forwarding tunnel."
 !define VERSIONMAJOR                 0
-!define VERSIONMINOR                 2
-!define VERSIONBUILD                 32
+!define VERSIONMINOR                 3
+!define VERSIONBUILD                 2
 !define INSTALL_DIR_DEFAULT          "$PROGRAMFILES64\${APPNAME}"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN
