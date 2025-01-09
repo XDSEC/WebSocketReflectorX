@@ -36,7 +36,7 @@ name = "wsrx"
 required-features = ["binary"]
 
 [dependencies]
-tokio = { version = "1.42", features = ["full"] }
+tokio = { version = "1.43", features = ["full"] }
 rustls = { version = "0.23", features = ["ring"] }
 futures-util = { version = "0.3", features = ["sink"] }
 tokio-util = { version = "0.7", features = ["codec"] }
