@@ -25,7 +25,7 @@ set(
     ui.cc ui.h
     # Resources
     components/components.qrc
-    ui/ui.qrc
+    ui/ui.qrc resources/icon.rc
 )
 
 if (APPLE)
