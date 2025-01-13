@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationDisplayName("WebSocket Reflector X");
     QApplication::setOrganizationDomain("tech.woooo.wsrx");
     QApplication::setOrganizationName("Ret2Shell");
-    QApplication::setWindowIcon(QIcon(":/resources/assets/logo-bg.svg"));
+    QApplication::setWindowIcon(QIcon(":/resources/assets/logo-bg.ico"));
     QApplication::setApplicationVersion(FULL_VERSION);
 
     QCommandLineParser parser;
