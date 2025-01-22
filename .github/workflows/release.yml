@@ -1,3 +1,4 @@
+---
 #-------------------------------------------------------------------------------
 # Workflow configuration
 #-------------------------------------------------------------------------------
@@ -13,7 +14,7 @@ on:
 
 env:
   APP_NAME: "WebSocketReflectorX"
-  APP_VERSION: "0.3.2"
+  APP_VERSION: "0.3.3"
   QT_VERSION: "6.8.1"
 
 #-------------------------------------------------------------------------------
@@ -41,25 +42,25 @@ jobs:
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
         run: |
-             sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev fuse libfuse-dev libwayland-dev -y;
-             sudo apt-get install cmake ninja-build pkgconf libtool -y;
-             sudo apt-get install appstream -y;
+          sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev fuse libfuse-dev libwayland-dev -y;
+          sudo apt-get install cmake ninja-build pkgconf libtool -y;
+          sudo apt-get install appstream -y;
 
       # Setup env
       - name: Setup env
         run: |
-             cmake --version
+          cmake --version
 
       # Build application
       - name: Build application
         run: |
-             cmake -B build/ -G Ninja -DCMAKE_BUILD_TYPE=Release -G Ninja
-             cmake --build build/ --config Release
+          cmake -B build/ -G Ninja -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build build/ --config Release
 
       # Deploy application
       - name: Deploy application
         run: ./deploy_linux.sh -c -i -p
-      
+
       # Upload AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
@@ -98,14 +99,14 @@ jobs:
       # Setup env
       - name: Setup env
         run: |
-             cmake --version
+          cmake --version
 
       # Build application
       - name: Build application
         run: |
-             export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES=x86_64
-             cmake --build build/ --config Release --target all
+          export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
+          cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES=x86_64
+          cmake --build build/ --config Release --target all
 
       # Deploy application
       - name: Deploy application
@@ -150,14 +151,14 @@ jobs:
       # Setup env
       - name: Setup env
         run: |
-             cmake --version
+          cmake --version
 
       # Build application
       - name: Build application
         run: |
-             export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
-             cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES=arm64
-             cmake --build build/ --config Release --target all
+          export CMAKE_BUILD_PARALLEL_LEVEL=`sysctl -n hw.logicalcpu`
+          cmake -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES=arm64
+          cmake --build build/ --config Release --target all
 
       # Deploy application
       - name: Deploy application
@@ -197,10 +198,10 @@ jobs:
 
       - name: Install NASM for aws-lc-rs on Windows
         uses: ilammy/setup-nasm@v1
-  
+
       - name: Install ninja-build tool for aws-lc-fips-sys on Windows
         uses: seanmiddleditch/gha-setup-ninja@v5
-  
+
       # Install Qt
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -217,14 +218,14 @@ jobs:
       # Setup env
       - name: Setup env
         run: |
-             cmake --version
+          cmake --version
 
       # Build application
       - name: Build application
         run: |
-             mkdir build && cd build/
-             cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
-             nmake
+          mkdir build && cd build/
+          cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
+          nmake
 
       # Deploy application
       - name: Deploy application
