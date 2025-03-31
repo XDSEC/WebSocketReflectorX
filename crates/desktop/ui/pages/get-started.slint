@@ -1,0 +1,106 @@
+import { Styles } from "../widgets/styles.slint";
+import { LineEdit } from "../widgets/line-edit.slint";
+import { Button } from "../widgets/button.slint";
+export component GetStartedPage inherits Rectangle {
+    background: transparent;
+
+    VerticalLayout {
+        alignment: LayoutAlignment.center;
+        spacing: Styles.sizes.s-xl;
+
+        HorizontalLayout {
+            alignment: LayoutAlignment.center;
+            spacing: Styles.sizes.s-md;
+            Image {
+                source: @image-url("../assets/logo-stroked.svg");
+                width: 64px;
+                height: 64px;
+            }
+
+            title := VerticalLayout {
+                alignment: LayoutAlignment.center;
+                spacing: Styles.sizes.s-md;
+                padding: Styles.sizes.p-md;
+
+                property <string> cursor: "_";
+
+                Timer {
+                    interval: 0.5s;
+                    running: true;
+                    triggered() => {
+                        if (title.cursor == "_") {
+                            title.cursor = " ";
+                        } else {
+                            title.cursor = "_";
+                        }
+                    }
+                }
+
+                Text {
+                    text: "WebSocket Reflector X";
+                    font-size: Styles.sizes.font * 1.5;
+                    font-weight: 700;
+                    color: Styles.palette.window-fg;
+                }
+
+                Text {
+                    text: "Controlled TCP-over-WebSocket forwarding tunnel" + title.cursor;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: Styles.palette.window-fg;
+                    opacity: 0.6;
+                }
+            }
+        }
+
+        Rectangle {
+            height: Styles.sizes.h-md * 2;
+        }
+
+        HorizontalLayout {
+            alignment: LayoutAlignment.center;
+
+            VerticalLayout {
+                spacing: Styles.sizes.s-lg;
+                width: 480px;
+
+                HorizontalLayout {
+                    spacing: Styles.sizes.s-lg;
+
+                    Button {
+                        icon: @image-url("../assets/arrow-sync.svg");
+                    }
+
+                    LineEdit {
+                        horizontal-stretch: 1;
+                        placeholder-text: @tr("Local server host address...");
+                        text: "127.0.0.1";
+                    }
+
+                    LineEdit {
+                        width: 80px;
+                        placeholder-text: @tr("Port...");
+                        text: "0";
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Styles.sizes.s-lg;
+
+                    LineEdit {
+                        horizontal-stretch: 1;
+                        placeholder-text: "[ws|wss]://address...";
+                    }
+
+                    Button {
+                        icon: @image-url("../assets/send.svg");
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            height: Styles.sizes.h-md;
+        }
+    }
+}

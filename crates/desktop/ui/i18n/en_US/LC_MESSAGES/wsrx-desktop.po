@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2025-03-31 16:31+0000\n"
+"PO-Revision-Date: 2025-04-01 00:31+0800\n"
+"Last-Translator: Reverier Xu <reverier.xu@woooo.tech>\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: blocks/side-bar.slint:47
+msgctxt "SideBar"
+msgid "Get Started"
+msgstr "Get Started"
+
+#: blocks/side-bar.slint:60
+msgctxt "SideBar"
+msgid "Network logs"
+msgstr "Network logs"
+
+#: blocks/side-bar.slint:73
+msgctxt "SideBar"
+msgid "Managed Websites"
+msgstr "Managed Websites"
+
+#: blocks/side-bar.slint:105
+msgctxt "SideBar"
+msgid "Default Scope"
+msgstr "Default Scope"
+
+#: blocks/side-bar.slint:173
+msgctxt "SideBar"
+msgid "Settings"
+msgstr "Settings"
+
+#: pages/get-started.slint:76
+msgctxt "GetStartedPage"
+msgid "Local server host address..."
+msgstr "Local server host address..."
+
+#: pages/get-started.slint:82
+msgctxt "GetStartedPage"
+msgid "Port..."
+msgstr "Port..."

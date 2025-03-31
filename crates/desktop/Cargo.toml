@@ -1,0 +1,22 @@
+[package]
+authors.workspace      = true
+description            = "Controlled TCP-over-WebSocket forwarding tunnel."
+documentation          = "https://docs.rs/wsrx"
+edition.workspace      = true
+homepage.workspace     = true
+license.workspace      = true
+name                   = "wsrx-desktop"
+readme                 = "../../README.md"
+repository.workspace   = true
+rust-version.workspace = true
+version.workspace      = true
+
+[dependencies]
+wsrx = { path = "../wsrx" }
+
+i-slint-backend-winit = { workspace = true }
+slint                 = { workspace = true }
+winit                 = { workspace = true }
+
+[build-dependencies]
+slint-build = "1.9"

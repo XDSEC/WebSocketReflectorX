@@ -1,0 +1,33 @@
+import { Styles } from "../widgets/styles.slint";
+import { SettingsPage } from "../pages/settings.slint";
+import { NetworkLogsPage } from "../pages/network-logs.slint";
+import { GetStartedPage } from "../pages/get-started.slint";
+import { ConnectionsPage } from "../pages/connections.slint";
+import { UiState } from "globals.slint";
+
+export component Stack inherits Rectangle {
+    horizontal-stretch: 1;
+    vertical-stretch: 1;
+    background: transparent;
+
+    if (UiState.page == "home"):
+        GetStartedPage {
+        width: 100%;
+        height: 100%;
+    }
+    if (UiState.page == "settings"):
+        SettingsPage {
+        width: 100%;
+        height: 100%;
+    }
+    if (UiState.page == "logs"):
+        NetworkLogsPage {
+        width: 100%;
+        height: 100%;
+    }
+    if (UiState.page != "home" && UiState.page != "settings" && UiState.page != "logs"):
+        ConnectionsPage {
+        width: 100%;
+        height: 100%;
+    }
+}

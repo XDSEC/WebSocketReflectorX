@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="40"
+   height="40"
+   viewBox="0 0 40 40"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <g fill="#e86f03">
+    <path
+       transform="rotate(-45)"
+       d="M -28.284271,2.1990365e-7 H 28.284271 V 7.071068 h -56.568542 z" />
+    <path
+       transform="rotate(-45)"
+       d="m -28.284271,14.142136 h 56.568542 v 7.071067 h -56.568542 z" />
+    <path
+       transform="rotate(-45)"
+       d="m -28.284271,28.284271 h 56.568542 v 7.071068 h -56.568542 z" />
+    <path
+       transform="rotate(-45)"
+       d="m -28.284271,42.426407 h 56.568542 v 7.071068 h -56.568542 z" />
+    <path
+       fill-opacity="0.5"
+       transform="rotate(-45)"
+       d="M -28.284271,7.0710683 H 28.284271 V 14.142136 H -28.284271 Z" />
+    <path
+       fill-opacity="0.5"
+       transform="rotate(-45)"
+       d="m -28.284271,21.213203 h 56.568542 v 7.071068 h -56.568542 z" />
+    <path
+       fill-opacity="0.5"
+       transform="rotate(-45)"
+       d="m -28.284271,35.355343 h 56.568542 v 7.071068 h -56.568542 z" />
+    <path
+       fill-opacity="0.5"
+       transform="rotate(-45)"
+       d="m -28.284271,49.497475 h 56.568542 v 7.071067 h -56.568542 z" />
+  </g>
+</svg>

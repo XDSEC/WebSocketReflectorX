@@ -1,3 +1,56 @@
 [workspace]
-members = ["wsrx"]
+members  = ["crates/*"]
 resolver = "2"
+
+[workspace.package]
+authors      = ["Reverier-Xu <reverier.xu@xdsec.club>"]
+edition      = "2024"
+homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
+license      = "MIT"
+repository   = "https://github.com/XDSEC/WebSocketReflectorX"
+rust-version = "1.85.0"
+version      = "0.4.0"
+
+[profile.release]
+codegen-units = 1
+lto           = "thin"
+opt-level     = 3
+panic         = "abort"
+strip         = true
+
+[workspace.dependencies]
+futures-util = { version = "0.3", features = ["sink"] }
+rustls       = { version = "0.23", features = ["ring"] }
+thiserror    = "2.0"
+tokio        = { version = "1.43", features = ["full"] }
+tokio-util   = { version = "0.7", features = ["codec"] }
+
+axum = { version = "0.8", features = ["ws", "macros"] }
+# optional
+tokio-tungstenite = { version = "0.26", features = ["rustls-tls-native-roots"] }
+
+# binary cli only
+chrono             = { version = "0.4" }
+clap               = { version = "4.5", features = ["derive"] }
+once_cell          = { version = "1.20" }
+serde              = { version = "1.0", features = ["derive"] }
+serde_json         = { version = "1.0" }
+subprocess         = { version = "0.2" }
+tower-http         = { version = "0.6", features = ["trace", "cors"] }
+tracing            = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+url                = { version = "2.5" }
+
+# GUI
+i-slint-backend-winit = "1.10"
+slint = { version = "1.10", default-features = false, features = [
+  "std",
+  "compat-1-2",
+  "gettext",
+  "serde",
+  "accessibility",
+  "backend-winit",
+  "renderer-skia",
+  "renderer-software",
+] }
+winit = "0.30"

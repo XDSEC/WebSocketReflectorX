@@ -1,0 +1,21 @@
+import { Button } from "../widgets/button.slint";
+import { Styles } from "../widgets/styles.slint";
+
+export component ButtonIndicator inherits Button {
+    in property <bool> active: false;
+
+    Rectangle {
+        background: Styles.palette.primary-bg;
+        border-radius: 2px;
+        width: 4px;
+        height: root.active ? parent.height / 2 : 0;
+        animate height {
+            duration: Styles.durations.short;
+            easing: ease-out;
+        }
+        x: 0;
+        y: (parent.height - self.height) / 2;
+    }
+
+    font-weight: active ? 700 : 400;
+}

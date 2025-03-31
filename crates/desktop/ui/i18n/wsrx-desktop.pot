@@ -1,0 +1,49 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2025-03-31 16:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: blocks/side-bar.slint:47
+msgctxt "SideBar"
+msgid "Get Started"
+msgstr ""
+
+#: blocks/side-bar.slint:60
+msgctxt "SideBar"
+msgid "Network logs"
+msgstr ""
+
+#: blocks/side-bar.slint:73
+msgctxt "SideBar"
+msgid "Managed Websites"
+msgstr ""
+
+#: blocks/side-bar.slint:105
+msgctxt "SideBar"
+msgid "Default Scope"
+msgstr ""
+
+#: blocks/side-bar.slint:173
+msgctxt "SideBar"
+msgid "Settings"
+msgstr ""
+
+#: pages/get-started.slint:76
+msgctxt "GetStartedPage"
+msgid "Local server host address..."
+msgstr ""
+
+#: pages/get-started.slint:82
+msgctxt "GetStartedPage"
+msgid "Port..."
+msgstr ""
+

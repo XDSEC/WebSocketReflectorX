@@ -1,0 +1,14 @@
+include = [
+  "Cargo.toml",
+  "crates/**/*.toml",
+  "config/config.sample.toml",
+  ".cargo/config.toml",
+  "taplo.toml",
+]
+
+[formatting]
+align_comments        = true
+align_entries         = true
+align_single_comments = true
+crlf                  = false
+reorder_keys          = true

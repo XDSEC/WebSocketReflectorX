@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2025-03-31 16:31+0000\n"
+"PO-Revision-Date: 2025-04-01 00:31+0800\n"
+"Last-Translator: Reverier Xu <reverier.xu@woooo.tech>\n"
+"Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: blocks/side-bar.slint:47
+msgctxt "SideBar"
+msgid "Get Started"
+msgstr "由此开始"
+
+#: blocks/side-bar.slint:60
+msgctxt "SideBar"
+msgid "Network logs"
+msgstr "网络日志"
+
+#: blocks/side-bar.slint:73
+msgctxt "SideBar"
+msgid "Managed Websites"
+msgstr "授权网站"
+
+#: blocks/side-bar.slint:105
+msgctxt "SideBar"
+msgid "Default Scope"
+msgstr "默认连接池"
+
+#: blocks/side-bar.slint:173
+msgctxt "SideBar"
+msgid "Settings"
+msgstr "软件设置"
+
+#: pages/get-started.slint:76
+msgctxt "GetStartedPage"
+msgid "Local server host address..."
+msgstr "本地服务器地址..."
+
+#: pages/get-started.slint:82
+msgctxt "GetStartedPage"
+msgid "Port..."
+msgstr "端口..."

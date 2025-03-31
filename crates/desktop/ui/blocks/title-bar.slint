@@ -1,0 +1,99 @@
+
+import { Styles } from "../widgets/styles.slint";
+import { Button } from "../widgets/button.slint";
+import { WindowControlBridge } from "bridges.slint";
+import { UiState } from "globals.slint";
+
+export component TitleBar inherits Rectangle {
+    in property <bool> maximized;
+    in property <bool> minimized;
+
+    out property <bool> minimize-hovered;
+    out property <bool> maximize-hovered;
+    out property <bool> close-hovered;
+
+    private property <bool> may-drag-move: false;
+
+    background: transparent;
+    height: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
+    TouchArea {
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                // debug("drag pressed down");
+                root.may-drag-move = true;
+            }
+            if (event.kind == PointerEventKind.move && root.may-drag-move) {
+                // debug("drag move");
+                WindowControlBridge.start_drag();
+                root.may-drag-move = false;
+            }
+        }
+
+        double-clicked => {
+            WindowControlBridge.maximize();
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Styles.sizes.s-md;
+        padding: Styles.sizes.p-md;
+
+        Button {
+            flat: true;
+            icon: @image-url("../assets/navigation.svg");
+            clicked => {
+                UiState.show-sidebar = !UiState.show-sidebar;
+            }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+            background: transparent;
+        }
+
+        Button {
+            flat: true;
+            icon: Styles.is-dark-mode ? @image-url("../assets/weather-moon.svg") : @image-url("../assets/weather-sunny.svg");
+            clicked => {
+                Styles.is-dark-mode = !Styles.is-dark-mode;
+            }
+        }
+
+        Button {
+            flat: true;
+            icon: @image-url("../assets/subtract.svg");
+            clicked => {
+                WindowControlBridge.minimize();
+            }
+
+            changed hover => {
+                root.minimize-hovered = self.hover;
+            }
+        }
+
+        Button {
+            flat: true;
+            icon: root.maximized ? @image-url("../assets/square-multiple.svg") : @image-url("../assets/maximize.svg");
+            clicked => {
+                WindowControlBridge.maximize();
+            }
+
+            changed hover => {
+                root.maximize-hovered = self.hover;
+            }
+        }
+
+        Button {
+            flat: true;
+            icon: @image-url("../assets/dismiss.svg");
+            // background: self.hover ? Styles.palette.error-bg.transparentize(0.5) : transparent;
+            clicked => {
+                WindowControlBridge.close();
+            }
+
+            changed hover => {
+                root.close-hovered = self.hover;
+            }
+        }
+    }
+}

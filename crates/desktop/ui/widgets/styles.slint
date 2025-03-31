@@ -1,0 +1,156 @@
+export struct Palette {
+    window-fg: color,
+    window-bg: color,
+    window-alter-fg: color,
+    window-alter-bg: color,
+    primary-fg: color,
+    primary-bg: color,
+    window-border: color,
+    popup-border: color,
+    element-border: color,
+    info-fg: color,
+    info-bg: color,
+    warn-fg: color,
+    warn-bg: color,
+    error-fg: color,
+    error-bg: color,
+    debug-fg: color,
+    debug-bg: color,
+    success-fg: color,
+    success-bg: color,
+    layer-1: color,
+    layer-2: color,
+    layer-3: color,
+    layer-4: color,
+    layer-5: color,
+}
+
+export struct Sizes {
+    p-xs: length,
+    p-sm: length,
+    p-md: length,
+    p-lg: length,
+    p-xl: length,
+
+    s-xs: length,
+    s-sm: length,
+    s-md: length,
+    s-lg: length,
+    s-xl: length,
+
+    r-xs: length,
+    r-sm: length,
+    r-md: length,
+    r-lg: length,
+    r-xl: length,
+
+    line: length,
+    font: length,
+    icon: length,
+
+    h-xs: length,
+    h-sm: length,
+    h-md: length,
+    h-lg: length,
+    h-xl: length,
+}
+
+export struct Durations {
+    short: duration,
+    mid: duration,
+    long: duration,
+}
+
+export global Styles {
+    property <Palette> dark-palette: {
+        window-fg: #cdd6f4,
+        window-bg: #151515,
+        window-alter-fg: #cdd6f4,
+        window-alter-bg: #1e1e1e,
+        primary-fg: #cdd6f4,
+        primary-bg: #0078D6,
+        window-border: #323232,
+        popup-border: #2d2d2d,
+        element-border: #2d2d2d,
+        info-fg: #cdd6f4,
+        info-bg: #0078D6,
+        warn-fg: #cdd6f4,
+        warn-bg: #e85d03,
+        error-fg: #cdd6f4,
+        error-bg: #ef303f,
+        debug-fg: #cdd6f4,
+        debug-bg: #808080,
+        success-fg: #cdd6f4,
+        success-bg: #03a44e,
+        layer-1: #ffffff10,
+        layer-2: #ffffff18,
+        layer-3: #ffffff20,
+        layer-4: #ffffff28,
+        layer-5: #ffffff30,
+    };
+
+    property <Palette> light-palette: {
+        window-fg: #151515,
+        window-bg: #f0f0f0,
+        window-alter-fg: #151515,
+        window-alter-bg: #e5e5e5,
+        primary-fg: #151515,
+        primary-bg: #0078D6,
+        window-border: #d9d9d9,
+        popup-border: #d9d9d9,
+        element-border: #d9d9d9,
+        info-fg: #151515,
+        info-bg: #0078D6,
+        warn-fg: #151515,
+        warn-bg: #e85d03,
+        error-fg: #151515,
+        error-bg: #ef303f,
+        debug-fg: #151515,
+        debug-bg: #808080,
+        success-fg: #151515,
+        success-bg: #03a44e,
+        layer-1: #00000010,
+        layer-2: #00000018,
+        layer-3: #00000020,
+        layer-4: #00000028,
+        layer-5: #00000030,
+    };
+
+    in-out property <bool> is-dark-mode: true;
+
+    out property <Palette> palette: root.is-dark-mode ? root.dark-palette : root.light-palette;
+
+    out property <string> font-family: "Reverier Mono";
+
+    out property <Sizes> sizes: {
+        p-xs: 1px,
+        p-sm: 2px,
+        p-md: 4px,
+        p-lg: 8px,
+        p-xl: 12px,
+        s-xs: 1px,
+        s-sm: 2px,
+        s-md: 4px,
+        s-lg: 8px,
+        s-xl: 12px,
+        r-xs: 2px,
+        r-sm: 4px,
+        r-md: 6px,
+        r-lg: 8px,
+        r-xl: 10px,
+        line: 1px,
+        font: 16px,
+        icon: 16px,
+        h-xs: 16px,
+        h-sm: 24px,
+        h-md: 32px,
+        h-lg: 36px,
+        h-xl: 40px,
+    };
+
+    out property <Durations> durations: {
+        short: 120ms,
+        mid: 240ms,
+        long: 480ms,
+    };
+}

@@ -1,0 +1,187 @@
+import { Styles } from "../widgets/styles.slint";
+import { Button } from "../widgets/button.slint";
+import { WindowControlBridge } from "bridges.slint";
+import { ButtonIndicator } from "button-indicator.slint";
+import { UiState } from "globals.slint";
+
+
+export component SideBar inherits Rectangle {
+
+    background: Styles.palette.layer-1;
+    clip: true;
+
+    animate width {
+        duration: Styles.durations.long;
+        easing: ease-out-expo;
+    }
+    VerticalLayout {
+        spacing: 0;
+        padding: 0;
+
+        HorizontalLayout {
+            spacing: Styles.sizes.s-md;
+            padding: Styles.sizes.p-md;
+
+            Button {
+                text: "WebSocket Reflector X";
+                icon: @image-url("../assets/logo-stroked.svg");
+                colored: true;
+                flat: true;
+                border-radius: 0;
+                font-weight: 700;
+                alignment: LayoutAlignment.start;
+                background: transparent;
+            }
+        }
+
+        VerticalLayout {
+            spacing: Styles.sizes.s-md;
+            padding: Styles.sizes.p-md;
+            horizontal-stretch: 1;
+
+            Rectangle {
+                height: Styles.sizes.s-md;
+            }
+
+            ButtonIndicator {
+                text: @tr("Get Started");
+                icon: @image-url("../assets/home.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "home";
+
+                clicked => {
+                    UiState.page = "home";
+                }
+            }
+
+            ButtonIndicator {
+                text: @tr("Network logs");
+                icon: @image-url("../assets/code.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "logs";
+
+                clicked => {
+                    UiState.page = "logs";
+                }
+            }
+
+            Button {
+                text: @tr("Managed Websites");
+                icon: @image-url("../assets/shield-lock.svg");
+                colored: false;
+                flat: true;
+                background: transparent;
+                alignment: LayoutAlignment.start;
+
+                Button {
+                    icon: @image-url("../assets/arrow-sync.svg");
+                    colored: false;
+                    flat: true;
+                    x: parent.width - self.width - Styles.sizes.s-md;
+                    y: (parent.height - self.height) / 2;
+                    height: Styles.sizes.h-md;
+                    width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
+                }
+            }
+
+            HorizontalLayout {
+                alignment: LayoutAlignment.center;
+
+                Rectangle {
+                    height: 1px;
+                    background: Styles.palette.layer-3;
+                    width: parent.width - 2 * Styles.sizes.p-xl;
+                }
+            }
+
+            Rectangle {
+                height: Styles.sizes.s-md;
+            }
+
+            ButtonIndicator {
+                text: @tr("Default Scope");
+                icon: @image-url("../assets/archive.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "default-scope";
+
+                clicked => {
+                    UiState.page = "default-scope";
+                }
+            }
+
+            ButtonIndicator {
+                text: "西电 CTF 终端";
+                icon: @image-url("../assets/earth.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "ctf.xidian.edu.cn";
+                icon-color: Styles.palette.success-bg;
+
+                clicked => {
+                    UiState.page = "ctf.xidian.edu.cn";
+                }
+
+                Button {
+                    icon: @image-url("../assets/delete.svg");
+                    colored: false;
+                    flat: true;
+                    x: parent.width - self.width - Styles.sizes.s-md;
+                    y: (parent.height - self.height) / 2;
+                    height: Styles.sizes.h-md;
+                    width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
+                    visible: parent.active;
+                }
+            }
+
+            ButtonIndicator {
+                text: "TGCTF 2025";
+                icon: @image-url("../assets/earth.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "tgctf.woooo.tech";
+                icon-color: Styles.palette.warn-bg;
+
+                clicked => {
+                    UiState.page = "tgctf.woooo.tech";
+                }
+
+                Button {
+                    icon: @image-url("../assets/delete.svg");
+                    colored: false;
+                    flat: true;
+                    x: parent.width - self.width - Styles.sizes.s-md;
+                    y: (parent.height - self.height) / 2;
+                    height: Styles.sizes.h-md;
+                    width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
+                    visible: parent.active;
+                }
+            }
+
+            Rectangle {
+                background: transparent;
+                vertical-stretch: 1;
+            }
+
+            ButtonIndicator {
+                text: @tr("Settings");
+                icon: @image-url("../assets/settings.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "settings";
+
+                clicked => {
+                    UiState.page = "settings";
+                }
+            }
+        }
+    }
+}
