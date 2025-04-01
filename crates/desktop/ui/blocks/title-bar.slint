@@ -8,10 +8,6 @@ export component TitleBar inherits Rectangle {
     in property <bool> maximized;
     in property <bool> minimized;
 
-    out property <bool> minimize-hovered;
-    out property <bool> maximize-hovered;
-    out property <bool> close-hovered;
-
     private property <bool> may-drag-move: false;
 
     background: transparent;
@@ -65,10 +61,6 @@ export component TitleBar inherits Rectangle {
             clicked => {
                 WindowControlBridge.minimize();
             }
-
-            changed hover => {
-                root.minimize-hovered = self.hover;
-            }
         }
 
         if SystemInfoBridge.os != "macos": Button {
@@ -77,22 +69,15 @@ export component TitleBar inherits Rectangle {
             clicked => {
                 WindowControlBridge.maximize();
             }
-
-            changed hover => {
-                root.maximize-hovered = self.hover;
-            }
         }
 
         if SystemInfoBridge.os != "macos": Button {
             flat: true;
             icon: @image-url("../assets/dismiss.svg");
+            icon-color: self.hover ? Styles.palette.error-bg : Styles.palette.window-fg;
             // background: self.hover ? Styles.palette.error-bg.transparentize(0.5) : transparent;
             clicked => {
                 WindowControlBridge.close();
-            }
-
-            changed hover => {
-                root.close-hovered = self.hover;
             }
         }
     }

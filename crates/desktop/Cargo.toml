@@ -19,9 +19,13 @@ slint                 = { workspace = true }
 winit                 = { workspace = true }
 
 local-ip-address   = { workspace = true }
+sysinfo            = { workspace = true }
 tokio              = { workspace = true }
 tracing            = { workspace = true }
 tracing-subscriber = { workspace = true }
 
 [build-dependencies]
-slint-build = "1.9"
+build-target  = { workspace = true }
+git-version   = { workspace = true }
+rustc_version = { workspace = true }
+slint-build   = { workspace = true }

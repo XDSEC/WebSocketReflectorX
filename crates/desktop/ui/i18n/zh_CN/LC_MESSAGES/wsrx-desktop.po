@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-01 22:15+0000\n"
+"POT-Creation-Date: 2025-04-01 23:21+0000\n"
 "PO-Revision-Date: 2025-04-01 00:31+0800\n"
 "Last-Translator: Reverier Xu <reverier.xu@woooo.tech>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -46,39 +46,64 @@ msgctxt "GetStartedPage"
 msgid "Port..."
 msgstr "端口..."
 
-#: crates/desktop/ui/pages/settings.slint:62
+#: crates/desktop/ui/pages/settings.slint:65
 msgctxt "SettingsPage"
 msgid "Running in system tray when closed"
 msgstr "关闭窗口后继续在系统托盘中运行"
 
-#: crates/desktop/ui/pages/settings.slint:88
+#: crates/desktop/ui/pages/settings.slint:75
+msgctxt "SettingsPage"
+msgid "Enabled"
+msgstr "开启"
+
+#: crates/desktop/ui/pages/settings.slint:75
+msgctxt "SettingsPage"
+msgid "Disabled"
+msgstr "关闭"
+
+#: crates/desktop/ui/pages/settings.slint:92
 #, fuzzy
 msgctxt "SettingsPage"
 msgid "Export network logs"
 msgstr "网络日志"
 
-#: crates/desktop/ui/pages/settings.slint:97
+#: crates/desktop/ui/pages/settings.slint:101
 msgctxt "SettingsPage"
 msgid "Export"
 msgstr "导出"
 
-#: crates/desktop/ui/pages/settings.slint:111
+#: crates/desktop/ui/pages/settings.slint:115
 msgctxt "SettingsPage"
 msgid "System information for bug reporting and debugging"
 msgstr "系统调试信息"
 
-#: crates/desktop/ui/pages/settings.slint:119
+#: crates/desktop/ui/pages/settings.slint:125
+#: crates/desktop/ui/pages/settings.slint:133
+msgctxt "SettingsPage"
+msgid "Copy"
+msgstr "复制"
+
+#: crates/desktop/ui/pages/settings.slint:143
+msgctxt "SettingsPage"
+msgid "Copied"
+msgstr "已复制"
+
+#: crates/desktop/ui/pages/settings.slint:151
 msgctxt "SettingsPage"
 msgid ""
 "Please include the following information when reporting bugs or asking for "
 "help."
-msgstr ""
-"请在反馈Bug或者提问时，附上这里的系统信息，以便于我们复现与解决。"
+msgstr "请在反馈Bug或者提问时，附上这里的系统信息，以便于我们复现与解决。"
 
-#: crates/desktop/ui/pages/settings.slint:133
+#: crates/desktop/ui/pages/settings.slint:187
+msgctxt "SettingsPage"
+msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
+msgstr "由 Reverier-Xu 开发，千行代码仅需 100mg 咖啡因与一只叫狗子的猫，唯有热爱可抵万难。"
+
+#: crates/desktop/ui/pages/settings.slint:187
 msgctxt "SettingsPage"
 msgid "(c) 2022 - 2025 XDSEC, distributed with MIT license."
-msgstr "(c) 2022 - 2025 XDSEC，遵循MIT协议发布。"
+msgstr "(c) 2022 - 2025 XDSEC，遵循 MIT 协议发布。"
 
 #~ msgctxt "GetStartedPage"
 #~ msgid "Local server host address..."

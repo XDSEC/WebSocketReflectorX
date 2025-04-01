@@ -1,7 +1,11 @@
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 use std::rc::Rc;
+use sysinfo::System;
 
-use crate::ui::{MainWindow, SystemInfoBridge};
+use crate::{
+    WSRX_FULL_VERSION,
+    ui::{MainWindow, SystemInfoBridge},
+};
 use local_ip_address::list_afinet_netifas;
 
 pub fn setup(window: &MainWindow) {
@@ -12,6 +16,17 @@ pub fn setup(window: &MainWindow) {
     bridge.set_os("windows".into());
     #[cfg(target_os = "macos")]
     bridge.set_os("macos".into());
+
+    bridge.set_info(
+        format!(
+            "System    : {}\nCPU       : {}\nKernel    : {}\nWSRX      : {}",
+            System::name().unwrap_or_else(|| "Unknown".into()),
+            System::cpu_arch(),
+            System::kernel_long_version(),
+            WSRX_FULL_VERSION,
+        )
+        .into(),
+    );
 
     let network_interfaces_model: Rc<VecModel<SharedString>> =
         Rc::new(VecModel::from(vec!["127.0.0.1".into(), "0.0.0.0".into()]));

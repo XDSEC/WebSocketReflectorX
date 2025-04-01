@@ -30,15 +30,7 @@ export component MainWindow inherits FramelessWindow {
         main-window-resize(e);
     }
 
-    border-color: {
-        if title-bar.maximize-hovered || title-bar.minimize-hovered {
-            Styles.palette.primary-bg.transparentize(0.3)
-        } else if title-bar.close-hovered {
-            Styles.palette.error-bg.transparentize(0.3)
-        } else {
-            Styles.palette.layer-3
-        }
-    }
+    border-color: Styles.palette.layer-3;
     forward-focus: global-shortcut-handler;
 
     global-shortcut-handler := FocusScope {

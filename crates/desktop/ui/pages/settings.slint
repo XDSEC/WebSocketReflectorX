@@ -1,5 +1,8 @@
 import { Styles } from "../widgets/styles.slint";
 import { Button } from "../widgets/button.slint";
+import { SystemInfoBridge } from "../blocks/bridges.slint";
+
+
 export component SettingsPage inherits Rectangle {
     background: transparent;
 
@@ -69,6 +72,7 @@ export component SettingsPage inherits Rectangle {
                 property <bool> toggled: false;
                 icon: toggled ? @image-url("../assets/toggle-right.svg") : @image-url("../assets/toggle-left.svg");
                 icon-color: toggled ? Styles.palette.info-bg : Styles.palette.window-fg;
+                text: toggled ? @tr("Enabled") : @tr("Disabled");
                 flat: true;
 
                 clicked => {
@@ -106,21 +110,75 @@ export component SettingsPage inherits Rectangle {
 
         VerticalLayout {
             spacing: Styles.sizes.s-md;
+            HorizontalLayout {
+                Text {
+                    text: @tr("System information for bug reporting and debugging");
+                    color: Styles.palette.window-fg;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                    height: Styles.sizes.h-md;
+                }
 
-            Text {
-                text: @tr("System information for bug reporting and debugging");
-                color: Styles.palette.window-fg;
-                vertical-alignment: center;
-                horizontal-stretch: 1;
-                height: Styles.sizes.h-md;
+                info-copy-button := Button {
+                    icon: @image-url("../assets/copy.svg");
+                    flat: true;
+                    text: @tr("Copy");
+                    icon-color: Styles.palette.primary-bg;
+
+                    copy-timer := Timer {
+                        interval: 1s;
+                        running: false;
+                        triggered() => {
+                            info-copy-button.icon-color = Styles.palette.primary-bg;
+                            info-copy-button.text = @tr("Copy");
+                            info-copy-button.icon = @image-url("../assets/copy.svg");
+                            self.running = false;
+                        }
+                    }
+
+                    clicked => {
+                        hidden-copy.select-all();
+                        hidden-copy.copy();
+                        self.icon-color = Styles.palette.success-bg;
+                        self.text = @tr("Copied");
+                        self.icon = @image-url("../assets/checkmark.svg");
+                        copy-timer.running = true;
+                    }
+                }
             }
 
-            Text {
-                text: @tr("Please include the following information when reporting bugs or asking for help.");
-                color: Styles.palette.window-fg;
-                vertical-alignment: center;
-                horizontal-stretch: 1;
-                opacity: 0.6;
+            VerticalLayout {
+                spacing: Styles.sizes.s-xl;
+
+                Text {
+                    text: @tr("Please include the following information when reporting bugs or asking for help.");
+                    color: Styles.palette.window-fg;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                    opacity: 0.6;
+                }
+
+                Rectangle {
+                    background: Styles.palette.layer-1;
+                    border-radius: Styles.sizes.r-md;
+
+                    HorizontalLayout {
+                        padding: Styles.sizes.p-xl;
+
+                        Text {
+                            text: SystemInfoBridge.info;
+                            color: Styles.palette.window-fg;
+                            wrap: TextWrap.word-wrap;
+                        }
+                    }
+                }
+            }
+
+            hidden-copy := TextInput {
+                text: SystemInfoBridge.info;
+                read-only: true;
+                width: 0;
+                height: 0;
             }
         }
 
@@ -130,7 +188,7 @@ export component SettingsPage inherits Rectangle {
         }
 
         Text {
-            text: @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
+            text: @tr("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.") + "\n" + @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
             color: Styles.palette.window-fg;
             vertical-alignment: center;
             height: Styles.sizes.h-md;
