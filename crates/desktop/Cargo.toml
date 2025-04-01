@@ -18,5 +18,9 @@ i-slint-backend-winit = { workspace = true }
 slint                 = { workspace = true }
 winit                 = { workspace = true }
 
+tokio              = { workspace = true }
+tracing            = { workspace = true }
+tracing-subscriber = { workspace = true }
+
 [build-dependencies]
 slint-build = "1.9"

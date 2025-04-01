@@ -5,3 +5,35 @@ export global WindowControlBridge {
     pure callback minimize;
     pure callback maximize;
 }
+
+export global SystemInfoBridge {
+    in-out property <string> os;
+}
+
+export struct Instance {
+    label: string,
+    remote: string,
+    local: string,
+    latency: string,
+    scope_host: string,
+}
+
+export struct Scope {
+    host: string,
+    name: string,
+    state: string,
+}
+
+export global InstanceBridge {
+    // manual-add only available to "default" scope
+    callback add(remote: string, local: string);
+    callback del(remote: string);
+    callback scope(host: string);
+    in-out property <[Instance]> instances;
+}
+
+export global ScopeBridge {
+    callback del(host: string);
+    callback allow(host: string);
+    in-out property <[Scope]> scopes;
+}

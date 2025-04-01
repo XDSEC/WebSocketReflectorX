@@ -1,3 +1,5 @@
+import { Palette } from "std-widgets.slint";
+
 export struct Palette {
     window-fg: color,
     window-bg: color,
@@ -116,7 +118,7 @@ export global Styles {
         layer-5: #00000030,
     };
 
-    in-out property <bool> is-dark-mode: true;
+    in-out property <bool> is-dark-mode: Palette.color-scheme == ColorScheme.dark;
 
     out property <Palette> palette: root.is-dark-mode ? root.dark-palette : root.light-palette;
 

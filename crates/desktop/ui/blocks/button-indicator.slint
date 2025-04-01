@@ -8,12 +8,12 @@ export component ButtonIndicator inherits Button {
         background: Styles.palette.primary-bg;
         border-radius: 2px;
         width: 4px;
-        height: root.active ? parent.height / 2 : 0;
+        height: root.active ? (root.hover ? parent.height / 3 * 2 : parent.height / 2) : 0;
         animate height {
             duration: Styles.durations.short;
             easing: ease-out;
         }
-        x: 0;
+        x: 4px;
         y: (parent.height - self.height) / 2;
     }
 

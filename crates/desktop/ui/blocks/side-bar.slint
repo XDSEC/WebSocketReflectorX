@@ -1,6 +1,6 @@
 import { Styles } from "../widgets/styles.slint";
 import { Button } from "../widgets/button.slint";
-import { WindowControlBridge } from "bridges.slint";
+import { WindowControlBridge, SystemInfoBridge } from "bridges.slint";
 import { ButtonIndicator } from "button-indicator.slint";
 import { UiState } from "globals.slint";
 
@@ -22,8 +22,41 @@ export component SideBar inherits Rectangle {
             spacing: Styles.sizes.s-md;
             padding: Styles.sizes.p-md;
 
+            if SystemInfoBridge.os == "macos": Button {
+                icon: @image-url("../assets/circle-filled.svg");
+                colored: false;
+                flat: true;
+                horizontal-stretch: 0;
+                icon-color: Styles.palette.error-bg;
+                clicked => {
+                    WindowControlBridge.close();
+                }
+            }
+
+            if SystemInfoBridge.os == "macos": Button {
+                icon: @image-url("../assets/circle-filled.svg");
+                colored: false;
+                flat: true;
+                horizontal-stretch: 0;
+                icon-color: Styles.palette.success-bg;
+                clicked => {
+                    WindowControlBridge.maximize();
+                }
+            }
+
+            if SystemInfoBridge.os == "macos": Button {
+                icon: @image-url("../assets/circle-filled.svg");
+                colored: false;
+                flat: true;
+                horizontal-stretch: 0;
+                icon-color: Styles.palette.warn-bg;
+                clicked => {
+                    WindowControlBridge.minimize();
+                }
+            }
+
             Button {
-                text: "WebSocket Reflector X";
+                text: SystemInfoBridge.os == "macos" ? "" : "WebSocket Reflector X";
                 icon: @image-url("../assets/logo-stroked.svg");
                 colored: true;
                 flat: true;
@@ -31,6 +64,7 @@ export component SideBar inherits Rectangle {
                 font-weight: 700;
                 alignment: LayoutAlignment.start;
                 background: transparent;
+                horizontal-stretch: 1;
             }
         }
 
@@ -102,66 +136,75 @@ export component SideBar inherits Rectangle {
                 height: Styles.sizes.s-md;
             }
 
-            ButtonIndicator {
-                text: @tr("Default Scope");
-                icon: @image-url("../assets/archive.svg");
-                colored: false;
-                flat: true;
-                alignment: LayoutAlignment.start;
-                active: UiState.page == "default-scope";
+            Flickable {
+                horizontal-stretch: 1;
+                vertical-stretch: 1;
 
-                clicked => {
-                    UiState.page = "default-scope";
-                }
-            }
+                VerticalLayout {
+                    spacing: Styles.sizes.s-md;
 
-            ButtonIndicator {
-                text: "西电 CTF 终端";
-                icon: @image-url("../assets/earth.svg");
-                colored: false;
-                flat: true;
-                alignment: LayoutAlignment.start;
-                active: UiState.page == "ctf.xidian.edu.cn";
-                icon-color: Styles.palette.success-bg;
+                    ButtonIndicator {
+                        text: @tr("Default Scope");
+                        icon: @image-url("../assets/archive.svg");
+                        colored: false;
+                        flat: true;
+                        alignment: LayoutAlignment.start;
+                        active: UiState.page == "default-scope";
 
-                clicked => {
-                    UiState.page = "ctf.xidian.edu.cn";
-                }
+                        clicked => {
+                            UiState.page = "default-scope";
+                        }
+                    }
 
-                Button {
-                    icon: @image-url("../assets/delete.svg");
-                    colored: false;
-                    flat: true;
-                    x: parent.width - self.width - Styles.sizes.s-md;
-                    y: (parent.height - self.height) / 2;
-                    height: Styles.sizes.h-md;
-                    width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
-                    visible: parent.active;
-                }
-            }
+                    ButtonIndicator {
+                        text: "西电 CTF 终端";
+                        icon: @image-url("../assets/earth.svg");
+                        colored: false;
+                        flat: true;
+                        alignment: LayoutAlignment.start;
+                        active: UiState.page == "ctf.xidian.edu.cn";
+                        icon-color: Styles.palette.success-bg;
 
-            ButtonIndicator {
-                text: "TGCTF 2025";
-                icon: @image-url("../assets/earth.svg");
-                colored: false;
-                flat: true;
-                alignment: LayoutAlignment.start;
-                active: UiState.page == "tgctf.woooo.tech";
-                icon-color: Styles.palette.warn-bg;
+                        clicked => {
+                            UiState.page = "ctf.xidian.edu.cn";
+                        }
 
-                clicked => {
-                    UiState.page = "tgctf.woooo.tech";
-                }
+                        Button {
+                            icon: @image-url("../assets/delete.svg");
+                            colored: false;
+                            flat: true;
+                            x: parent.width - self.width - Styles.sizes.s-md;
+                            y: (parent.height - self.height) / 2;
+                            height: Styles.sizes.h-md;
+                            width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
+                            visible: parent.active;
+                        }
+                    }
 
-                Button {
-                    icon: @image-url("../assets/delete.svg");
-                    colored: false;
-                    flat: true;
-                    x: parent.width - self.width - Styles.sizes.s-md;
-                    y: (parent.height - self.height) / 2;
-                    height: Styles.sizes.h-md;
-                    width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
-                    visible: parent.active;
+                    ButtonIndicator {
+                        text: "GZCTF Stage";
+                        icon: @image-url("../assets/earth.svg");
+                        colored: false;
+                        flat: true;
+                        alignment: LayoutAlignment.start;
+                        active: UiState.page == "gzctf-stage.kengwang.com.cn";
+                        icon-color: Styles.palette.warn-bg;
+
+                        clicked => {
+                            UiState.page = "gzctf-stage.kengwang.com.cn";
+                        }
+
+                        Button {
+                            icon: @image-url("../assets/delete.svg");
+                            colored: false;
+                            flat: true;
+                            x: parent.width - self.width - Styles.sizes.s-md;
+                            y: (parent.height - self.height) / 2;
+                            height: Styles.sizes.h-md;
+                            width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
+                            visible: parent.active;
+                        }
+                    }
                 }
             }
 
