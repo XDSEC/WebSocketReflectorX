@@ -1,4 +1,140 @@
 import { Styles } from "../widgets/styles.slint";
+import { Button } from "../widgets/button.slint";
 export component SettingsPage inherits Rectangle {
     background: transparent;
+
+    VerticalLayout {
+        padding: Styles.sizes.p-xl * 2;
+        spacing: Styles.sizes.s-md;
+
+        HorizontalLayout {
+            spacing: Styles.sizes.s-md;
+            Image {
+                source: @image-url("../assets/logo-stroked.svg");
+                width: 96px;
+                height: 96px;
+            }
+
+            title := VerticalLayout {
+                alignment: LayoutAlignment.center;
+                spacing: Styles.sizes.s-md;
+                padding: Styles.sizes.p-md;
+
+                property <string> cursor: "_";
+
+                Timer {
+                    interval: 0.5s;
+                    running: true;
+                    triggered() => {
+                        if (title.cursor == "_") {
+                            title.cursor = " ";
+                        } else {
+                            title.cursor = "_";
+                        }
+                    }
+                }
+
+                Text {
+                    text: "WebSocket Reflector X";
+                    font-size: Styles.sizes.font * 1.5;
+                    font-weight: 700;
+                    color: Styles.palette.window-fg;
+                }
+
+                Text {
+                    text: "Idealism is that you will never receive something back,\nbut nonetheless still decide to give." + title.cursor;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: Styles.palette.window-fg;
+                    opacity: 0.6;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+
+            Text {
+                text: @tr("Running in system tray when closed");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                property <bool> toggled: false;
+                icon: toggled ? @image-url("../assets/toggle-right.svg") : @image-url("../assets/toggle-left.svg");
+                icon-color: toggled ? Styles.palette.info-bg : Styles.palette.window-fg;
+                flat: true;
+
+                clicked => {
+                    self.toggled = !self.toggled;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+
+            Text {
+                text: @tr("Export network logs");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: @image-url("../assets/open.svg");
+                flat: true;
+                text: @tr("Export");
+                icon-color: Styles.palette.primary-bg;
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        VerticalLayout {
+            spacing: Styles.sizes.s-md;
+
+            Text {
+                text: @tr("System information for bug reporting and debugging");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+                height: Styles.sizes.h-md;
+            }
+
+            Text {
+                text: @tr("Please include the following information when reporting bugs or asking for help.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+                opacity: 0.6;
+            }
+        }
+
+        Rectangle {
+            background: transparent;
+            vertical-stretch: 1;
+        }
+
+        Text {
+            text: @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
+            color: Styles.palette.window-fg;
+            vertical-alignment: center;
+            height: Styles.sizes.h-md;
+            opacity: 0.6;
+        }
+    }
 }

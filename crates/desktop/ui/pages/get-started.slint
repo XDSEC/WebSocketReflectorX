@@ -1,6 +1,9 @@
 import { Styles } from "../widgets/styles.slint";
 import { LineEdit } from "../widgets/line-edit.slint";
 import { Button } from "../widgets/button.slint";
+import { SystemInfoBridge, InstanceBridge } from "../blocks/bridges.slint";
+import { UiState } from "../blocks/globals.slint";
+
 export component GetStartedPage inherits Rectangle {
     background: transparent;
 
@@ -69,12 +72,62 @@ export component GetStartedPage inherits Rectangle {
 
                     Button {
                         icon: @image-url("../assets/arrow-sync.svg");
+
+                        icon-rotate-angle: 0deg;
+
+                        clicked() => {
+                            SystemInfoBridge.refresh_interfaces();
+                            self.icon-rotate-angle = self.icon-rotate-angle + 180deg;
+                        }
                     }
 
-                    LineEdit {
+                    local-address-selector := Button {
                         horizontal-stretch: 1;
-                        placeholder-text: @tr("Local server host address...");
                         text: "127.0.0.1";
+                        icon: @image-url("../assets/location.svg");
+                        alignment: start;
+
+                        clicked() => {
+                            network-interface-popup.show();
+                        }
+
+                        network-interface-popup := PopupWindow {
+                            width: parent.width;
+                            height: min(SystemInfoBridge.interfaces.length * (Styles.sizes.h-md + Styles.sizes.s-md) - Styles.sizes.s-md + Styles.sizes.p-md * 2, 192px);
+                            x: 0;
+                            y: parent.height + Styles.sizes.s-md;
+
+                            Rectangle {
+                                background: Styles.palette.window-alter-bg;
+                                width: parent.width;
+                                height: parent.height;
+                                border-color: Styles.palette.window-border;
+                                border-width: 1px;
+                                border-radius: Styles.sizes.r-lg;
+                                clip: true;
+
+                                Flickable {
+                                    width: parent.width;
+                                    height: parent.height;
+                                    VerticalLayout {
+                                        spacing: Styles.sizes.s-md;
+                                        padding: Styles.sizes.p-md;
+                                        for item in SystemInfoBridge.interfaces: Button {
+                                            text: item;
+                                            flat: true;
+                                            alignment: start;
+                                            icon: @image-url("../assets/earth.svg");
+
+                                            clicked() => {
+                                                if (item != "") {
+                                                    local-address-selector.text = item;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     LineEdit {
@@ -87,13 +140,29 @@ export component GetStartedPage inherits Rectangle {
                 HorizontalLayout {
                     spacing: Styles.sizes.s-lg;
 
-                    LineEdit {
+                    remote-addr-edit := LineEdit {
                         horizontal-stretch: 1;
                         placeholder-text: "[ws|wss]://address...";
                     }
 
-                    Button {
+                    send-button := Button {
                         icon: @image-url("../assets/send.svg");
+
+                        send-timer := Timer {
+                            interval: Styles.durations.mid;
+                            running: false;
+                            triggered => {
+                                InstanceBridge.add(remote-addr-edit.text, local-address-selector.text);
+                                UiState.page = "default-scope";
+                                send-timer.running = false;
+                                send-button.icon-rotate-angle = 0deg;
+                            }
+                        }
+
+                        clicked() => {
+                            send-timer.running = true;
+                            send-button.icon-rotate-angle = 90deg;
+                        }
                     }
                 }
             }

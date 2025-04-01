@@ -12,6 +12,7 @@ export component Button inherits Rectangle {
     in-out property <color> icon-color: Styles.palette.window-fg;
     in-out property <bool> flat: false;
     in property <LayoutAlignment> alignment: center;
+    in property <angle> icon-rotate-angle: 0;
 
     height: Styles.sizes.h-md;
 
@@ -55,6 +56,11 @@ export component Button inherits Rectangle {
             source: root.icon;
             colorize: root.colored ? Colors.transparent : root.icon-color;
             vertical-alignment: center;
+            rotation-angle: root.icon-rotate-angle;
+            animate rotation-angle {
+                duration: Styles.durations.mid;
+                easing: ease-out;
+            }
         }
 
         if root.text != "": Text {

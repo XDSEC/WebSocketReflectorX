@@ -8,6 +8,8 @@ export global WindowControlBridge {
 
 export global SystemInfoBridge {
     in-out property <string> os;
+    in-out property <[string]> interfaces;
+    callback refresh_interfaces;
 }
 
 export struct Instance {

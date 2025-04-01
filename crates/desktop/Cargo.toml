@@ -18,6 +18,7 @@ i-slint-backend-winit = { workspace = true }
 slint                 = { workspace = true }
 winit                 = { workspace = true }
 
+local-ip-address   = { workspace = true }
 tokio              = { workspace = true }
 tracing            = { workspace = true }
 tracing-subscriber = { workspace = true }

@@ -19,11 +19,12 @@ panic         = "abort"
 strip         = true
 
 [workspace.dependencies]
-futures-util = { version = "0.3", features = ["sink"] }
-rustls       = { version = "0.23", features = ["ring"] }
-thiserror    = "2.0"
-tokio        = { version = "1.43", features = ["full"] }
-tokio-util   = { version = "0.7", features = ["codec"] }
+futures-util     = { version = "0.3", features = ["sink"] }
+local-ip-address = "0.6"
+rustls           = { version = "0.23", features = ["ring"] }
+thiserror        = "2.0"
+tokio            = { version = "1.43", features = ["full"] }
+tokio-util       = { version = "0.7", features = ["codec"] }
 
 axum = { version = "0.8", features = ["ws", "macros"] }
 # optional

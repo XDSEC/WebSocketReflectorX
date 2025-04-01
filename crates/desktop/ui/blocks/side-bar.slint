@@ -158,12 +158,11 @@ export component SideBar inherits Rectangle {
 
                     ButtonIndicator {
                         text: "西电 CTF 终端";
-                        icon: @image-url("../assets/earth.svg");
+                        icon: @image-url("../assets/lock-closed.svg");
                         colored: false;
                         flat: true;
                         alignment: LayoutAlignment.start;
                         active: UiState.page == "ctf.xidian.edu.cn";
-                        icon-color: Styles.palette.success-bg;
 
                         clicked => {
                             UiState.page = "ctf.xidian.edu.cn";
@@ -183,12 +182,11 @@ export component SideBar inherits Rectangle {
 
                     ButtonIndicator {
                         text: "GZCTF Stage";
-                        icon: @image-url("../assets/earth.svg");
+                        icon: @image-url("../assets/warning.svg");
                         colored: false;
                         flat: true;
                         alignment: LayoutAlignment.start;
                         active: UiState.page == "gzctf-stage.kengwang.com.cn";
-                        icon-color: Styles.palette.warn-bg;
 
                         clicked => {
                             UiState.page = "gzctf-stage.kengwang.com.cn";
@@ -216,13 +214,26 @@ export component SideBar inherits Rectangle {
             ButtonIndicator {
                 text: @tr("Settings");
                 icon: @image-url("../assets/settings.svg");
-                colored: false;
                 flat: true;
                 alignment: LayoutAlignment.start;
                 active: UiState.page == "settings";
 
                 clicked => {
                     UiState.page = "settings";
+                }
+            }
+
+            Button {
+                text: @tr("Controller port");
+                icon: @image-url("../assets/circle.svg");
+                alignment: LayoutAlignment.start;
+                flat: true;
+
+                Text {
+                    text: "3307";
+                    x: parent.width - self.width - Styles.sizes.p-xl;
+                    color: Styles.palette.info-bg;
+                    y: (parent.height - self.height) / 2;
                 }
             }
         }
