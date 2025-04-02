@@ -98,7 +98,7 @@ msgstr "请在反馈Bug或者提问时，附上这里的系统信息，以便于
 #: crates/desktop/ui/pages/settings.slint:187
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
-msgstr "由 Reverier-Xu 开发，千行代码仅需 100mg 咖啡因与一只叫狗子的猫，唯有热爱可抵万难。"
+msgstr "由 Reverier-Xu 开发，千行代码仅需一杯咖啡与一只叫狗子的猫，唯有热爱可抵万难。"
 
 #: crates/desktop/ui/pages/settings.slint:187
 msgctxt "SettingsPage"
