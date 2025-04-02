@@ -110,20 +110,15 @@ export component SideBar inherits Rectangle {
                 flat: true;
                 background: transparent;
                 alignment: LayoutAlignment.start;
-            }
-
-            HorizontalLayout {
-                alignment: LayoutAlignment.center;
 
                 Rectangle {
                     height: 1px;
                     background: Styles.palette.layer-3;
-                    width: parent.width - 2 * Styles.sizes.p-xl;
-                }
-            }
 
-            Rectangle {
-                height: Styles.sizes.s-md;
+                    x: Styles.sizes.p-lg;
+                    y: parent.height;
+                    width: parent.width - 2 * Styles.sizes.p-lg;
+                }
             }
 
             Flickable {
