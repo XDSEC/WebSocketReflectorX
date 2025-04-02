@@ -110,16 +110,6 @@ export component SideBar inherits Rectangle {
                 flat: true;
                 background: transparent;
                 alignment: LayoutAlignment.start;
-
-                Button {
-                    icon: @image-url("../assets/arrow-sync.svg");
-                    colored: false;
-                    flat: true;
-                    x: parent.width - self.width - Styles.sizes.s-md;
-                    y: (parent.height - self.height) / 2;
-                    height: Styles.sizes.h-md;
-                    width: Styles.sizes.h-md + 2 * Styles.sizes.p-md;
-                }
             }
 
             HorizontalLayout {
