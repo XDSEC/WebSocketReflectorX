@@ -103,22 +103,13 @@ export component SideBar inherits Rectangle {
                 }
             }
 
-            Button {
-                text: @tr("Managed Websites");
-                icon: @image-url("../assets/shield-lock.svg");
-                colored: false;
-                flat: true;
-                background: transparent;
-                alignment: LayoutAlignment.start;
+            Rectangle {
+                height: 1px;
+                background: Styles.palette.layer-3;
 
-                Rectangle {
-                    height: 1px;
-                    background: Styles.palette.layer-3;
-
-                    x: Styles.sizes.p-lg;
-                    y: parent.height;
-                    width: parent.width - 2 * Styles.sizes.p-lg;
-                }
+                x: Styles.sizes.p-lg;
+                y: parent.height;
+                width: parent.width - 2 * Styles.sizes.p-lg;
             }
 
             Flickable {
