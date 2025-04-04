@@ -55,6 +55,13 @@ export component TitleBar inherits Rectangle {
             }
         }
 
+        if SystemInfoBridge.os == "macos": Button {
+            icon: @image-url("../assets/logo-stroked.svg");
+            colored: true;
+            flat: true;
+            background: transparent;
+        }
+
         if SystemInfoBridge.os != "macos": Button {
             flat: true;
             icon: @image-url("../assets/subtract.svg");

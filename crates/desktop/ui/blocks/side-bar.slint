@@ -65,6 +65,7 @@ export component SideBar inherits Rectangle {
                 alignment: LayoutAlignment.start;
                 background: transparent;
                 horizontal-stretch: 1;
+                visible: SystemInfoBridge.os != "macos";
             }
         }
 
@@ -103,13 +104,13 @@ export component SideBar inherits Rectangle {
                 }
             }
 
-            Rectangle {
-                height: 1px;
-                background: Styles.palette.layer-3;
+            VerticalLayout {
+                padding: Styles.sizes.p-md;
 
-                x: Styles.sizes.p-lg;
-                y: parent.height;
-                width: parent.width - 2 * Styles.sizes.p-lg;
+                Rectangle {
+                    height: 1px;
+                    background: Styles.palette.layer-3;
+                }
             }
 
             Flickable {
