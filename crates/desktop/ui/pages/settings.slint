@@ -61,6 +61,10 @@ export component SettingsPage inherits Rectangle {
 
         HorizontalLayout {
 
+            Rectangle {
+                width: Styles.sizes.p-md;
+            }
+
             Text {
                 text: @tr("Running in system tray when closed");
                 color: Styles.palette.window-fg;
@@ -88,6 +92,10 @@ export component SettingsPage inherits Rectangle {
 
         HorizontalLayout {
 
+            Rectangle {
+                width: Styles.sizes.p-md;
+            }
+
             Text {
                 text: @tr("Export network logs");
                 color: Styles.palette.window-fg;
@@ -111,6 +119,10 @@ export component SettingsPage inherits Rectangle {
         VerticalLayout {
             spacing: Styles.sizes.s-md;
             HorizontalLayout {
+                Rectangle {
+                    width: Styles.sizes.p-md;
+                }
+
                 Text {
                     text: @tr("System information for bug reporting and debugging");
                     color: Styles.palette.window-fg;
@@ -150,12 +162,19 @@ export component SettingsPage inherits Rectangle {
             VerticalLayout {
                 spacing: Styles.sizes.s-xl;
 
-                Text {
-                    text: @tr("Please include the following information when reporting bugs or asking for help.");
-                    color: Styles.palette.window-fg;
-                    vertical-alignment: center;
-                    horizontal-stretch: 1;
-                    opacity: 0.6;
+                HorizontalLayout {
+
+                    Rectangle {
+                        width: Styles.sizes.p-md;
+                    }
+
+                    Text {
+                        text: @tr("Please include the following information when reporting bugs or asking for help.");
+                        color: Styles.palette.window-fg;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                        opacity: 0.6;
+                    }
                 }
 
                 Rectangle {

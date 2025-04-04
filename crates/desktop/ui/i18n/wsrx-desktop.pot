@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-01 23:21+0000\n"
+"POT-Creation-Date: 2025-04-04 19:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,34 +12,79 @@ msgstr ""
 "Language: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: crates/desktop/ui/blocks/side-bar.slint:81
+#: crates/desktop/ui/blocks/side-bar.slint:82
 msgctxt "SideBar"
 msgid "Get Started"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:94
+#: crates/desktop/ui/blocks/side-bar.slint:95
 msgctxt "SideBar"
 msgid "Network logs"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:107
-msgctxt "SideBar"
-msgid "Managed Websites"
-msgstr ""
-
-#: crates/desktop/ui/blocks/side-bar.slint:147
+#: crates/desktop/ui/blocks/side-bar.slint:124
 msgctxt "SideBar"
 msgid "Default Scope"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:215
+#: crates/desktop/ui/blocks/side-bar.slint:192
 msgctxt "SideBar"
 msgid "Settings"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:227
+#: crates/desktop/ui/blocks/side-bar.slint:204
 msgctxt "SideBar"
 msgid "Controller port"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:35
+msgctxt "ConnectionsPage"
+msgid "Default Scope"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:55
+msgctxt "ConnectionsPage"
+msgid "Manually Controlled"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:55
+msgctxt "ConnectionsPage"
+msgid "External Controlled"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:88
+msgctxt "ConnectionsPage"
+msgid "This scope is controlled by you manually."
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:88
+msgctxt "ConnectionsPage"
+msgid "This domain can control wsrx on your local network."
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:88
+msgctxt "ConnectionsPage"
+msgid "This domain requested controlling wsrx."
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:97
+msgctxt "ConnectionsPage"
+msgid "Enjoy"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:105
+msgctxt "ConnectionsPage"
+msgid "Accept"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:112
+msgctxt "ConnectionsPage"
+msgid "Decline"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:119
+msgctxt "ConnectionsPage"
+msgid "Remove"
 msgstr ""
 
 #: crates/desktop/ui/pages/get-started.slint:135
@@ -87,19 +132,19 @@ msgctxt "SettingsPage"
 msgid "Copied"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:151
+#: crates/desktop/ui/pages/settings.slint:154
 msgctxt "SettingsPage"
 msgid ""
 "Please include the following information when reporting bugs or asking for "
 "help."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:187
+#: crates/desktop/ui/pages/settings.slint:191
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:187
+#: crates/desktop/ui/pages/settings.slint:191
 msgctxt "SettingsPage"
 msgid "(c) 2022 - 2025 XDSEC, distributed with MIT license."
 msgstr ""
