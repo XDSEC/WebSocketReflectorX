@@ -1,4 +1,5 @@
 pub mod bridges;
+pub mod logging;
 pub mod main_window;
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 

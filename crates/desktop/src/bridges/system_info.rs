@@ -28,6 +28,8 @@ pub fn setup(window: &MainWindow) {
         .into(),
     );
 
+    bridge.set_version(env!("CARGO_PKG_VERSION").into());
+
     let network_interfaces_model: Rc<VecModel<SharedString>> =
         Rc::new(VecModel::from(vec!["127.0.0.1".into(), "0.0.0.0".into()]));
     let network_interfaces = ModelRc::from(network_interfaces_model.clone());

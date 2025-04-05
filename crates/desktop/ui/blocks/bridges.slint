@@ -7,6 +7,8 @@ export global WindowControlBridge {
 }
 
 export global SystemInfoBridge {
+    in-out property <string> version;
+    in-out property <bool> has-updates;
     in-out property <string> os;
     in-out property <[string]> interfaces;
     in-out property <string> info;
@@ -39,4 +41,11 @@ export global ScopeBridge {
     callback del(host: string);
     callback allow(host: string);
     in-out property <[Scope]> scopes;
+}
+
+export global SettingsBridge {
+    in-out property <string> theme;
+    in-out property <string> language;
+    in-out property <int> api-port: 3307;
+    in-out property <bool> online: true;
 }

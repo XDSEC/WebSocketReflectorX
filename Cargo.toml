@@ -19,6 +19,7 @@ panic         = "abort"
 strip         = true
 
 [workspace.dependencies]
+directories      = "6.0"
 futures-util     = { version = "0.3", features = ["sink"] }
 local-ip-address = "0.6"
 rustls           = { version = "0.23", features = ["ring"] }
@@ -40,6 +41,7 @@ serde_json         = { version = "1.0" }
 subprocess         = { version = "0.2" }
 tower-http         = { version = "0.6", features = ["trace", "cors"] }
 tracing            = { version = "0.1" }
+tracing-appender   = { version = "0.2" }
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url                = { version = "2.5" }
 

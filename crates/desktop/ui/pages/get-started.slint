@@ -84,7 +84,7 @@ export component GetStartedPage inherits Rectangle {
                     local-address-selector := Button {
                         horizontal-stretch: 1;
                         text: "127.0.0.1";
-                        icon: @image-url("../assets/location.svg");
+                        icon: @image-url("../assets/globe.svg");
                         alignment: start;
 
                         clicked() => {
@@ -92,9 +92,9 @@ export component GetStartedPage inherits Rectangle {
                         }
 
                         network-interface-popup := PopupWindow {
-                            width: parent.width;
+                            width: parent.width + Styles.sizes.p-md * 2;
                             height: min(SystemInfoBridge.interfaces.length * (Styles.sizes.h-md + Styles.sizes.s-md) - Styles.sizes.s-md + Styles.sizes.p-md * 2, 192px);
-                            x: 0;
+                            x: -Styles.sizes.p-md;
                             y: parent.height + Styles.sizes.s-md;
 
                             Rectangle {
@@ -116,7 +116,7 @@ export component GetStartedPage inherits Rectangle {
                                             text: item;
                                             flat: true;
                                             alignment: start;
-                                            icon: @image-url("../assets/earth.svg");
+                                            icon: item == "127.0.0.1" ? @image-url("../assets/lock-closed.svg") : (item == "0.0.0.0" ? @image-url("../assets/warning.svg") : @image-url("../assets/network-adapter.svg"));
 
                                             clicked() => {
                                                 if (item != "") {

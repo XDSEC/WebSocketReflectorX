@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-01 23:21+0000\n"
+"POT-Creation-Date: 2025-04-05 13:17+0000\n"
 "PO-Revision-Date: 2025-04-01 00:31+0800\n"
 "Last-Translator: Reverier Xu <reverier.xu@woooo.tech>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -11,99 +11,165 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: crates/desktop/ui/blocks/side-bar.slint:81
+#: crates/desktop/ui/blocks/side-bar.slint:82
 msgctxt "SideBar"
 msgid "Get Started"
 msgstr "由此开始"
 
-#: crates/desktop/ui/blocks/side-bar.slint:94
+#: crates/desktop/ui/blocks/side-bar.slint:95
 msgctxt "SideBar"
 msgid "Network logs"
 msgstr "网络日志"
 
-#: crates/desktop/ui/blocks/side-bar.slint:107
-msgctxt "SideBar"
-msgid "Managed Websites"
-msgstr "授权网站"
-
-#: crates/desktop/ui/blocks/side-bar.slint:147
+#: crates/desktop/ui/blocks/side-bar.slint:124
 msgctxt "SideBar"
 msgid "Default Scope"
 msgstr "默认连接池"
 
-#: crates/desktop/ui/blocks/side-bar.slint:215
+#: crates/desktop/ui/blocks/side-bar.slint:192
 msgctxt "SideBar"
 msgid "Settings"
 msgstr "软件设置"
 
-#: crates/desktop/ui/blocks/side-bar.slint:227
+#: crates/desktop/ui/blocks/side-bar.slint:204
+msgctxt "SideBar"
+msgid "Click to copy"
+msgstr "点击复制"
+
+#: crates/desktop/ui/blocks/side-bar.slint:204
 msgctxt "SideBar"
 msgid "Controller port"
 msgstr "控制端口"
+
+#: crates/desktop/ui/pages/connections.slint:35
+#, fuzzy
+msgctxt "ConnectionsPage"
+msgid "Default Scope"
+msgstr "默认连接池"
+
+#: crates/desktop/ui/pages/connections.slint:55
+msgctxt "ConnectionsPage"
+msgid "Manually Controlled"
+msgstr "手动控制"
+
+#: crates/desktop/ui/pages/connections.slint:55
+msgctxt "ConnectionsPage"
+msgid "External Controlled"
+msgstr "外部控制"
+
+#: crates/desktop/ui/pages/connections.slint:88
+msgctxt "ConnectionsPage"
+msgid "This scope is controlled by you manually."
+msgstr "此连接池由你手动控制。"
+
+#: crates/desktop/ui/pages/connections.slint:88
+msgctxt "ConnectionsPage"
+msgid "This domain can control wsrx on your local network."
+msgstr "此域名可以控制你本地网络上的 wsrx。"
+
+#: crates/desktop/ui/pages/connections.slint:88
+msgctxt "ConnectionsPage"
+msgid "This domain requested controlling wsrx."
+msgstr "此域名请求控制 wsrx。"
+
+#: crates/desktop/ui/pages/connections.slint:97
+msgctxt "ConnectionsPage"
+msgid "Enjoy"
+msgstr "无须操作"
+
+#: crates/desktop/ui/pages/connections.slint:105
+msgctxt "ConnectionsPage"
+msgid "Accept"
+msgstr "接受"
+
+#: crates/desktop/ui/pages/connections.slint:112
+msgctxt "ConnectionsPage"
+msgid "Decline"
+msgstr "拒绝"
+
+#: crates/desktop/ui/pages/connections.slint:119
+msgctxt "ConnectionsPage"
+msgid "Remove"
+msgstr "移除"
 
 #: crates/desktop/ui/pages/get-started.slint:135
 msgctxt "GetStartedPage"
 msgid "Port..."
 msgstr "端口..."
 
-#: crates/desktop/ui/pages/settings.slint:65
+#: crates/desktop/ui/pages/settings.slint:69
+msgctxt "SettingsPage"
+msgid "Version and Updates"
+msgstr "版本与更新"
+
+#: crates/desktop/ui/pages/settings.slint:78
+msgctxt "SettingsPage"
+msgid "Update available"
+msgstr "有可用更新"
+
+#: crates/desktop/ui/pages/settings.slint:96
 msgctxt "SettingsPage"
 msgid "Running in system tray when closed"
 msgstr "关闭窗口后继续在系统托盘中运行"
 
-#: crates/desktop/ui/pages/settings.slint:75
+#: crates/desktop/ui/pages/settings.slint:106
 msgctxt "SettingsPage"
 msgid "Enabled"
 msgstr "开启"
 
-#: crates/desktop/ui/pages/settings.slint:75
+#: crates/desktop/ui/pages/settings.slint:106
 msgctxt "SettingsPage"
 msgid "Disabled"
 msgstr "关闭"
 
-#: crates/desktop/ui/pages/settings.slint:92
+#: crates/desktop/ui/pages/settings.slint:127
 #, fuzzy
 msgctxt "SettingsPage"
 msgid "Export network logs"
 msgstr "网络日志"
 
-#: crates/desktop/ui/pages/settings.slint:101
+#: crates/desktop/ui/pages/settings.slint:136
 msgctxt "SettingsPage"
 msgid "Export"
 msgstr "导出"
 
-#: crates/desktop/ui/pages/settings.slint:115
+#: crates/desktop/ui/pages/settings.slint:154
 msgctxt "SettingsPage"
 msgid "System information for bug reporting and debugging"
 msgstr "系统调试信息"
 
-#: crates/desktop/ui/pages/settings.slint:125
-#: crates/desktop/ui/pages/settings.slint:133
+#: crates/desktop/ui/pages/settings.slint:164
+#: crates/desktop/ui/pages/settings.slint:172
 msgctxt "SettingsPage"
 msgid "Copy"
 msgstr "复制"
 
-#: crates/desktop/ui/pages/settings.slint:143
+#: crates/desktop/ui/pages/settings.slint:182
 msgctxt "SettingsPage"
 msgid "Copied"
 msgstr "已复制"
 
-#: crates/desktop/ui/pages/settings.slint:151
+#: crates/desktop/ui/pages/settings.slint:199
 msgctxt "SettingsPage"
 msgid ""
 "Please include the following information when reporting bugs or asking for "
 "help."
 msgstr "请在反馈Bug或者提问时，附上这里的系统信息，以便于我们复现与解决。"
 
-#: crates/desktop/ui/pages/settings.slint:187
+#: crates/desktop/ui/pages/settings.slint:237
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
-msgstr "由 Reverier-Xu 开发，千行代码仅需一杯咖啡与一只叫狗子的猫，唯有热爱可抵万难。"
+msgstr ""
+"由 Reverier-Xu 开发，千行代码仅需一杯咖啡与一只叫狗子的猫，唯有热爱可抵万难。"
 
-#: crates/desktop/ui/pages/settings.slint:187
+#: crates/desktop/ui/pages/settings.slint:244
 msgctxt "SettingsPage"
 msgid "(c) 2022 - 2025 XDSEC, distributed with MIT license."
 msgstr "(c) 2022 - 2025 XDSEC，遵循 MIT 协议发布。"
+
+#~ msgctxt "SideBar"
+#~ msgid "Managed Websites"
+#~ msgstr "授权网站"
 
 #~ msgctxt "GetStartedPage"
 #~ msgid "Local server host address..."

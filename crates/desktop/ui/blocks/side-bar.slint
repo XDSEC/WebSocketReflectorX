@@ -1,6 +1,6 @@
 import { Styles } from "../widgets/styles.slint";
 import { Button } from "../widgets/button.slint";
-import { WindowControlBridge, SystemInfoBridge } from "bridges.slint";
+import { WindowControlBridge, SystemInfoBridge, SettingsBridge } from "bridges.slint";
 import { ButtonIndicator } from "button-indicator.slint";
 import { UiState } from "globals.slint";
 
@@ -122,7 +122,7 @@ export component SideBar inherits Rectangle {
 
                     ButtonIndicator {
                         text: @tr("Default Scope");
-                        icon: @image-url("../assets/archive.svg");
+                        icon: @image-url("../assets/globe-star.svg");
                         colored: false;
                         flat: true;
                         alignment: LayoutAlignment.start;
@@ -201,13 +201,27 @@ export component SideBar inherits Rectangle {
             }
 
             Button {
-                text: @tr("Controller port");
-                icon: @image-url("../assets/circle.svg");
+                text: self.hover ? @tr("Click to copy") : @tr("Controller port");
+                icon: self.hover ? @image-url("../assets/copy.svg") : (SettingsBridge.online ? @image-url("../assets/flash-flow.svg") : @image-url("../assets/globe-warning.svg"));
+                icon-color: self.hover ? Styles.palette.success-bg : (SettingsBridge.online ? Styles.palette.window-fg : Styles.palette.error-bg);
                 alignment: LayoutAlignment.start;
                 flat: true;
 
+                clicked => {
+                    api-address-input.select-all();
+                    api-address-input.copy();
+                }
+
+                api-address-input := TextInput {
+                    text: "http://127.0.0.1:" + SettingsBridge.api-port;
+                    visible: false;
+                    width: 0;
+                    height: 0;
+                    read-only: true;
+                }
+
                 Text {
-                    text: "3307";
+                    text: SettingsBridge.api-port;
                     x: parent.width - self.width - Styles.sizes.p-xl;
                     color: Styles.palette.info-bg;
                     y: (parent.height - self.height) / 2;

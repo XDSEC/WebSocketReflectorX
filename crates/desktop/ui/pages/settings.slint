@@ -1,10 +1,10 @@
 import { Styles } from "../widgets/styles.slint";
 import { Button } from "../widgets/button.slint";
 import { SystemInfoBridge } from "../blocks/bridges.slint";
+import { ScrollView } from "../widgets/scroll-view.slint";
 
 
-export component SettingsPage inherits Rectangle {
-    background: transparent;
+export component SettingsPage inherits ScrollView {
 
     VerticalLayout {
         padding: Styles.sizes.p-xl * 2;
@@ -66,6 +66,33 @@ export component SettingsPage inherits Rectangle {
             }
 
             Text {
+                text: @tr("Version and Updates");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: SystemInfoBridge.has-updates ? @image-url("../assets/cloud-arrow-up.svg") : @image-url("../assets/checkmark-circle.svg");
+                flat: true;
+                text: SystemInfoBridge.version + (SystemInfoBridge.has-updates ? " " + @tr("Update available") : "");
+                icon-color: SystemInfoBridge.has-updates ? Styles.palette.primary-bg : Styles.palette.success-bg;
+                disabled: !SystemInfoBridge.has-updates;
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+
+            Rectangle {
+                width: Styles.sizes.p-md;
+            }
+
+            Text {
                 text: @tr("Running in system tray when closed");
                 color: Styles.palette.window-fg;
                 vertical-alignment: center;
@@ -107,6 +134,32 @@ export component SettingsPage inherits Rectangle {
                 icon: @image-url("../assets/open.svg");
                 flat: true;
                 text: @tr("Export");
+                icon-color: Styles.palette.primary-bg;
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+
+            Rectangle {
+                width: Styles.sizes.p-md;
+            }
+
+            Text {
+                text: @tr("Have problems? Find support here.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: @image-url("../assets/open.svg");
+                flat: true;
+                text: @tr("Support");
                 icon-color: Styles.palette.primary-bg;
             }
         }
@@ -207,10 +260,16 @@ export component SettingsPage inherits Rectangle {
         }
 
         Text {
-            text: @tr("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.") + "\n" + @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
+            text: @tr("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.");
             color: Styles.palette.window-fg;
             vertical-alignment: center;
-            height: Styles.sizes.h-md;
+            opacity: 0.6;
+        }
+
+        Text {
+            text: @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
+            color: Styles.palette.window-fg;
+            vertical-alignment: center;
             opacity: 0.6;
         }
     }
