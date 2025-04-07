@@ -161,6 +161,10 @@ export component SettingsPage inherits ScrollView {
                 flat: true;
                 text: @tr("Support");
                 icon-color: Styles.palette.primary-bg;
+
+                clicked => {
+                    SystemInfoBridge.goto_support();
+                }
             }
         }
 

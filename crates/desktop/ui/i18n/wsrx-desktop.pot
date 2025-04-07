@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-05 13:22+0000\n"
+"POT-Creation-Date: 2025-04-06 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,44 +132,44 @@ msgctxt "SettingsPage"
 msgid "Export"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:154
+#: crates/desktop/ui/pages/settings.slint:153
+msgctxt "SettingsPage"
+msgid "Have problems? Find support here."
+msgstr ""
+
+#: crates/desktop/ui/pages/settings.slint:162
+msgctxt "SettingsPage"
+msgid "Support"
+msgstr ""
+
+#: crates/desktop/ui/pages/settings.slint:180
 msgctxt "SettingsPage"
 msgid "System information for bug reporting and debugging"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:164 crates/desktop/ui/pages/settings.slint:172
+#: crates/desktop/ui/pages/settings.slint:190 crates/desktop/ui/pages/settings.slint:198
 msgctxt "SettingsPage"
 msgid "Copy"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:182
+#: crates/desktop/ui/pages/settings.slint:208
 msgctxt "SettingsPage"
 msgid "Copied"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:199
+#: crates/desktop/ui/pages/settings.slint:225
 msgctxt "SettingsPage"
 msgid ""
 "Please include the following information when reporting bugs or asking for "
 "help."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:238
-msgctxt "SettingsPage"
-msgid "Have problems? Find support here."
-msgstr ""
-
-#: crates/desktop/ui/pages/settings.slint:247
-msgctxt "SettingsPage"
-msgid "Support"
-msgstr ""
-
-#: crates/desktop/ui/pages/settings.slint:258
+#: crates/desktop/ui/pages/settings.slint:263
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:265
+#: crates/desktop/ui/pages/settings.slint:270
 msgctxt "SettingsPage"
 msgid "(c) 2022 - 2025 XDSEC, distributed with MIT license."
 msgstr ""
