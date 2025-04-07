@@ -4,7 +4,7 @@
 use std::error::Error;
 
 use tracing::info;
-use wsrx_desktop::{logging, main_window};
+use wsrx_desktop::{launcher, logging};
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Initialize the logger.
@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     slint::platform::set_platform(Box::new(i_slint_backend_winit::Backend::new().unwrap()))?;
 
     // Create the main window.
-    let window = main_window::setup()?;
+    let window = launcher::setup()?;
 
     drop(console_guard);
     drop(file_guard);
