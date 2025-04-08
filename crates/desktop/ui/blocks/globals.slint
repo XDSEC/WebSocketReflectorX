@@ -1,4 +1,9 @@
+import { Scope } from "../blocks/bridges.slint";
+
 export global UiState {
     in-out property <string> page: "home";
     in-out property <bool> show-sidebar: true;
+    in-out property <Scope> scope;
+
+    callback change-scope(host: string);
 }

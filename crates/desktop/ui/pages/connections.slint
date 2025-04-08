@@ -1,133 +1,231 @@
 import { Styles } from "../widgets/styles.slint";
-import {UiState} from "../blocks/globals.slint";
+import { UiState } from "../blocks/globals.slint";
 import { Button } from "../widgets/button.slint";
+import { ScopeBridge, InstanceBridge } from "../blocks/bridges.slint";
+import { ScrollView } from "../widgets/scroll-view.slint";
 
 export component ConnectionsPage inherits Rectangle {
     background: transparent;
 
-    in-out property <bool> allowed: false;
+    in-out property <bool> allowed: UiState.scope.state == "allowed";
 
     VerticalLayout {
-        padding: Styles.sizes.p-xl * 2;
         spacing: Styles.sizes.s-md;
-
-        HorizontalLayout {
+        VerticalLayout {
+            padding-top: Styles.sizes.p-xl * 2;
+            padding-left: Styles.sizes.p-xl * 2;
+            padding-right: Styles.sizes.p-xl * 2;
             spacing: Styles.sizes.s-md;
 
-            VerticalLayout {
-                alignment: LayoutAlignment.center;
-                padding: Styles.sizes.p-xl;
+            vertical-stretch: 0;
 
-                Image {
-                    source: UiState.page == "default-scope" ? @image-url("../assets/globe-star.svg") : @image-url("../assets/globe-sync.svg");
-                    colorize: Styles.palette.window-fg;
-                    width: 32px;
-                    height: 32px;
-                }
-            }
-
-            VerticalLayout {
+            HorizontalLayout {
                 spacing: Styles.sizes.s-md;
-                alignment: LayoutAlignment.center;
-                horizontal-stretch: 1;
 
-                Text {
-                    text: UiState.page == "default-scope" ? @tr("Default Scope") : "";
-                    font-size: Styles.sizes.font;
-                    font-weight: 700;
-                    color: Styles.palette.window-fg;
+                VerticalLayout {
+                    alignment: LayoutAlignment.center;
+                    padding: Styles.sizes.p-xl;
+
+                    Image {
+                        source: UiState.page == "default-scope" ? @image-url("../assets/globe-star.svg") : UiState.scope.state == "pending" ? @image-url("../assets/globe-warning.svg") : @image-url("../assets/globe-sync.svg");
+                        colorize: Styles.palette.window-fg;
+                        width: 32px;
+                        height: 32px;
+                    }
                 }
 
-                Text {
-                    text: UiState.page;
-                    font-size: Styles.sizes.font;
-                    font-weight: 400;
-                    color: Styles.palette.window-fg;
-                    opacity: 0.6;
+                VerticalLayout {
+                    spacing: Styles.sizes.s-md;
+                    alignment: LayoutAlignment.center;
+                    horizontal-stretch: 1;
+
+                    Text {
+                        text: UiState.page == "default-scope" ? @tr("Default Scope") : UiState.scope.name;
+                        font-size: Styles.sizes.font;
+                        font-weight: 700;
+                        color: Styles.palette.window-fg;
+                    }
+
+                    Text {
+                        text: UiState.page == "default-scope" ? @tr("This is the default scope.") : UiState.scope.host;
+                        font-size: Styles.sizes.font;
+                        font-weight: 400;
+                        color: Styles.palette.window-fg;
+                        opacity: 0.6;
+                    }
                 }
-            }
 
-            VerticalLayout {
-                spacing: Styles.sizes.s-md;
-                alignment: LayoutAlignment.center;
+                VerticalLayout {
+                    spacing: Styles.sizes.s-md;
+                    alignment: LayoutAlignment.center;
+                    padding-right: Styles.sizes.p-md;
 
-                Text {
-                    text: UiState.page == "default-scope" ? @tr("Manually Controlled") : @tr("External Controlled");
-                    font-size: Styles.sizes.font;
-                    color: UiState.page == "default-scope" ? Styles.palette.info-bg : Styles.palette.success-bg;
-                    horizontal-alignment: right;
-                }
+                    Text {
+                        text: UiState.page == "default-scope" ? @tr("Manually Controlled") : @tr("External Controlled");
+                        font-size: Styles.sizes.font;
+                        color: UiState.page == "default-scope" ? Styles.palette.info-bg : Styles.palette.success-bg;
+                        horizontal-alignment: right;
+                    }
 
-                Text {
-                    text: "HTTP/1, HTTP/2";
-                    font-size: Styles.sizes.font;
-                    font-weight: 400;
-                    color: Styles.palette.window-fg;
-                    opacity: 0.6;
-                    horizontal-alignment: right;
+                    Text {
+                        text: UiState.page == "default-scope" ? "v0,pingfall" : UiState.scope.features;
+                        font-size: Styles.sizes.font;
+                        font-weight: 400;
+                        color: Styles.palette.window-fg;
+                        opacity: 0.6;
+                        horizontal-alignment: right;
+                    }
                 }
             }
 
             Rectangle {
-                width: Styles.sizes.p-md;
+                height: 1px;
+                background: Styles.palette.layer-3;
             }
-        }
 
-        Rectangle {
-            height: 1px;
-            background: Styles.palette.layer-3;
-        }
+            HorizontalLayout {
+                padding-left: Styles.sizes.p-md;
 
-        HorizontalLayout {
+                Text {
+                    text: UiState.page == "default-scope" ? @tr("This scope is controlled by you manually.") : (root.allowed ? @tr("This domain can control wsrx on your local network.") : @tr("This domain requested controlling wsrx."));
+                    color: UiState.page == "default-scope" ? Styles.palette.info-bg : (root.allowed ? Styles.palette.success-bg : Styles.palette.error-bg);
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                if UiState.page == "default-scope": Button {
+                    icon: @image-url("../assets/checkmark-circle.svg");
+                    flat: true;
+                    text: @tr("Enjoy");
+                    icon-color: Styles.palette.success-bg;
+                    disabled: true;
+                }
+
+                if UiState.page != "default-scope" && !root.allowed: Button {
+                    icon: allow-timer.running ? @image-url("../assets/more-horizontal.svg") : @image-url("../assets/checkmark-circle.svg");
+                    flat: true;
+                    text: @tr("Accept");
+                    icon-color: Styles.palette.success-bg;
+
+                    allow-timer := Timer {
+                        interval: Styles.durations.long;
+                        running: false;
+                        triggered => {
+                            UiState.change-scope(UiState.scope.host);
+                            self.running = false;
+                        }
+                    }
+
+                    clicked => {
+                        ScopeBridge.allow(UiState.scope.host);
+                        allow-timer.running = true;
+                    }
+                }
+
+                if UiState.page != "default-scope" && !root.allowed: Button {
+                    icon: @image-url("../assets/dismiss-circle.svg");
+                    flat: true;
+                    text: @tr("Decline");
+                    icon-color: Styles.palette.error-bg;
+
+                    clicked => {
+                        ScopeBridge.del(UiState.scope.host);
+                        UiState.page = "default-scope";
+                    }
+                }
+
+                if UiState.page != "default-scope" && root.allowed: Button {
+                    icon: @image-url("../assets/dismiss-circle.svg");
+                    flat: true;
+                    text: @tr("Remove");
+                    icon-color: Styles.palette.error-bg;
+
+                    clicked => {
+                        ScopeBridge.del(UiState.scope.host);
+                        UiState.page = "default-scope";
+                    }
+                }
+            }
 
             Rectangle {
-                width: Styles.sizes.p-md;
-            }
-
-            Text {
-                text: UiState.page == "default-scope" ? @tr("This scope is controlled by you manually.") : (root.allowed ? @tr("This domain can control wsrx on your local network.") : @tr("This domain requested controlling wsrx."));
-                color: UiState.page == "default-scope" ? Styles.palette.info-bg : (root.allowed ? Styles.palette.success-bg : Styles.palette.error-bg);
-                vertical-alignment: center;
-                horizontal-stretch: 1;
-            }
-
-            if UiState.page == "default-scope": Button {
-                icon: @image-url("../assets/checkmark-circle.svg");
-                flat: true;
-                text: @tr("Enjoy");
-                icon-color: Styles.palette.success-bg;
-                disabled: true;
-            }
-
-            if UiState.page != "default-scope" && !root.allowed: Button {
-                icon: @image-url("../assets/checkmark-circle.svg");
-                flat: true;
-                text: @tr("Accept");
-                icon-color: Styles.palette.success-bg;
-            }
-
-            if UiState.page != "default-scope" && !root.allowed: Button {
-                icon: @image-url("../assets/dismiss-circle.svg");
-                flat: true;
-                text: @tr("Decline");
-                icon-color: Styles.palette.error-bg;
-            }
-
-            if UiState.page != "default-scope" && root.allowed: Button {
-                icon: @image-url("../assets/dismiss-circle.svg");
-                flat: true;
-                text: @tr("Remove");
-                icon-color: Styles.palette.error-bg;
+                height: 1px;
+                background: Styles.palette.layer-3;
             }
         }
 
-        Rectangle {
-            height: 1px;
-            background: Styles.palette.layer-3;
-        }
-
-        Flickable {
+        ScrollView {
             vertical-stretch: 1;
+
+            VerticalLayout {
+                padding: Styles.sizes.p-xl * 2;
+                spacing: Styles.sizes.s-md;
+
+                for instance in InstanceBridge.scoped-instances: VerticalLayout {
+                    spacing: Styles.sizes.s-md;
+
+                    horizontal-stretch: 1;
+                    vertical-stretch: 0;
+
+                    HorizontalLayout {
+                        padding-left: Styles.sizes.p-md;
+                        padding-right: Styles.sizes.p-md;
+                        spacing: Styles.sizes.s-xl;
+                        vertical-stretch: 0;
+
+                        Text {
+                            text: instance.label;
+                            font-size: Styles.sizes.font;
+                            font-weight: 700;
+                            color: Styles.palette.window-fg;
+                            horizontal-stretch: 1;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: instance.local;
+                            font-size: Styles.sizes.font;
+                            font-weight: 400;
+                            color: Styles.palette.info-bg;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        padding-left: Styles.sizes.p-md;
+                        padding-right: Styles.sizes.p-md;
+                        spacing: Styles.sizes.s-xl;
+                        vertical-stretch: 0;
+
+                        Text {
+                            text: instance.remote;
+                            font-size: Styles.sizes.font;
+                            font-weight: 400;
+                            color: Styles.palette.window-fg;
+                            horizontal-stretch: 1;
+                            vertical-alignment: center;
+                            opacity: 0.6;
+                        }
+
+                        Text {
+                            text: instance.latency;
+                            font-size: Styles.sizes.font;
+                            font-weight: 400;
+                            color: Styles.palette.success-bg;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Rectangle {
+                        height: 1px;
+                        background: Styles.palette.layer-3;
+                        vertical-stretch: 0;
+                    }
+                }
+
+                Rectangle {
+                    vertical-stretch: 1;
+                }
+            }
         }
     }
 }

@@ -28,6 +28,7 @@ export struct Scope {
     host: string,
     name: string,
     state: string,
+    features: string,
 }
 
 export global InstanceBridge {
@@ -36,6 +37,7 @@ export global InstanceBridge {
     callback del(remote: string);
     callback scope(host: string);
     in-out property <[Instance]> instances;
+    in-out property <[Instance]> scoped-instances;
 }
 
 export global ScopeBridge {

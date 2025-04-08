@@ -36,6 +36,7 @@ tokio-tungstenite = { version = "0.26", features = ["rustls-tls-native-roots"] }
 chrono             = { version = "0.4" }
 clap               = { version = "4.5", features = ["derive"] }
 once_cell          = { version = "1.21" }
+rand               = { version = "0.9" }
 serde              = { version = "1.0", features = ["derive"] }
 serde_json         = { version = "1.0" }
 subprocess         = { version = "0.2" }
