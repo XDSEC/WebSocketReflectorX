@@ -78,6 +78,10 @@ export component SettingsPage inherits ScrollView {
                 text: SystemInfoBridge.version + (SystemInfoBridge.has-updates ? " " + @tr("Update available") : "");
                 icon-color: SystemInfoBridge.has-updates ? Styles.palette.primary-bg : Styles.palette.success-bg;
                 disabled: !SystemInfoBridge.has-updates;
+
+                clicked => {
+                    SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX/releases");
+                }
             }
         }
 
@@ -163,7 +167,7 @@ export component SettingsPage inherits ScrollView {
                 icon-color: Styles.palette.primary-bg;
 
                 clicked => {
-                    SystemInfoBridge.goto_support();
+                    SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX/issues");
                 }
             }
         }

@@ -168,15 +168,19 @@ export component SideBar inherits Rectangle {
             }
 
             Button {
-                text: self.hover ? @tr("Click to copy") : @tr("Controller port");
+                text: self.hover ? (SettingsBridge.online ? @tr("Click to copy") : @tr("Click to see log")) : @tr("Controller port");
                 icon: self.hover ? @image-url("../assets/copy.svg") : (SettingsBridge.online ? @image-url("../assets/flash-flow.svg") : @image-url("../assets/globe-warning.svg"));
-                icon-color: self.hover ? Styles.palette.success-bg : (SettingsBridge.online ? Styles.palette.window-fg : Styles.palette.error-bg);
+                icon-color: self.hover ? (SettingsBridge.online ? Styles.palette.success-bg : Styles.palette.error-bg) : (SettingsBridge.online ? Styles.palette.window-fg : Styles.palette.error-bg);
                 alignment: LayoutAlignment.start;
                 flat: true;
 
                 clicked => {
-                    api-address-input.select-all();
-                    api-address-input.copy();
+                    if SettingsBridge.online {
+                        api-address-input.select-all();
+                        api-address-input.copy();
+                    } else {
+                        UiState.page = "logs";
+                    }
                 }
 
                 api-address-input := TextInput {

@@ -12,8 +12,8 @@ export global SystemInfoBridge {
     in-out property <string> os;
     in-out property <[string]> interfaces;
     in-out property <string> info;
-    callback refresh_interfaces;
-    callback goto_support;
+    callback refresh-interfaces;
+    callback open-link(url: string);
 }
 
 export struct Instance {
@@ -49,6 +49,6 @@ export global ScopeBridge {
 export global SettingsBridge {
     in-out property <string> theme;
     in-out property <string> language;
-    in-out property <int> api-port: 3307;
-    in-out property <bool> online: true;
+    in-out property <int> api-port: 0;
+    in-out property <bool> online: false;
 }

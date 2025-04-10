@@ -39,11 +39,28 @@ export component GetStartedPage inherits Rectangle {
                     }
                 }
 
-                Text {
-                    text: "WebSocket Reflector X";
-                    font-size: Styles.sizes.font * 1.5;
-                    font-weight: 700;
-                    color: Styles.palette.window-fg;
+                HorizontalLayout {
+                    spacing: Styles.sizes.s-lg;
+
+                    Text {
+                        text: "WebSocket Reflector X";
+                        font-size: Styles.sizes.font * 1.5;
+                        font-weight: 700;
+                        color: Styles.palette.window-fg;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+
+                    if SystemInfoBridge.has-updates: Button {
+                        horizontal-stretch: 0;
+                        text: @tr("Update");
+                        icon: @image-url("../assets/sparkle.svg");
+                        icon-color: Styles.palette.warn-bg;
+
+                        clicked => {
+                            SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX/releases");
+                        }
+                    }
                 }
 
                 Text {
@@ -76,7 +93,7 @@ export component GetStartedPage inherits Rectangle {
                         icon-rotate-angle: 0deg;
 
                         clicked() => {
-                            SystemInfoBridge.refresh_interfaces();
+                            SystemInfoBridge.refresh-interfaces();
                             self.icon-rotate-angle = self.icon-rotate-angle + 180deg;
                         }
                     }

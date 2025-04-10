@@ -39,8 +39,10 @@ pub fn setup()
         .with_thread_ids(false)
         .with_thread_names(false);
 
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+
     tracing_subscriber::registry()
-        .with(EnvFilter::from_env("WSRX_LOG"))
+        .with(filter)
         .with(file_log_layer)
         .with(console_log_layer)
         .init();

@@ -42,12 +42,10 @@ pub fn setup(window: &MainWindow) {
         refresh_network_interfaces(model);
     });
 
-    bridge.on_goto_support(move || {
-        open::that_detached("https://github.com/XDSEC/WebSocketReflectorX/issues").unwrap_or_else(
-            |_| {
-                tracing::error!("Failed to open the support page.");
-            },
-        );
+    bridge.on_open_link(move |url| {
+        open::that_detached(&url).unwrap_or_else(|_| {
+            tracing::error!("Failed to open link {url} in default browser.");
+        });
     });
 
     check_for_updates(window);
