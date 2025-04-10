@@ -55,6 +55,7 @@ reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
   "http2",
   "charset",
+  "blocking",
 ] }
 slint = { version = "1.10", default-features = false, features = [
   "std",

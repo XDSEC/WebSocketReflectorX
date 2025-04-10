@@ -4,14 +4,12 @@
 use slint::ComponentHandle;
 use std::error::Error;
 
-use tracing::info;
 use wsrx_desktop::{launcher, logging};
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Initialize the logger.
     let (console_guard, file_guard) = logging::setup()?;
     // Set the platform backend to winit.
-    info!("WSRX Desktop is initializing...");
     slint::platform::set_platform(Box::new(i_slint_backend_winit::Backend::new().unwrap()))?;
 
     // Create the main window.

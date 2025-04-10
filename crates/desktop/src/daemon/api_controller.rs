@@ -12,8 +12,9 @@ use axum::{
     extract::{FromRequest, Request, State},
     http::{HeaderMap, Method, StatusCode},
     response::{IntoResponse, Response},
-    routing::get,
+    routing::{get, post},
 };
+use i_slint_backend_winit::WinitWindowAccessor;
 use serde::{Deserialize, Serialize};
 use slint::{ComponentHandle, Model, VecModel};
 use tokio::net::TcpListener;
@@ -56,6 +57,7 @@ pub fn router(state: ServerState) -> axum::Router {
                         .post(launch_instance)
                         .delete(close_instance),
                 )
+                .route("/popup", post(popup_window))
                 .layer(cors_layer)
                 .with_state(state.clone()),
         )
@@ -395,4 +397,18 @@ async fn request_control(
             ))
         }
     }
+}
+
+async fn popup_window(
+    State(state): State<ServerState>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    slint::invoke_from_event_loop(move || {
+        let ui_handle = state.ui.upgrade().unwrap();
+        ui_handle.show().ok();
+        ui_handle.window().with_winit_window(|winit_window| {
+            winit_window.set_minimized(false);
+        });
+    })
+    .ok();
+    Ok(StatusCode::OK)
 }

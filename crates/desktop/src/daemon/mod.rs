@@ -2,6 +2,7 @@ use std::{process, rc::Rc, sync::Arc};
 
 use api_controller::router;
 
+use directories::ProjectDirs;
 use model::ServerState;
 use slint::{ComponentHandle, VecModel};
 use tokio::{net::TcpListener, sync::RwLock};
@@ -120,6 +121,21 @@ pub fn setup(ui: &MainWindow) {
             settings_bridge.set_online(true);
         })
         .ok();
+
+        let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
+            Some(dirs) => dirs,
+            None => {
+                error!("Unable to find project config directories");
+                return;
+            }
+        };
+        let lock_file = proj_dirs.data_local_dir().join(".rx.is.alive");
+        tokio::fs::write(&lock_file, port.to_string())
+            .await
+            .unwrap_or_else(|_| {
+                error!("Failed to write lock file");
+                std::process::exit(1);
+            });
 
         info!(
             "api server is listening on [[ {} ]]",
