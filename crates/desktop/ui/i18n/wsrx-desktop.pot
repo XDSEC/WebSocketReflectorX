@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-10 14:05+0000\n"
+"POT-Creation-Date: 2025-04-10 17:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,9 +102,14 @@ msgctxt "ConnectionsPage"
 msgid "Remove"
 msgstr ""
 
-#: crates/desktop/ui/pages/connections.slint:222
+#: crates/desktop/ui/pages/connections.slint:199
 msgctxt "ConnectionsPage"
-msgid "Click to copy"
+msgid "Click to copy: "
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:224
+msgctxt "ConnectionsPage"
+msgid "Click to close"
 msgstr ""
 
 #: crates/desktop/ui/pages/get-started.slint:56
@@ -152,44 +157,44 @@ msgctxt "SettingsPage"
 msgid "Export"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:157
+#: crates/desktop/ui/pages/settings.slint:161
 msgctxt "SettingsPage"
 msgid "Have problems? Find support here."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:166
+#: crates/desktop/ui/pages/settings.slint:170
 msgctxt "SettingsPage"
 msgid "Support"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:188
+#: crates/desktop/ui/pages/settings.slint:192
 msgctxt "SettingsPage"
 msgid "System information for bug reporting and debugging"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:198 crates/desktop/ui/pages/settings.slint:206
+#: crates/desktop/ui/pages/settings.slint:202 crates/desktop/ui/pages/settings.slint:210
 msgctxt "SettingsPage"
 msgid "Copy"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:216
+#: crates/desktop/ui/pages/settings.slint:220
 msgctxt "SettingsPage"
 msgid "Copied"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:233
+#: crates/desktop/ui/pages/settings.slint:237
 msgctxt "SettingsPage"
 msgid ""
 "Please include the following information when reporting bugs or asking for "
 "help."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:271
+#: crates/desktop/ui/pages/settings.slint:275
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:278
+#: crates/desktop/ui/pages/settings.slint:289
 msgctxt "SettingsPage"
 msgid "(c) 2022 - 2025 XDSEC, distributed with MIT license."
 msgstr ""

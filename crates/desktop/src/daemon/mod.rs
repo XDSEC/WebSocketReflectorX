@@ -36,6 +36,12 @@ pub fn setup(ui: &MainWindow) {
     }
 
     let handle = ui.as_weak();
+
+    let state_d = ServerState {
+        ui: handle.clone(),
+        instances: Arc::new(RwLock::new(vec![])),
+        scopes: Arc::new(RwLock::new(vec![])),
+    };
     // Initialize the global state
     let instances: Rc<VecModel<Instance>> = Rc::new(VecModel::default());
     let scopes: Rc<VecModel<Scope>> = Rc::new(VecModel::default());
@@ -49,20 +55,42 @@ pub fn setup(ui: &MainWindow) {
     instance_bridge.set_instances(instances_rc);
     instance_bridge.set_scoped_instances(scoped_instances_rc);
 
+    let state = state_d.clone();
+
+    instance_bridge.on_add(move |remote, local| {
+        let state_cloned = state.clone();
+        match slint::spawn_local(async_compat::Compat::new(async move {
+            ui_controller::on_instance_add(&state_cloned, remote.as_str(), local.as_str()).await;
+        })) {
+            Ok(_) => {}
+            Err(e) => {
+                debug!("Failed to update instance bridge: {e}");
+            }
+        }
+    });
+
+    let state = state_d.clone();
+
+    instance_bridge.on_del(move |local| {
+        let state_cloned = state.clone();
+        match slint::spawn_local(async_compat::Compat::new(async move {
+            ui_controller::on_instance_del(&state_cloned, local.as_str()).await;
+        })) {
+            Ok(_) => {}
+            Err(e) => {
+                debug!("Failed to update instance bridge: {e}");
+            }
+        }
+    });
+
     let scope_bridge = ui.global::<ScopeBridge>();
     scope_bridge.set_scopes(scopes_rc);
 
-    let state = ServerState {
-        ui: handle.clone(),
-        instances: Arc::new(RwLock::new(vec![])),
-        scopes: Arc::new(RwLock::new(vec![])),
-    };
-
-    let state_cloned = state.clone();
     let handle_cloned = handle.clone();
+    let state = state_d.clone();
 
     scope_bridge.on_allow(move |scope_host| {
-        let state_cloned = state_cloned.clone();
+        let state_cloned = state.clone();
         let handle_cloned = handle_cloned.clone();
         match slint::spawn_local(async_compat::Compat::new(async move {
             ui_controller::on_scope_allow(
@@ -79,7 +107,7 @@ pub fn setup(ui: &MainWindow) {
         }
     });
 
-    let state_cloned = state.clone();
+    let state_cloned = state_d.clone();
     let handle_cloned = handle.clone();
 
     scope_bridge.on_del(move |scope_host| {
@@ -96,7 +124,7 @@ pub fn setup(ui: &MainWindow) {
         }
     });
 
-    let router = router(state.clone());
+    let router = router(state_d.clone());
 
     match slint::spawn_local(async_compat::Compat::new(async move {
         let listener = match TcpListener::bind(&format!("{}:{}", "127.0.0.1", 3307)).await {

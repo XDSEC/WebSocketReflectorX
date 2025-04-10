@@ -147,7 +147,7 @@ export component GetStartedPage inherits Rectangle {
                         }
                     }
 
-                    LineEdit {
+                    port-edit := LineEdit {
                         width: 80px;
                         placeholder-text: @tr("Port...");
                         text: "0";
@@ -169,14 +169,17 @@ export component GetStartedPage inherits Rectangle {
                             interval: Styles.durations.mid;
                             running: false;
                             triggered => {
-                                InstanceBridge.add(remote-addr-edit.text, local-address-selector.text);
+                                UiState.change-scope("default-scope");
                                 UiState.page = "default-scope";
+
                                 send-timer.running = false;
                                 send-button.icon-rotate-angle = 0deg;
                             }
                         }
 
                         clicked() => {
+                            InstanceBridge.add(remote-addr-edit.text, local-address-selector.text + ":" + port-edit.text);
+
                             send-timer.running = true;
                             send-button.icon-rotate-angle = 90deg;
                         }

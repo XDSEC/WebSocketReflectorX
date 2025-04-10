@@ -43,7 +43,6 @@ pub fn setup() -> Result<MainWindow, PlatformError> {
                 });
             }
         }
-
         std::process::exit(0);
     }
 

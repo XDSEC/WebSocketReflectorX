@@ -43,8 +43,7 @@ export struct Scope {
 export global InstanceBridge {
     // manual-add only available to "default" scope
     callback add(remote: string, local: string);
-    callback del(remote: string);
-    callback scope(host: string);
+    callback del(local: string);
     in-out property <[Instance]> instances;
     in-out property <[Instance]> scoped-instances;
 }

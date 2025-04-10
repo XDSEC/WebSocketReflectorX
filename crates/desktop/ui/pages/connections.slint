@@ -162,7 +162,7 @@ export component ConnectionsPage inherits Rectangle {
 
                 for instance in InstanceBridge.scoped-instances: Rectangle {
 
-                    background: item-touch-area.pressed ? Styles.palette.layer-1 : item-touch-area.has-hover ? Styles.palette.layer-2 : transparent;
+                    background: item-touch-area.pressed ? Styles.palette.layer-1 : item-touch-area.has-hover ? Styles.palette.layer-2 : close-touch-area.has-hover ? Styles.palette.warn-bg.with-alpha(0.2) : transparent;
                     border-radius: Styles.sizes.r-sm;
 
                     item-touch-area := TouchArea {
@@ -196,7 +196,7 @@ export component ConnectionsPage inherits Rectangle {
                             }
 
                             Text {
-                                text: instance.local;
+                                text: (item-touch-area.has-hover ? @tr("Click to copy: ") : "") + instance.local;
                                 font-size: Styles.sizes.font;
                                 font-weight: 400;
                                 color: Styles.palette.info-bg;
@@ -221,11 +221,18 @@ export component ConnectionsPage inherits Rectangle {
                             }
 
                             Text {
-                                text: item-touch-area.has-hover ? @tr("Click to copy") : ((instance.latency >= 0 ? instance.latency : "--") + " ms");
+                                text: UiState.page == "default-scope" && (item-touch-area.has-hover || close-touch-area.has-hover) ? @tr("Click to close") : ((instance.latency >= 0 ? instance.latency : "--") + " ms");
                                 font-size: Styles.sizes.font;
                                 font-weight: 400;
-                                color: instance.latency >= 0 ? Styles.palette.success-bg : Styles.palette.error-bg;
+                                color: item-touch-area.has-hover || close-touch-area.has-hover ? Styles.palette.warn-bg : instance.latency >= 0 ? Styles.palette.success-bg : Styles.palette.error-bg;
                                 vertical-alignment: center;
+                                close-touch-area := TouchArea {
+                                    mouse-cursor: MouseCursor.pointer;
+                                    clicked => {
+                                        InstanceBridge.del(instance.local);
+                                    }
+                                    enabled: UiState.page == "default-scope";
+                                }
                             }
                         }
 
