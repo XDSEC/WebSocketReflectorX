@@ -4,7 +4,10 @@ use i_slint_backend_winit::{WinitWindowAccessor, WinitWindowEventResult};
 use slint::ComponentHandle;
 use winit::window::ResizeDirection;
 
-use crate::ui::{MainWindow, WindowControlBridge};
+use crate::{
+    launcher,
+    ui::{MainWindow, WindowControlBridge},
+};
 
 pub fn setup(window: &MainWindow) {
     let mut resize_map = HashMap::new();
@@ -31,7 +34,8 @@ pub fn setup(window: &MainWindow) {
                 WinitWindowEventResult::Propagate
             }
             winit::event::WindowEvent::CloseRequested => {
-                std::process::exit(0);
+                launcher::shutdown();
+                WinitWindowEventResult::PreventDefault
             }
             _ => WinitWindowEventResult::Propagate,
         }
@@ -57,7 +61,8 @@ pub fn setup(window: &MainWindow) {
         });
     });
     window_control_bridge.on_close(move || {
-        std::process::exit(0);
+        // TODO: system tray implementation
+        launcher::shutdown();
     });
     let window_clone_pin = window.as_weak();
     window_control_bridge.on_maximize(move || {

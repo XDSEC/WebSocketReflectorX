@@ -1,8 +1,9 @@
 use async_compat::Compat;
+use directories::ProjectDirs;
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 use std::rc::Rc;
 use sysinfo::System;
-use tracing::{debug, error, info};
+use tracing::{debug, error, warn};
 
 use crate::{
     WSRX_FULL_VERSION,
@@ -45,6 +46,20 @@ pub fn setup(window: &MainWindow) {
     bridge.on_open_link(move |url| {
         open::that_detached(&url).unwrap_or_else(|_| {
             tracing::error!("Failed to open link {url} in default browser.");
+        });
+    });
+
+    bridge.on_open_logs(move || {
+        let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
+            Some(dirs) => dirs,
+            None => {
+                error!("Unable to find project config directories");
+                return;
+            }
+        };
+        let log_dir = proj_dirs.data_local_dir().join("logs");
+        open::that_detached(&log_dir).unwrap_or_else(|_| {
+            tracing::error!("Failed to open logs directory.");
         });
     });
 
@@ -98,10 +113,10 @@ fn check_for_updates(window: &MainWindow) {
             let current_version = env!("CARGO_PKG_VERSION");
             if version != current_version {
                 bridge.set_has_updates(true);
-                info!("Update available: {}", version);
+                warn!("Update available: {}", version);
             } else {
                 bridge.set_has_updates(false);
-                info!("No update available.");
+                debug!("No update available.");
             }
         } else {
             error!(

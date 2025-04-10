@@ -172,7 +172,7 @@ async fn launch_instance(
         label: instance_data.label.clone(),
         remote: instance_data.remote.clone(),
         local: local.clone(),
-        latency: "-- ms".to_string(),
+        latency: -1,
         scope_host: scope.clone(),
         handle: Some(tokio::task::spawn(async move {
             loop {
@@ -215,7 +215,7 @@ async fn launch_instance(
             label: instance_data.label.into(),
             remote: instance_data.remote.into(),
             local: local.into(),
-            latency: "-- ms".into(),
+            latency: -1,
             scope_host: scope.into(),
         };
         instances.push(instance);

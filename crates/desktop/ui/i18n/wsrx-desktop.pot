@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-10 13:41+0000\n"
+"POT-Creation-Date: 2025-04-10 14:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,6 +100,11 @@ msgstr ""
 #: crates/desktop/ui/pages/connections.slint:140
 msgctxt "ConnectionsPage"
 msgid "Remove"
+msgstr ""
+
+#: crates/desktop/ui/pages/connections.slint:222
+msgctxt "ConnectionsPage"
+msgid "Click to copy"
 msgstr ""
 
 #: crates/desktop/ui/pages/get-started.slint:56

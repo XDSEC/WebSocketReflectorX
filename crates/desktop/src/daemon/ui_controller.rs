@@ -88,7 +88,7 @@ pub async fn on_scope_del(state: &ServerState, ui: slint::Weak<MainWindow>, scop
             label: i.label.clone().into(),
             remote: i.remote.clone().into(),
             local: i.local.clone().into(),
-            latency: "-- ms".into(),
+            latency: i.latency,
             scope_host: i.scope_host.clone().into(),
         })
         .collect::<Vec<_>>();

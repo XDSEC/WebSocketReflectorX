@@ -15,7 +15,7 @@ pub fn setup()
     let log_dir = proj_dirs.data_local_dir().join("logs");
     std::fs::create_dir_all(&log_dir)?;
     let file_appender = rolling::RollingFileAppender::builder()
-        .rotation(rolling::Rotation::DAILY)
+        .rotation(rolling::Rotation::NEVER)
         .filename_prefix("wsrx")
         .filename_suffix("log");
     let file_appender = file_appender.build(std::path::Path::new(&log_dir).canonicalize()?)?;

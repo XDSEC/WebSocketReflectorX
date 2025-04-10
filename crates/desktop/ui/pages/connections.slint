@@ -160,65 +160,80 @@ export component ConnectionsPage inherits Rectangle {
                 padding: Styles.sizes.p-xl * 2;
                 spacing: Styles.sizes.s-md;
 
-                for instance in InstanceBridge.scoped-instances: VerticalLayout {
-                    spacing: Styles.sizes.s-md;
+                for instance in InstanceBridge.scoped-instances: Rectangle {
 
-                    horizontal-stretch: 1;
-                    vertical-stretch: 0;
+                    background: item-touch-area.pressed ? Styles.palette.layer-1 : item-touch-area.has-hover ? Styles.palette.layer-2 : transparent;
+                    border-radius: Styles.sizes.r-sm;
 
-                    HorizontalLayout {
-                        padding-left: Styles.sizes.p-md;
-                        padding-right: Styles.sizes.p-md;
-                        spacing: Styles.sizes.s-xl;
-                        vertical-stretch: 0;
-
-                        Text {
-                            text: instance.label;
-                            font-size: Styles.sizes.font;
-                            font-weight: 700;
-                            color: Styles.palette.window-fg;
-                            horizontal-stretch: 1;
-                            vertical-alignment: center;
-                        }
-
-                        Text {
-                            text: instance.local;
-                            font-size: Styles.sizes.font;
-                            font-weight: 400;
-                            color: Styles.palette.info-bg;
-                            vertical-alignment: center;
+                    item-touch-area := TouchArea {
+                        clicked => {
+                            hidden-input.select-all();
+                            hidden-input.copy();
                         }
                     }
 
-                    HorizontalLayout {
-                        padding-left: Styles.sizes.p-md;
-                        padding-right: Styles.sizes.p-md;
-                        spacing: Styles.sizes.s-xl;
-                        vertical-stretch: 0;
-
-                        Text {
-                            text: instance.remote;
-                            font-size: Styles.sizes.font;
-                            font-weight: 400;
-                            color: Styles.palette.window-fg;
-                            horizontal-stretch: 1;
-                            vertical-alignment: center;
-                            opacity: 0.6;
-                        }
-
-                        Text {
-                            text: instance.latency;
-                            font-size: Styles.sizes.font;
-                            font-weight: 400;
-                            color: Styles.palette.success-bg;
-                            vertical-alignment: center;
-                        }
+                    hidden-input := TextInput {
+                        width: 0;
+                        height: 0;
+                        text: instance.local;
                     }
 
-                    Rectangle {
-                        height: 1px;
-                        background: Styles.palette.layer-3;
-                        vertical-stretch: 0;
+                    VerticalLayout {
+
+                        HorizontalLayout {
+                            padding: Styles.sizes.p-md;
+                            spacing: Styles.sizes.s-xl;
+                            vertical-stretch: 0;
+
+                            Text {
+                                text: instance.label;
+                                font-size: Styles.sizes.font;
+                                font-weight: 700;
+                                color: Styles.palette.window-fg;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                            }
+
+                            Text {
+                                text: instance.local;
+                                font-size: Styles.sizes.font;
+                                font-weight: 400;
+                                color: Styles.palette.info-bg;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding: Styles.sizes.p-md;
+                            padding-top: 0;
+                            spacing: Styles.sizes.s-xl;
+                            vertical-stretch: 0;
+
+                            Text {
+                                text: instance.remote;
+                                font-size: Styles.sizes.font;
+                                font-weight: 400;
+                                color: Styles.palette.window-fg;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                                opacity: 0.6;
+                            }
+
+                            Text {
+                                text: item-touch-area.has-hover ? @tr("Click to copy") : ((instance.latency >= 0 ? instance.latency : "--") + " ms");
+                                font-size: Styles.sizes.font;
+                                font-weight: 400;
+                                color: instance.latency >= 0 ? Styles.palette.success-bg : Styles.palette.error-bg;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        Rectangle {
+                            height: 1px;
+                            background: Styles.palette.layer-3;
+                            vertical-stretch: 0;
+                            visible: !item-touch-area.has-hover;
+                        }
                     }
                 }
 

@@ -14,7 +14,7 @@ pub struct InstanceData {
     #[serde(alias = "from")]
     pub local: String,
     #[serde(default)]
-    pub latency: String,
+    pub latency: i32,
     #[serde(default)]
     pub scope_host: String,
     #[serde(skip)]

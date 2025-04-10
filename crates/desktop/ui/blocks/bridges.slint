@@ -6,21 +6,30 @@ export global WindowControlBridge {
     pure callback maximize;
 }
 
+export struct Log {
+    time: string,
+    message: string,
+    target: string,
+    level: string,
+}
+
 export global SystemInfoBridge {
     in-out property <string> version;
     in-out property <bool> has-updates;
     in-out property <string> os;
     in-out property <[string]> interfaces;
     in-out property <string> info;
+    in-out property <[Log]> logs;
     callback refresh-interfaces;
     callback open-link(url: string);
+    callback open-logs;
 }
 
 export struct Instance {
     label: string,
     remote: string,
     local: string,
-    latency: string,
+    latency: int,
     scope_host: string,
 }
 
