@@ -276,6 +276,13 @@ export component SettingsPage inherits ScrollView {
             color: Styles.palette.window-fg;
             vertical-alignment: center;
             opacity: 0.6;
+
+            TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    SystemInfoBridge.open-link("https://github.com/Reverier-Xu");
+                }
+            }
         }
 
         Text {
@@ -283,6 +290,13 @@ export component SettingsPage inherits ScrollView {
             color: Styles.palette.window-fg;
             vertical-alignment: center;
             opacity: 0.6;
+
+            TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX");
+                }
+            }
         }
     }
 }

@@ -166,6 +166,7 @@ export component ConnectionsPage inherits Rectangle {
                     border-radius: Styles.sizes.r-sm;
 
                     item-touch-area := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
                         clicked => {
                             hidden-input.select-all();
                             hidden-input.copy();
