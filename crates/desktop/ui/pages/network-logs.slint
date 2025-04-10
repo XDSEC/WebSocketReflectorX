@@ -1,4 +1,69 @@
 import { Styles } from "../widgets/styles.slint";
-export component NetworkLogsPage inherits Rectangle {
-    background: transparent;
+import { ScrollView } from "../widgets/scroll-view.slint";
+import { SystemInfoBridge } from "../blocks/bridges.slint";
+
+export component NetworkLogsPage inherits ScrollView {
+
+    VerticalLayout {
+        padding: Styles.sizes.p-xl * 2;
+
+        for log in SystemInfoBridge.logs: VerticalLayout {
+            opacity: log.level == "DEBUG" ? 0.5 : log.level == "INFO" ? 0.8 : 1;
+            horizontal-stretch: 0;
+
+            HorizontalLayout {
+                padding: Styles.sizes.p-md;
+                padding-bottom: Styles.sizes.s-md;
+                padding-top: Styles.sizes.p-lg;
+                spacing: Styles.sizes.s-lg;
+
+                Text {
+                    text: log.level;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: log.level == "DEBUG" ? Styles.palette.debug-bg : log.level == "INFO" ? Styles.palette.info-bg : log.level == "WARN" ? Styles.palette.warn-bg : Styles.palette.error-bg;
+                }
+
+                Text {
+                    text: log.target;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: Styles.palette.window-fg;
+                    opacity: 0.6;
+                    horizontal-stretch: 1;
+                }
+
+                Text {
+                    text: log.timestamp;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: Styles.palette.window-fg;
+                    opacity: 0.6;
+                }
+            }
+
+            HorizontalLayout {
+                padding: Styles.sizes.p-md;
+                padding-top: 0;
+                padding-bottom: Styles.sizes.p-lg;
+
+                Text {
+                    text: log.message;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: Styles.palette.window-fg;
+                    wrap: TextWrap.char-wrap;
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Styles.palette.layer-3;
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+        }
+    }
 }

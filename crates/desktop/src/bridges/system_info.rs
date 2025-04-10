@@ -1,13 +1,16 @@
 use async_compat::Compat;
+use chrono::{DateTime, Utc};
 use directories::ProjectDirs;
-use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
+use serde::Deserialize;
+use slint::{ComponentHandle, Model, ModelRc, SharedString, VecModel};
 use std::rc::Rc;
 use sysinfo::System;
+use tokio::{fs, io::AsyncBufReadExt, time::timeout};
 use tracing::{debug, error, warn};
 
 use crate::{
     WSRX_FULL_VERSION,
-    ui::{MainWindow, SystemInfoBridge},
+    ui::{Log, MainWindow, SystemInfoBridge},
 };
 use local_ip_address::list_afinet_netifas;
 
@@ -38,6 +41,10 @@ pub fn setup(window: &MainWindow) {
     let network_interfaces = ModelRc::from(network_interfaces_model.clone());
     bridge.set_interfaces(network_interfaces);
 
+    let logs_model: Rc<VecModel<Log>> = Rc::new(VecModel::default());
+    let logs = ModelRc::from(logs_model.clone());
+    bridge.set_logs(logs);
+
     bridge.on_refresh_interfaces(move || {
         let model = network_interfaces_model.clone();
         refresh_network_interfaces(model);
@@ -64,6 +71,7 @@ pub fn setup(window: &MainWindow) {
     });
 
     check_for_updates(window);
+    stream_logs(&window.as_weak());
 }
 
 pub fn refresh_network_interfaces(model: Rc<VecModel<SharedString>>) {
@@ -126,4 +134,74 @@ fn check_for_updates(window: &MainWindow) {
             );
         }
     }));
+}
+
+#[derive(Clone, Debug, Deserialize, Default)]
+struct LogEntryFields {
+    pub message: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Default)]
+struct LogEntry {
+    pub timestamp: DateTime<Utc>,
+    pub level: String,
+    pub target: String,
+    pub fields: LogEntryFields,
+}
+
+fn stream_logs(window: &slint::Weak<MainWindow>) {
+    let window = window.clone();
+
+    slint::spawn_local(Compat::new(async move {
+        let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
+            Some(dirs) => dirs,
+            None => {
+                eprintln!("Unable to find project config directories");
+                return;
+            }
+        };
+        let log_file = proj_dirs.data_local_dir().join("logs").join("wsrx.log");
+        let mut timer = tokio::time::interval(tokio::time::Duration::from_secs(1));
+        let mut lines = fs::File::open(&log_file)
+            .await
+            .map(tokio::io::BufReader::new)
+            .map(tokio::io::BufReader::lines)
+            .unwrap();
+        let interval = tokio::time::Duration::from_secs(5);
+        loop {
+            timer.tick().await;
+            while let Ok(log) = timeout(interval, lines.next_line()).await {
+                let log = match log {
+                    Ok(Some(log)) => log,
+                    Ok(None) => break,
+                    Err(e) => {
+                        error!("failed to read log: {:?}", e);
+                        break;
+                    }
+                };
+                let log_entry = serde_json::from_str::<LogEntry>(&log).unwrap_or_else(|_| {
+                    error!("failed to parse log: {}", log);
+                    LogEntry::default()
+                });
+                let window = window.clone();
+
+                slint::invoke_from_event_loop(move || {
+                    let window = window.upgrade().unwrap();
+                    let system_info_bridge = window.global::<SystemInfoBridge>();
+                    let local_time = log_entry.timestamp.with_timezone(&chrono::Local);
+                    let log = Log {
+                        timestamp: format!("{}", local_time.format("%Y-%m-%d %H:%M:%S")).into(),
+                        level: log_entry.level.into(),
+                        target: log_entry.target.into(),
+                        message: log_entry.fields.message.into(),
+                    };
+                    let logs = system_info_bridge.get_logs();
+                    let logs = logs.as_any().downcast_ref::<VecModel<Log>>().unwrap();
+                    logs.push(log.clone());
+                })
+                .ok();
+            }
+        }
+    }))
+    .ok();
 }
