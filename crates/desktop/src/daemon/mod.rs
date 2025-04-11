@@ -12,6 +12,7 @@ use tracing::{debug, error, info, warn};
 use crate::ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge, SettingsBridge};
 
 mod api_controller;
+mod latency_worker;
 mod model;
 mod ui_controller;
 
@@ -176,6 +177,16 @@ pub fn setup(ui: &MainWindow) {
         Ok(_) => {}
         Err(e) => {
             error!("Failed to start API server: {e}");
+        }
+    }
+
+    let state = state_d.clone();
+    match slint::spawn_local(async_compat::Compat::new(async move {
+        latency_worker::start(state).await;
+    })) {
+        Ok(_) => {}
+        Err(e) => {
+            error!("Failed to start latency worker: {e}");
         }
     }
 }

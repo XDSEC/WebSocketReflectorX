@@ -21,6 +21,27 @@ pub struct InstanceData {
     pub handle: Option<JoinHandle<()>>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InstanceDataPure {
+    pub label: String,
+    pub remote: String,
+    pub local: String,
+    pub latency: i32,
+    pub scope_host: String,
+}
+
+impl From<&InstanceData> for InstanceDataPure {
+    fn from(data: &InstanceData) -> Self {
+        InstanceDataPure {
+            label: data.label.clone(),
+            remote: data.remote.clone(),
+            local: data.local.clone(),
+            latency: data.latency,
+            scope_host: data.scope_host.clone(),
+        }
+    }
+}
+
 pub fn default_label() -> String {
     format!("inst-{:06x}", rand::random::<u32>())
 }
