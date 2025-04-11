@@ -52,6 +52,7 @@ pub fn setup() -> Result<MainWindow, PlatformError> {
 
     info!("Setting up data bridges...");
     bridges::setup(&ui);
+    bridges::settings::load_config(&ui);
 
     info!("Launching API server...");
     daemon::setup(&ui);
@@ -62,7 +63,9 @@ pub fn setup() -> Result<MainWindow, PlatformError> {
     Ok(ui)
 }
 
-pub fn shutdown() {
+pub fn shutdown(ui: &slint::Weak<MainWindow>) {
+    let window = ui.upgrade().unwrap();
+    bridges::settings::save_config(&window);
     let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
         Some(dirs) => dirs,
         None => {

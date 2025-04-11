@@ -113,7 +113,7 @@ msgstr "点击复制: "
 #, fuzzy
 msgctxt "ConnectionsPage"
 msgid "Click to close"
-msgstr "点击关闭"
+msgstr "关闭"
 
 #: crates/desktop/ui/pages/get-started.slint:56
 msgctxt "GetStartedPage"

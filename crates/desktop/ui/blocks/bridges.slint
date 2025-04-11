@@ -57,6 +57,8 @@ export global ScopeBridge {
 export global SettingsBridge {
     in-out property <string> theme;
     in-out property <string> language;
+    in-out property <bool> running-in-tray;
     in-out property <int> api-port: 0;
     in-out property <bool> online: false;
+    callback change-language(lang: string);
 }

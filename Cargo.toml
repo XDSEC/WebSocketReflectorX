@@ -67,6 +67,8 @@ slint = { version = "1.10", default-features = false, features = [
   "renderer-skia",
   "renderer-software",
 ] }
+sys-locale = "0.3"
+toml = "0.8"
 winit = "0.30"
 
 build-target  = "0.4"

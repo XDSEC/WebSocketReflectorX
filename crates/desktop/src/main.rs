@@ -15,7 +15,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create the main window.
     let ui = launcher::setup()?;
     ui.run().ok();
-    launcher::shutdown();
     drop(console_guard);
     drop(file_guard);
     drop(ui);

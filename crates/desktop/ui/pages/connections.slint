@@ -58,7 +58,7 @@ export component ConnectionsPage inherits Rectangle {
                 VerticalLayout {
                     spacing: Styles.sizes.s-md;
                     alignment: LayoutAlignment.center;
-                    padding-right: Styles.sizes.p-md;
+                    padding-right: Styles.sizes.p-lg;
 
                     Text {
                         text: UiState.page == "default-scope" ? @tr("Manually Controlled") : @tr("External Controlled");
@@ -84,7 +84,7 @@ export component ConnectionsPage inherits Rectangle {
             }
 
             HorizontalLayout {
-                padding-left: Styles.sizes.p-md;
+                padding-left: Styles.sizes.p-lg;
 
                 Text {
                     text: UiState.page == "default-scope" ? @tr("This scope is controlled by you manually.") : (root.allowed ? @tr("This domain can control wsrx on your local network.") : @tr("This domain requested controlling wsrx."));
@@ -182,7 +182,8 @@ export component ConnectionsPage inherits Rectangle {
                     VerticalLayout {
 
                         HorizontalLayout {
-                            padding: Styles.sizes.p-md;
+                            padding: Styles.sizes.p-lg;
+                            padding-bottom: Styles.sizes.s-md;
                             spacing: Styles.sizes.s-xl;
                             vertical-stretch: 0;
 
@@ -205,7 +206,7 @@ export component ConnectionsPage inherits Rectangle {
                         }
 
                         HorizontalLayout {
-                            padding: Styles.sizes.p-md;
+                            padding: Styles.sizes.p-lg;
                             padding-top: 0;
                             spacing: Styles.sizes.s-xl;
                             vertical-stretch: 0;
@@ -240,7 +241,7 @@ export component ConnectionsPage inherits Rectangle {
                             height: 1px;
                             background: Styles.palette.layer-3;
                             vertical-stretch: 0;
-                            visible: !item-touch-area.has-hover;
+                            visible: !item-touch-area.has-hover && !close-touch-area.has-hover;
                         }
                     }
                 }

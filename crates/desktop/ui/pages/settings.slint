@@ -1,6 +1,6 @@
 import { Styles } from "../widgets/styles.slint";
 import { Button } from "../widgets/button.slint";
-import { SystemInfoBridge } from "../blocks/bridges.slint";
+import { SystemInfoBridge, SettingsBridge } from "../blocks/bridges.slint";
 import { ScrollView } from "../widgets/scroll-view.slint";
 
 
@@ -60,10 +60,7 @@ export component SettingsPage inherits ScrollView {
         }
 
         HorizontalLayout {
-
-            Rectangle {
-                width: Styles.sizes.p-md;
-            }
+            padding-left: Styles.sizes.p-lg;
 
             Text {
                 text: @tr("Version and Updates");
@@ -91,10 +88,7 @@ export component SettingsPage inherits ScrollView {
         }
 
         HorizontalLayout {
-
-            Rectangle {
-                width: Styles.sizes.p-md;
-            }
+            padding-left: Styles.sizes.p-lg;
 
             Text {
                 text: @tr("Running in system tray when closed");
@@ -104,14 +98,14 @@ export component SettingsPage inherits ScrollView {
             }
 
             Button {
-                property <bool> toggled: false;
+                property <bool> toggled: SettingsBridge.running-in-tray;
                 icon: toggled ? @image-url("../assets/toggle-right.svg") : @image-url("../assets/toggle-left.svg");
                 icon-color: toggled ? Styles.palette.info-bg : Styles.palette.window-fg;
                 text: toggled ? @tr("Enabled") : @tr("Disabled");
                 flat: true;
 
                 clicked => {
-                    self.toggled = !self.toggled;
+                    SettingsBridge.running-in-tray = !toggled;
                 }
             }
         }
@@ -122,10 +116,97 @@ export component SettingsPage inherits ScrollView {
         }
 
         HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
 
-            Rectangle {
-                width: Styles.sizes.p-md;
+            Text {
+                text: @tr("Language / Locale");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
             }
+
+            Button {
+                icon: @image-url("../assets/local-language.svg");
+                flat: true;
+                text: SettingsBridge.language == "en_US" ? "English" : SettingsBridge.language == "zh_CN" ? "简体中文" : "繁體中文";
+                icon-color: Styles.palette.primary-bg;
+                preferred-width: 128px;
+                alignment: end;
+
+                clicked => {
+                    language-popup.show();
+                }
+
+                language-popup := PopupWindow {
+                    width: parent.width + Styles.sizes.p-md * 2;
+                    height: min(3 * (Styles.sizes.h-md + Styles.sizes.s-md) - Styles.sizes.s-md + Styles.sizes.p-md * 2, 192px);
+                    x: -Styles.sizes.p-md;
+                    y: parent.height + Styles.sizes.s-md;
+
+                    Rectangle {
+                        background: Styles.palette.window-alter-bg;
+                        width: parent.width;
+                        height: parent.height;
+                        border-color: Styles.palette.window-border;
+                        border-width: 1px;
+                        border-radius: Styles.sizes.r-lg;
+                        clip: true;
+
+                        Flickable {
+                            width: parent.width;
+                            height: parent.height;
+                            VerticalLayout {
+                                spacing: Styles.sizes.s-md;
+                                padding: Styles.sizes.p-md;
+                                Button {
+                                    text: "English";
+                                    flat: true;
+                                    alignment: start;
+                                    icon: SettingsBridge.language == "en_US" ? @image-url("../assets/checkmark.svg") : @image-url("../assets/local-language.svg");
+                                    icon-color: SettingsBridge.language == "en_US" ? Styles.palette.success-bg : Styles.palette.window-fg;
+
+                                    clicked() => {
+                                        SettingsBridge.change-language("en_US");
+                                    }
+                                }
+
+                                Button {
+                                    text: "简体中文";
+                                    flat: true;
+                                    alignment: start;
+                                    icon: SettingsBridge.language == "zh_CN" ? @image-url("../assets/checkmark.svg") : @image-url("../assets/local-language.svg");
+                                    icon-color: SettingsBridge.language == "zh_CN" ? Styles.palette.success-bg : Styles.palette.window-fg;
+
+                                    clicked() => {
+                                        SettingsBridge.change-language("zh_CN");
+                                    }
+                                }
+
+                                Button {
+                                    text: "繁體中文";
+                                    flat: true;
+                                    alignment: start;
+                                    icon: SettingsBridge.language == "zh_TW" ? @image-url("../assets/checkmark.svg") : @image-url("../assets/local-language.svg");
+                                    icon-color: SettingsBridge.language == "zh_TW" ? Styles.palette.success-bg : Styles.palette.window-fg;
+
+                                    clicked() => {
+                                        SettingsBridge.change-language("zh_TW");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
 
             Text {
                 text: @tr("Export network logs");
@@ -152,10 +233,7 @@ export component SettingsPage inherits ScrollView {
         }
 
         HorizontalLayout {
-
-            Rectangle {
-                width: Styles.sizes.p-md;
-            }
+            padding-left: Styles.sizes.p-lg;
 
             Text {
                 text: @tr("Have problems? Find support here.");
@@ -184,9 +262,7 @@ export component SettingsPage inherits ScrollView {
         VerticalLayout {
             spacing: Styles.sizes.s-md;
             HorizontalLayout {
-                Rectangle {
-                    width: Styles.sizes.p-md;
-                }
+                padding-left: Styles.sizes.p-lg;
 
                 Text {
                     text: @tr("System information for bug reporting and debugging");
@@ -228,10 +304,7 @@ export component SettingsPage inherits ScrollView {
                 spacing: Styles.sizes.s-xl;
 
                 HorizontalLayout {
-
-                    Rectangle {
-                        width: Styles.sizes.p-md;
-                    }
+                    padding-left: Styles.sizes.p-lg;
 
                     Text {
                         text: @tr("Please include the following information when reporting bugs or asking for help.");
@@ -271,30 +344,35 @@ export component SettingsPage inherits ScrollView {
             vertical-stretch: 1;
         }
 
-        Text {
-            text: @tr("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.");
-            color: Styles.palette.window-fg;
-            vertical-alignment: center;
-            opacity: 0.6;
+        VerticalLayout {
+            padding-left: Styles.sizes.p-lg;
+            spacing: Styles.sizes.s-md;
 
-            TouchArea {
-                mouse-cursor: MouseCursor.pointer;
-                clicked => {
-                    SystemInfoBridge.open-link("https://github.com/Reverier-Xu");
+            Text {
+                text: @tr("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                opacity: 0.6;
+
+                TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        SystemInfoBridge.open-link("https://github.com/Reverier-Xu");
+                    }
                 }
             }
-        }
 
-        Text {
-            text: @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
-            color: Styles.palette.window-fg;
-            vertical-alignment: center;
-            opacity: 0.6;
+            Text {
+                text: @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                opacity: 0.6;
 
-            TouchArea {
-                mouse-cursor: MouseCursor.pointer;
-                clicked => {
-                    SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX");
+                TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX");
+                    }
                 }
             }
         }

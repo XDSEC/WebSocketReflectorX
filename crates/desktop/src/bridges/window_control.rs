@@ -34,7 +34,7 @@ pub fn setup(window: &MainWindow) {
                 WinitWindowEventResult::Propagate
             }
             winit::event::WindowEvent::CloseRequested => {
-                launcher::shutdown();
+                launcher::shutdown(&window_weak);
                 WinitWindowEventResult::PreventDefault
             }
             _ => WinitWindowEventResult::Propagate,
@@ -60,9 +60,10 @@ pub fn setup(window: &MainWindow) {
             winit_window.drag_window().ok();
         });
     });
+    let window_clone_pin = window.as_weak();
     window_control_bridge.on_close(move || {
         // TODO: system tray implementation
-        launcher::shutdown();
+        launcher::shutdown(&window_clone_pin);
     });
     let window_clone_pin = window.as_weak();
     window_control_bridge.on_maximize(move || {

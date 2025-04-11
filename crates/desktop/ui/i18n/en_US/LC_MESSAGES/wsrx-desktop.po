@@ -34,12 +34,12 @@ msgstr "Settings"
 #: crates/desktop/ui/blocks/side-bar.slint:171
 msgctxt "SideBar"
 msgid "Click to copy"
-msgstr ""
+msgstr "Click to copy"
 
 #: crates/desktop/ui/blocks/side-bar.slint:171
 msgctxt "SideBar"
 msgid "Click to see log"
-msgstr ""
+msgstr "Click to see log"
 
 #: crates/desktop/ui/blocks/side-bar.slint:171
 msgctxt "SideBar"
@@ -55,67 +55,67 @@ msgstr "Default Scope"
 #: crates/desktop/ui/pages/connections.slint:50
 msgctxt "ConnectionsPage"
 msgid "This is the default scope."
-msgstr ""
+msgstr "This is the default scope."
 
 #: crates/desktop/ui/pages/connections.slint:64
 msgctxt "ConnectionsPage"
 msgid "Manually Controlled"
-msgstr ""
+msgstr "Manually Controlled"
 
 #: crates/desktop/ui/pages/connections.slint:64
 msgctxt "ConnectionsPage"
 msgid "External Controlled"
-msgstr ""
+msgstr "External Controlled"
 
 #: crates/desktop/ui/pages/connections.slint:90
 msgctxt "ConnectionsPage"
 msgid "This scope is controlled by you manually."
-msgstr ""
+msgstr "This scope is controlled by you manually."
 
 #: crates/desktop/ui/pages/connections.slint:90
 msgctxt "ConnectionsPage"
 msgid "This domain can control wsrx on your local network."
-msgstr ""
+msgstr "This domain can control wsrx on your local network."
 
 #: crates/desktop/ui/pages/connections.slint:90
 msgctxt "ConnectionsPage"
 msgid "This domain requested controlling wsrx."
-msgstr ""
+msgstr "This domain requested controlling wsrx."
 
 #: crates/desktop/ui/pages/connections.slint:99
 msgctxt "ConnectionsPage"
 msgid "Enjoy"
-msgstr ""
+msgstr "Enjoy"
 
 #: crates/desktop/ui/pages/connections.slint:107
 msgctxt "ConnectionsPage"
 msgid "Accept"
-msgstr ""
+msgstr "Accept"
 
 #: crates/desktop/ui/pages/connections.slint:128
 msgctxt "ConnectionsPage"
 msgid "Decline"
-msgstr ""
+msgstr "Decline"
 
 #: crates/desktop/ui/pages/connections.slint:140
 msgctxt "ConnectionsPage"
 msgid "Remove"
-msgstr ""
+msgstr "Remove"
 
 #: crates/desktop/ui/pages/connections.slint:199
 msgctxt "ConnectionsPage"
 msgid "Click to copy: "
-msgstr ""
+msgstr "Click to copy: "
 
 #: crates/desktop/ui/pages/connections.slint:224
 msgctxt "ConnectionsPage"
 msgid "Click to close"
-msgstr ""
+msgstr "Click to close"
 
 #: crates/desktop/ui/pages/get-started.slint:56
 msgctxt "GetStartedPage"
 msgid "Update"
-msgstr ""
+msgstr "Update"
 
 #: crates/desktop/ui/pages/get-started.slint:152
 msgctxt "GetStartedPage"
@@ -125,27 +125,27 @@ msgstr "Port..."
 #: crates/desktop/ui/pages/settings.slint:69
 msgctxt "SettingsPage"
 msgid "Version and Updates"
-msgstr ""
+msgstr "Version and Updates"
 
 #: crates/desktop/ui/pages/settings.slint:78
 msgctxt "SettingsPage"
 msgid "Update available"
-msgstr ""
+msgstr "Update available"
 
 #: crates/desktop/ui/pages/settings.slint:100
 msgctxt "SettingsPage"
 msgid "Running in system tray when closed"
-msgstr ""
+msgstr "Running in system tray when closed"
 
 #: crates/desktop/ui/pages/settings.slint:110
 msgctxt "SettingsPage"
 msgid "Enabled"
-msgstr ""
+msgstr "Enabled"
 
 #: crates/desktop/ui/pages/settings.slint:110
 msgctxt "SettingsPage"
 msgid "Disabled"
-msgstr ""
+msgstr "Disabled"
 
 #: crates/desktop/ui/pages/settings.slint:131
 #, fuzzy
@@ -161,7 +161,7 @@ msgstr "Export"
 #: crates/desktop/ui/pages/settings.slint:161
 msgctxt "SettingsPage"
 msgid "Have problems? Find support here."
-msgstr ""
+msgstr "Have problems? Find support here."
 
 #: crates/desktop/ui/pages/settings.slint:170
 #, fuzzy
@@ -178,12 +178,12 @@ msgstr "System information for bug reporting and debugging"
 #: crates/desktop/ui/pages/settings.slint:210
 msgctxt "SettingsPage"
 msgid "Copy"
-msgstr ""
+msgstr "Copy"
 
 #: crates/desktop/ui/pages/settings.slint:220
 msgctxt "SettingsPage"
 msgid "Copied"
-msgstr ""
+msgstr "Copied"
 
 #: crates/desktop/ui/pages/settings.slint:237
 msgctxt "SettingsPage"
@@ -197,7 +197,7 @@ msgstr ""
 #: crates/desktop/ui/pages/settings.slint:275
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
-msgstr ""
+msgstr "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
 
 #: crates/desktop/ui/pages/settings.slint:289
 msgctxt "SettingsPage"

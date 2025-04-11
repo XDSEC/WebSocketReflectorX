@@ -9,12 +9,11 @@ export component NetworkLogsPage inherits ScrollView {
 
         for log in SystemInfoBridge.logs: VerticalLayout {
             opacity: log.level == "DEBUG" ? 0.5 : log.level == "INFO" ? 0.8 : 1;
-            horizontal-stretch: 0;
+            vertical-stretch: 0;
 
             HorizontalLayout {
-                padding: Styles.sizes.p-md;
+                padding: Styles.sizes.p-lg;
                 padding-bottom: Styles.sizes.s-md;
-                padding-top: Styles.sizes.p-lg;
                 spacing: Styles.sizes.s-lg;
 
                 Text {
@@ -43,9 +42,8 @@ export component NetworkLogsPage inherits ScrollView {
             }
 
             HorizontalLayout {
-                padding: Styles.sizes.p-md;
+                padding: Styles.sizes.p-lg;
                 padding-top: 0;
-                padding-bottom: Styles.sizes.p-lg;
 
                 Text {
                     text: log.message;
