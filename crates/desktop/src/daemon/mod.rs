@@ -20,10 +20,10 @@ pub fn setup(ui: &MainWindow) {
     use rustls::crypto;
 
     match crypto::aws_lc_rs::default_provider().install_default() {
-        Ok(_) => info!("using `AWS Libcrypto` as default crypto backend."),
+        Ok(_) => info!("Using `AWS Libcrypto` as default crypto backend."),
         Err(err) => {
             error!("`AWS Libcrypto` is not available: {:?}", err);
-            warn!("try to use `ring` as default crypto backend.");
+            warn!("Try to use `ring` as default crypto backend.");
             crypto::ring::default_provider()
                 .install_default()
                 .inspect_err(|err| {
@@ -32,7 +32,7 @@ pub fn setup(ui: &MainWindow) {
                     process::exit(1);
                 })
                 .ok();
-            info!("using `ring` as default crypto backend.");
+            info!("Using `ring` as default crypto backend.");
         }
     }
 
@@ -167,7 +167,7 @@ pub fn setup(ui: &MainWindow) {
             });
 
         info!(
-            "api server is listening on [[ {} ]]",
+            "API server is listening on [[ {} ]]",
             listener.local_addr().expect("failed to bind port")
         );
         axum::serve(listener, router)
