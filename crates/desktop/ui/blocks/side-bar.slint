@@ -28,6 +28,17 @@ export component SideBar inherits Rectangle {
                 flat: true;
                 horizontal-stretch: 0;
                 icon-color: Styles.palette.error-bg;
+
+                Image {
+                    source: @image-url("../assets/dismiss-filled.svg");
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    colorize: black;
+                    width: Styles.sizes.font - 8px;
+                    height: Styles.sizes.font - 8px;
+                    visible: parent.hover;
+                }
+
                 clicked => {
                     WindowControlBridge.close();
                 }
@@ -38,9 +49,20 @@ export component SideBar inherits Rectangle {
                 colored: false;
                 flat: true;
                 horizontal-stretch: 0;
-                icon-color: Styles.palette.success-bg;
+                icon-color: Styles.palette.warn-bg;
+
+                Image {
+                    source: @image-url("../assets/subtract-filled.svg");
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    colorize: black;
+                    width: Styles.sizes.font - 8px;
+                    height: Styles.sizes.font - 8px;
+                    visible: parent.hover;
+                }
+
                 clicked => {
-                    WindowControlBridge.maximize();
+                    WindowControlBridge.minimize();
                 }
             }
 
@@ -49,9 +71,23 @@ export component SideBar inherits Rectangle {
                 colored: false;
                 flat: true;
                 horizontal-stretch: 0;
-                icon-color: Styles.palette.warn-bg;
+                icon-color: Styles.palette.success-bg;
+
+                Image {
+                    source: @image-url("../assets/chevron-up-down-filled.svg");
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    colorize: black;
+                    rotation-angle: 135deg;
+                    rotation-origin-x: self.width / 2;
+                    rotation-origin-y: self.height / 2;
+                    width: Styles.sizes.font - 8px;
+                    height: Styles.sizes.font - 8px;
+                    visible: parent.hover;
+                }
+
                 clicked => {
-                    WindowControlBridge.minimize();
+                    WindowControlBridge.maximize();
                 }
             }
 
