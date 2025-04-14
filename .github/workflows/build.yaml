@@ -100,9 +100,7 @@ jobs:
       - name: Get git version
         id: git_tag_version
         run: |
-          export BUILD_VERSION=$(git describe --tags --abbrev=0)
-          echo "Build at version $BUILD_VERSION"
-          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
       # Setup Rust
       - uses: actions-rs/toolchain@v1
         with:
