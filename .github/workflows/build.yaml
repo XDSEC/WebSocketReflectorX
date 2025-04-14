@@ -32,6 +32,7 @@ jobs:
       - name: Checkout repository (and submodules)
         uses: actions/checkout@v4
         with:
+          depth: 0
           submodules: recursive
       # Get current git tag version
       - name: Get git version
