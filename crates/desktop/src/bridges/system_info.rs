@@ -94,7 +94,7 @@ fn check_for_updates(window: &MainWindow) {
         let bridge = window.global::<SystemInfoBridge>();
         debug!("Checking for updates...");
         let client = reqwest::Client::builder()
-            .user_agent("WebSocketReflectorX/0.4")
+            .user_agent(format!("wsrx/{}", env!("CARGO_PKG_VERSION")))
             .build()
             .unwrap();
         let response = match client
