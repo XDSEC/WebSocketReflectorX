@@ -1,0 +1,255 @@
+import { Styles } from "../widgets/styles.slint";
+import { UiState } from "../blocks/globals.slint";
+import { Button } from "../widgets/button.slint";
+import { ScopeBridge, InstanceBridge } from "../blocks/bridges.slint";
+import { ScrollView } from "../widgets/scroll-view.slint";
+
+export component ConnectionsPage inherits Rectangle {
+    background: transparent;
+
+    in-out property <bool> allowed: UiState.scope.state == "allowed";
+
+    VerticalLayout {
+        spacing: Styles.sizes.s-md;
+        VerticalLayout {
+            padding-top: Styles.sizes.p-xl * 2;
+            padding-left: Styles.sizes.p-xl * 2;
+            padding-right: Styles.sizes.p-xl * 2;
+            spacing: Styles.sizes.s-md;
+
+            vertical-stretch: 0;
+
+            HorizontalLayout {
+                spacing: Styles.sizes.s-md;
+
+                VerticalLayout {
+                    alignment: LayoutAlignment.center;
+                    padding: Styles.sizes.p-xl;
+
+                    Image {
+                        source: UiState.page == "default-scope" ? @image-url("../assets/globe-star.svg") : UiState.scope.state == "pending" ? @image-url("../assets/globe-warning.svg") : @image-url("../assets/globe-sync.svg");
+                        colorize: Styles.palette.window-fg;
+                        width: 32px;
+                        height: 32px;
+                    }
+                }
+
+                VerticalLayout {
+                    spacing: Styles.sizes.s-md;
+                    alignment: LayoutAlignment.center;
+                    horizontal-stretch: 1;
+
+                    Text {
+                        text: UiState.page == "default-scope" ? @tr("Default Scope") : UiState.scope.name;
+                        font-size: Styles.sizes.font;
+                        font-weight: 700;
+                        color: Styles.palette.window-fg;
+                    }
+
+                    Text {
+                        text: UiState.page == "default-scope" ? @tr("This is the default scope.") : UiState.scope.host;
+                        font-size: Styles.sizes.font;
+                        font-weight: 400;
+                        color: Styles.palette.window-fg;
+                        opacity: 0.6;
+                    }
+                }
+
+                VerticalLayout {
+                    spacing: Styles.sizes.s-md;
+                    alignment: LayoutAlignment.center;
+                    padding-right: Styles.sizes.p-lg;
+
+                    Text {
+                        text: UiState.page == "default-scope" ? @tr("Manually Controlled") : @tr("External Controlled");
+                        font-size: Styles.sizes.font;
+                        color: UiState.page == "default-scope" ? Styles.palette.info-bg : Styles.palette.success-bg;
+                        horizontal-alignment: right;
+                    }
+
+                    Text {
+                        text: UiState.page == "default-scope" ? "basic" : UiState.scope.features;
+                        font-size: Styles.sizes.font;
+                        font-weight: 400;
+                        color: Styles.palette.window-fg;
+                        opacity: 0.6;
+                        horizontal-alignment: right;
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Styles.palette.layer-3;
+            }
+
+            HorizontalLayout {
+                padding-left: Styles.sizes.p-lg;
+
+                Text {
+                    text: UiState.page == "default-scope" ? @tr("This scope is controlled by you manually.") : (root.allowed ? @tr("This domain can control wsrx on your local network.") : @tr("This domain requested controlling wsrx."));
+                    color: UiState.page == "default-scope" ? Styles.palette.info-bg : (root.allowed ? Styles.palette.success-bg : Styles.palette.error-bg);
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+
+                if UiState.page == "default-scope": Button {
+                    icon: @image-url("../assets/checkmark-circle.svg");
+                    flat: true;
+                    text: @tr("Enjoy");
+                    icon-color: Styles.palette.success-bg;
+                    disabled: true;
+                }
+
+                if UiState.page != "default-scope" && !root.allowed: Button {
+                    icon: allow-timer.running ? @image-url("../assets/more-horizontal.svg") : @image-url("../assets/checkmark-circle.svg");
+                    flat: true;
+                    text: @tr("Accept");
+                    icon-color: Styles.palette.success-bg;
+
+                    allow-timer := Timer {
+                        interval: Styles.durations.long;
+                        running: false;
+                        triggered => {
+                            UiState.change-scope(UiState.scope.host);
+                            self.running = false;
+                        }
+                    }
+
+                    clicked => {
+                        ScopeBridge.allow(UiState.scope.host);
+                        allow-timer.running = true;
+                    }
+                }
+
+                if UiState.page != "default-scope" && !root.allowed: Button {
+                    icon: @image-url("../assets/dismiss-circle.svg");
+                    flat: true;
+                    text: @tr("Decline");
+                    icon-color: Styles.palette.error-bg;
+
+                    clicked => {
+                        ScopeBridge.del(UiState.scope.host);
+                        UiState.page = "default-scope";
+                    }
+                }
+
+                if UiState.page != "default-scope" && root.allowed: Button {
+                    icon: @image-url("../assets/dismiss-circle.svg");
+                    flat: true;
+                    text: @tr("Remove");
+                    icon-color: Styles.palette.error-bg;
+
+                    clicked => {
+                        ScopeBridge.del(UiState.scope.host);
+                        UiState.page = "default-scope";
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: Styles.palette.layer-3;
+            }
+        }
+
+        ScrollView {
+            vertical-stretch: 1;
+
+            VerticalLayout {
+                padding: Styles.sizes.p-xl * 2;
+                spacing: Styles.sizes.s-md;
+
+                for instance in InstanceBridge.scoped-instances: Rectangle {
+
+                    background: item-touch-area.pressed ? Styles.palette.layer-1 : item-touch-area.has-hover ? Styles.palette.layer-2 : close-touch-area.has-hover ? Styles.palette.warn-bg.with-alpha(0.2) : transparent;
+                    border-radius: Styles.sizes.r-sm;
+
+                    item-touch-area := TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => {
+                            hidden-input.select-all();
+                            hidden-input.copy();
+                        }
+                    }
+
+                    hidden-input := TextInput {
+                        width: 0;
+                        height: 0;
+                        text: instance.local;
+                    }
+
+                    VerticalLayout {
+
+                        HorizontalLayout {
+                            padding: Styles.sizes.p-lg;
+                            padding-bottom: Styles.sizes.s-md;
+                            spacing: Styles.sizes.s-xl;
+                            vertical-stretch: 0;
+
+                            Text {
+                                text: instance.label;
+                                font-size: Styles.sizes.font;
+                                font-weight: 700;
+                                color: Styles.palette.window-fg;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                            }
+
+                            Text {
+                                text: (item-touch-area.has-hover ? @tr("Click to copy: ") : "") + instance.local;
+                                font-size: Styles.sizes.font;
+                                font-weight: 400;
+                                color: Styles.palette.info-bg;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding: Styles.sizes.p-lg;
+                            padding-top: 0;
+                            spacing: Styles.sizes.s-xl;
+                            vertical-stretch: 0;
+
+                            Text {
+                                text: instance.remote;
+                                font-size: Styles.sizes.font;
+                                font-weight: 400;
+                                color: Styles.palette.window-fg;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                                opacity: 0.6;
+                            }
+
+                            Text {
+                                text: UiState.page == "default-scope" && (item-touch-area.has-hover || close-touch-area.has-hover) ? @tr("Click to close") : ((instance.latency >= 0 ? instance.latency : "--") + " ms");
+                                font-size: Styles.sizes.font;
+                                font-weight: 400;
+                                color: item-touch-area.has-hover || close-touch-area.has-hover ? Styles.palette.warn-bg : instance.latency >= 0 ? Styles.palette.success-bg : Styles.palette.error-bg;
+                                vertical-alignment: center;
+                                close-touch-area := TouchArea {
+                                    mouse-cursor: MouseCursor.pointer;
+                                    clicked => {
+                                        InstanceBridge.del(instance.local);
+                                    }
+                                    enabled: UiState.page == "default-scope";
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            height: 1px;
+                            background: Styles.palette.layer-3;
+                            vertical-stretch: 0;
+                            visible: !item-touch-area.has-hover && !close-touch-area.has-hover;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    vertical-stretch: 1;
+                }
+            }
+        }
+    }
+}

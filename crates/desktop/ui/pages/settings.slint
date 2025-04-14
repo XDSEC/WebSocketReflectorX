@@ -1,0 +1,380 @@
+import { Styles } from "../widgets/styles.slint";
+import { Button } from "../widgets/button.slint";
+import { SystemInfoBridge, SettingsBridge } from "../blocks/bridges.slint";
+import { ScrollView } from "../widgets/scroll-view.slint";
+
+
+export component SettingsPage inherits ScrollView {
+
+    VerticalLayout {
+        padding: Styles.sizes.p-xl * 2;
+        spacing: Styles.sizes.s-md;
+
+        HorizontalLayout {
+            spacing: Styles.sizes.s-md;
+            Image {
+                source: @image-url("../assets/logo-stroked.svg");
+                width: 96px;
+                height: 96px;
+            }
+
+            title := VerticalLayout {
+                alignment: LayoutAlignment.center;
+                spacing: Styles.sizes.s-md;
+                padding: Styles.sizes.p-md;
+
+                property <string> cursor: "_";
+
+                Timer {
+                    interval: 0.5s;
+                    running: true;
+                    triggered() => {
+                        if (title.cursor == "_") {
+                            title.cursor = " ";
+                        } else {
+                            title.cursor = "_";
+                        }
+                    }
+                }
+
+                Text {
+                    text: "WebSocket Reflector X";
+                    font-size: Styles.sizes.font * 1.5;
+                    font-weight: 700;
+                    color: Styles.palette.window-fg;
+                }
+
+                Text {
+                    text: "Idealism is that you will never receive something back,\nbut nonetheless still decide to give." + title.cursor;
+                    font-size: Styles.sizes.font;
+                    font-weight: 400;
+                    color: Styles.palette.window-fg;
+                    opacity: 0.6;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
+
+            Text {
+                text: @tr("Version and Updates");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: SystemInfoBridge.has-updates ? @image-url("../assets/cloud-arrow-up.svg") : @image-url("../assets/checkmark-circle.svg");
+                flat: true;
+                text: SystemInfoBridge.version + (SystemInfoBridge.has-updates ? " " + @tr("Update available") : "");
+                icon-color: SystemInfoBridge.has-updates ? Styles.palette.primary-bg : Styles.palette.success-bg;
+                disabled: !SystemInfoBridge.has-updates;
+
+                clicked => {
+                    SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX/releases");
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
+
+            Text {
+                text: @tr("Running in system tray when closed");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                property <bool> toggled: SettingsBridge.running-in-tray;
+                icon: toggled ? @image-url("../assets/toggle-right.svg") : @image-url("../assets/toggle-left.svg");
+                icon-color: toggled ? Styles.palette.info-bg : Styles.palette.window-fg;
+                text: toggled ? @tr("Enabled") : @tr("Disabled");
+                flat: true;
+
+                clicked => {
+                    SettingsBridge.running-in-tray = !toggled;
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
+
+            Text {
+                text: @tr("Language / Locale");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: @image-url("../assets/local-language.svg");
+                flat: true;
+                text: SettingsBridge.language == "en_US" ? "English" : SettingsBridge.language == "zh_CN" ? "简体中文" : "繁體中文";
+                icon-color: Styles.palette.primary-bg;
+                preferred-width: 128px;
+                alignment: end;
+
+                clicked => {
+                    language-popup.show();
+                }
+
+                language-popup := PopupWindow {
+                    width: parent.width + Styles.sizes.p-md * 2;
+                    height: min(3 * (Styles.sizes.h-md + Styles.sizes.s-md) - Styles.sizes.s-md + Styles.sizes.p-md * 2, 192px);
+                    x: -Styles.sizes.p-md;
+                    y: parent.height + Styles.sizes.s-md;
+
+                    Rectangle {
+                        background: Styles.palette.window-alter-bg;
+                        width: parent.width;
+                        height: parent.height;
+                        border-color: Styles.palette.window-border;
+                        border-width: 1px;
+                        border-radius: Styles.sizes.r-lg;
+                        clip: true;
+
+                        Flickable {
+                            width: parent.width;
+                            height: parent.height;
+                            VerticalLayout {
+                                spacing: Styles.sizes.s-md;
+                                padding: Styles.sizes.p-md;
+                                Button {
+                                    text: "English";
+                                    flat: true;
+                                    alignment: start;
+                                    icon: SettingsBridge.language == "en_US" ? @image-url("../assets/checkmark.svg") : @image-url("../assets/local-language.svg");
+                                    icon-color: SettingsBridge.language == "en_US" ? Styles.palette.success-bg : Styles.palette.window-fg;
+
+                                    clicked() => {
+                                        SettingsBridge.change-language("en_US");
+                                    }
+                                }
+
+                                Button {
+                                    text: "简体中文";
+                                    flat: true;
+                                    alignment: start;
+                                    icon: SettingsBridge.language == "zh_CN" ? @image-url("../assets/checkmark.svg") : @image-url("../assets/local-language.svg");
+                                    icon-color: SettingsBridge.language == "zh_CN" ? Styles.palette.success-bg : Styles.palette.window-fg;
+
+                                    clicked() => {
+                                        SettingsBridge.change-language("zh_CN");
+                                    }
+                                }
+
+                                Button {
+                                    text: "繁體中文";
+                                    flat: true;
+                                    alignment: start;
+                                    icon: SettingsBridge.language == "zh_TW" ? @image-url("../assets/checkmark.svg") : @image-url("../assets/local-language.svg");
+                                    icon-color: SettingsBridge.language == "zh_TW" ? Styles.palette.success-bg : Styles.palette.window-fg;
+
+                                    clicked() => {
+                                        SettingsBridge.change-language("zh_TW");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
+
+            Text {
+                text: @tr("Export network logs");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: @image-url("../assets/open.svg");
+                flat: true;
+                text: @tr("Export");
+                icon-color: Styles.palette.primary-bg;
+
+                clicked => {
+                    SystemInfoBridge.open-logs();
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        HorizontalLayout {
+            padding-left: Styles.sizes.p-lg;
+
+            Text {
+                text: @tr("Have problems? Find support here.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                icon: @image-url("../assets/open.svg");
+                flat: true;
+                text: @tr("Support");
+                icon-color: Styles.palette.primary-bg;
+
+                clicked => {
+                    SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX/issues");
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1px;
+            background: Styles.palette.layer-3;
+        }
+
+        VerticalLayout {
+            spacing: Styles.sizes.s-md;
+            HorizontalLayout {
+                padding-left: Styles.sizes.p-lg;
+
+                Text {
+                    text: @tr("System information for bug reporting and debugging");
+                    color: Styles.palette.window-fg;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                    height: Styles.sizes.h-md;
+                }
+
+                info-copy-button := Button {
+                    icon: @image-url("../assets/copy.svg");
+                    flat: true;
+                    text: @tr("Copy");
+                    icon-color: Styles.palette.primary-bg;
+
+                    copy-timer := Timer {
+                        interval: 1s;
+                        running: false;
+                        triggered() => {
+                            info-copy-button.icon-color = Styles.palette.primary-bg;
+                            info-copy-button.text = @tr("Copy");
+                            info-copy-button.icon = @image-url("../assets/copy.svg");
+                            self.running = false;
+                        }
+                    }
+
+                    clicked => {
+                        hidden-copy.select-all();
+                        hidden-copy.copy();
+                        self.icon-color = Styles.palette.success-bg;
+                        self.text = @tr("Copied");
+                        self.icon = @image-url("../assets/checkmark.svg");
+                        copy-timer.running = true;
+                    }
+                }
+            }
+
+            VerticalLayout {
+                spacing: Styles.sizes.s-xl;
+
+                HorizontalLayout {
+                    padding-left: Styles.sizes.p-lg;
+
+                    Text {
+                        text: @tr("Please include the following information when reporting bugs or asking for help.");
+                        color: Styles.palette.window-fg;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                        opacity: 0.6;
+                    }
+                }
+
+                Rectangle {
+                    background: Styles.palette.layer-1;
+                    border-radius: Styles.sizes.r-md;
+
+                    HorizontalLayout {
+                        padding: Styles.sizes.p-xl;
+
+                        Text {
+                            text: SystemInfoBridge.info;
+                            color: Styles.palette.window-fg;
+                            wrap: TextWrap.word-wrap;
+                        }
+                    }
+                }
+            }
+
+            hidden-copy := TextInput {
+                text: SystemInfoBridge.info;
+                read-only: true;
+                width: 0;
+                height: 0;
+            }
+        }
+
+        Rectangle {
+            background: transparent;
+            vertical-stretch: 1;
+        }
+
+        VerticalLayout {
+            padding-left: Styles.sizes.p-lg;
+            spacing: Styles.sizes.s-md;
+
+            Text {
+                text: @tr("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                opacity: 0.6;
+
+                TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        SystemInfoBridge.open-link("https://github.com/Reverier-Xu");
+                    }
+                }
+            }
+
+            Text {
+                text: @tr("(c) 2022 - 2025 XDSEC, distributed with MIT license.");
+                color: Styles.palette.window-fg;
+                vertical-alignment: center;
+                opacity: 0.6;
+
+                TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        SystemInfoBridge.open-link("https://github.com/XDSEC/WebSocketReflectorX");
+                    }
+                }
+            }
+        }
+    }
+}

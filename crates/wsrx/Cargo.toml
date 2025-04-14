@@ -1,0 +1,89 @@
+[package]
+authors.workspace      = true
+description            = "Controlled TCP-over-WebSocket forwarding tunnel."
+documentation          = "https://docs.rs/wsrx"
+edition.workspace      = true
+homepage.workspace     = true
+license.workspace      = true
+name                   = "wsrx"
+readme                 = "../../README.md"
+repository.workspace   = true
+rust-version.workspace = true
+version.workspace      = true
+
+[features]
+binary = [
+  "dep:clap",
+  "dep:once_cell",
+  "dep:url",
+  "dep:tower-http",
+  "dep:serde",
+  "dep:serde_json",
+  "dep:tracing-subscriber",
+  "dep:subprocess",
+  "dep:chrono",
+  "server",
+  "client",
+  "log",
+]
+
+client = ["dep:tokio-tungstenite"]
+log    = ["dep:tracing"]
+server = ["dep:axum"]
+
+default = ["binary"]
+
+[[bin]]
+name              = "wsrx"
+required-features = ["binary"]
+
+[dependencies]
+futures-util = { workspace = true }
+rustls       = { workspace = true }
+thiserror    = { workspace = true }
+tokio        = { workspace = true }
+tokio-util   = { workspace = true }
+
+# for client or server
+axum              = { workspace = true, optional = true }
+tokio-tungstenite = { workspace = true, optional = true }
+
+# binary cli only
+chrono             = { workspace = true, optional = true }
+clap               = { workspace = true, optional = true }
+once_cell          = { workspace = true, optional = true }
+serde              = { workspace = true, optional = true }
+serde_json         = { workspace = true, optional = true }
+subprocess         = { workspace = true, optional = true }
+tower-http         = { workspace = true, optional = true }
+tracing            = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+url                = { workspace = true, optional = true }
+
+[package.metadata.binstall]
+disabled-strategies = ["quick-install", "compile"]
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
+bin-dir = "{ bin }"
+pkg-fmt = "tgz"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-linux64-gnu{ archive-suffix }"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
+bin-dir = "{ bin }"
+pkg-fmt = "tgz"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-linux64-musl{ archive-suffix }"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+bin-dir = "target/release/{ bin }.exe"
+pkg-ext = "zip"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-win64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.aarch64-apple-darwin]
+bin-dir = "target/release/{ bin }"
+pkg-ext = "zip"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-macOS-arm64{ archive-suffix }"
+
+[package.metadata.binstall.overrides.x86_64-apple-darwin]
+bin-dir = "target/release/{ bin }"
+pkg-ext = "zip"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-macOS-x86_64{ archive-suffix }"

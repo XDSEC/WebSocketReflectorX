@@ -1,0 +1,60 @@
+---
+#-------------------------------------------------------------------------------
+# Workflow configuration
+#-------------------------------------------------------------------------------
+
+name: "Binary build on commit/pr"
+on:
+  push:
+    paths:
+      - "crates/"
+      - "Cargo.toml"
+  pull_request_review:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+#-------------------------------------------------------------------------------
+# Workflow jobs
+#-------------------------------------------------------------------------------
+
+jobs:
+  build-linux:
+    name: "Build on linux"
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      # Get current git tag version
+      - name: Get git version
+        id: git_tag_version
+        run: git describe --tags --abbrev=0
+      # Install dependencies (from package manager)
+      - name: Install dependencies (from package manager)
+        run: |
+          sudo apt-get install libgl1-mesa-dev libxcb1-dev libxkbcommon-x11-dev libx11-xcb-dev libxcb-cursor0 libzstd-dev fuse libfuse-dev libwayland-dev -y;
+          sudo apt-get install cmake ninja-build pkgconf libtool -y;
+          sudo apt-get install appstream -y;
+      # Build application
+      - name: Build application
+        run: |
+          rustup update stable && rustup default stable;
+          cargo build --verbose --release --bins;
+      # Build AppImage
+      - name: Build AppImage
+        run: |
+          ./deployments/appimage.fish
+      # Upload AppImage
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebSocketReflectorX-x86_64.AppImage
+          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-linux-x86_64.AppImage

@@ -1,0 +1,64 @@
+
+export global WindowControlBridge {
+    pure callback start_drag;
+    pure callback close;
+    pure callback minimize;
+    pure callback maximize;
+}
+
+export struct Log {
+    timestamp: string,
+    message: string,
+    target: string,
+    level: string,
+}
+
+export global SystemInfoBridge {
+    in-out property <string> version;
+    in-out property <bool> has-updates;
+    in-out property <string> os;
+    in-out property <[string]> interfaces;
+    in-out property <string> info;
+    in-out property <[Log]> logs;
+    callback refresh-interfaces;
+    callback open-link(url: string);
+    callback open-logs;
+}
+
+export struct Instance {
+    label: string,
+    remote: string,
+    local: string,
+    latency: int,
+    scope_host: string,
+}
+
+export struct Scope {
+    host: string,
+    name: string,
+    state: string,
+    features: string,
+}
+
+export global InstanceBridge {
+    // manual-add only available to "default" scope
+    callback add(remote: string, local: string);
+    callback del(local: string);
+    in-out property <[Instance]> instances;
+    in-out property <[Instance]> scoped-instances;
+}
+
+export global ScopeBridge {
+    callback del(host: string);
+    callback allow(host: string);
+    in-out property <[Scope]> scopes;
+}
+
+export global SettingsBridge {
+    in-out property <string> theme;
+    in-out property <string> language;
+    in-out property <bool> running-in-tray;
+    in-out property <int> api-port: 0;
+    in-out property <bool> online: false;
+    callback change-language(lang: string);
+}

@@ -1,0 +1,76 @@
+ import { Styles } from "styles.slint";
+
+export component Button inherits Rectangle {
+    in property <bool> disabled;
+    in property <bool> colored: false;
+    out property <bool> hover;
+    in-out property <string> text;
+    in-out property <string> font-family;
+    in-out property <int> font-weight: 400;
+    in-out property <image> icon;
+    in-out property <length> icon-size: Styles.sizes.icon;
+    in-out property <color> icon-color: Styles.palette.window-fg;
+    in-out property <bool> flat: false;
+    in property <LayoutAlignment> alignment: center;
+    in property <angle> icon-rotate-angle: 0;
+
+    height: Styles.sizes.h-md;
+
+    callback clicked;
+    callback double-clicked;
+
+    background: touch-area.pressed ? Styles.palette.layer-1 : touch-area.has-hover ? Styles.palette.layer-2 : (root.flat ? transparent : Styles.palette.layer-1);
+
+    animate background {
+        duration: Styles.durations.short;
+        easing: ease-out;
+    }
+
+    touch-area := TouchArea {
+        changed has-hover => {
+            root.hover = self.has-hover;
+        }
+        mouse-cursor: root.disabled ? MouseCursor.not-allowed : MouseCursor.pointer;
+        clicked => {
+            if (!root.disabled) {
+                root.clicked();
+            }
+        }
+        double-clicked => {
+            if (!root.disabled) {
+                root.double-clicked();
+            }
+        }
+    }
+
+    border-radius: Styles.sizes.r-md;
+    HorizontalLayout {
+        padding-left: Styles.sizes.p-xl;
+        padding-right: Styles.sizes.p-xl;
+        spacing: Styles.sizes.s-lg;
+        alignment: root.alignment;
+        icon-image := Image {
+            width: root.icon-size;
+            height: root.icon-size;
+            y: (parent.height - self.height) / 2;
+            source: root.icon;
+            colorize: root.colored ? Colors.transparent : root.icon-color;
+            vertical-alignment: center;
+            rotation-angle: root.icon-rotate-angle;
+            animate rotation-angle {
+                duration: Styles.durations.mid;
+                easing: ease-out;
+            }
+        }
+
+        if root.text != "": Text {
+            text: root.text;
+            font-family: root.font-family;
+            font-weight: root.font-weight;
+            color: Styles.palette.window-fg;
+            vertical-alignment: center;
+        }
+    }
+
+    @children
+}

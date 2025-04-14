@@ -1,0 +1,183 @@
+import { Styles } from "styles.slint";
+export component FramelessWindow inherits Window {
+    background: Colors.transparent;
+    no-frame: true;
+
+    in property <brush> border-color;
+    in-out property <bool> maximized;
+    in-out property <bool> minimized;
+
+    callback resize(string);
+
+    central-widget := Rectangle {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        // the background with border
+        background: Styles.palette.window-bg;
+        border-width: root.maximized ? 0 : Styles.sizes.line;
+        border-color: root.border-color;
+        animate border-color { duration: 120ms; }
+        border-radius: root.maximized ? 0 : Styles.sizes.r-lg;
+        clip: true;
+
+        @children
+    }
+
+    // Top resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("t");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: ns-resize;
+        width: parent.width;
+        height: 6px;
+        y: 0;
+    }
+
+    // Bottom resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("b");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: ns-resize;
+        width: parent.width;
+        height: 6px;
+        y: parent.height - self.height;
+    }
+
+    // Left resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("l");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: ew-resize;
+        width: 6px;
+        height: parent.height;
+        x: 0;
+    }
+
+    // Right resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("r");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: ew-resize;
+        width: 6px;
+        height: parent.height;
+        x: parent.width - self.width;
+    }
+
+    // Top-left resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("tl");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: nwse-resize;
+        width: 8px;
+        height: 8px;
+        x: 0;
+        y: 0;
+    }
+
+    // Top-right resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("tr");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: nesw-resize;
+        width: 8px;
+        height: 8px;
+        x: parent.width - self.width;
+        y: 0;
+    }
+
+    // Bottom-left resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("bl");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: nesw-resize;
+        width: 8px;
+        height: 8px;
+        x: 0;
+        y: parent.height - self.height;
+    }
+
+    // Bottom-right resize handle
+    TouchArea {
+        private property <bool> may-drag: false;
+        enabled: !root.maximized;
+        pointer-event(event) => {
+            if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                may-drag = true;
+            }
+            if (event.kind == PointerEventKind.move && may-drag) {
+                root.resize("br");
+                may-drag = false;
+            }
+        }
+        mouse-cursor: nwse-resize;
+        width: 8px;
+        height: 8px;
+        x: parent.width - self.width;
+        y: parent.height - self.height;
+    }
+}

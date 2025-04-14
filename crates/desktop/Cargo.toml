@@ -1,0 +1,53 @@
+[package]
+authors.workspace      = true
+description            = "Controlled TCP-over-WebSocket forwarding tunnel."
+documentation          = "https://docs.rs/wsrx"
+edition.workspace      = true
+homepage.workspace     = true
+license.workspace      = true
+name                   = "wsrx-desktop"
+readme                 = "../../README.md"
+repository.workspace   = true
+rust-version.workspace = true
+version.workspace      = true
+
+[dependencies]
+wsrx = { path = "../wsrx" }
+
+i-slint-backend-winit = { workspace = true }
+slint                 = { workspace = true }
+winit                 = { workspace = true }
+
+directories      = { workspace = true }
+local-ip-address = { workspace = true }
+open             = { workspace = true }
+sys-locale       = { workspace = true }
+sysinfo          = { workspace = true }
+
+async-compat       = { workspace = true }
+once_cell          = { workspace = true }
+rand               = { workspace = true }
+rustls             = { workspace = true }
+tokio              = { workspace = true }
+toml               = { workspace = true }
+tracing            = { workspace = true }
+tracing-appender   = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+axum              = { workspace = true }
+chrono            = { workspace = true }
+reqwest           = { workspace = true }
+serde             = { workspace = true }
+serde_json        = { workspace = true }
+tokio-tungstenite = { workspace = true }
+tower-http        = { workspace = true }
+
+[build-dependencies]
+build-target  = { workspace = true }
+git-version   = { workspace = true }
+rustc_version = { workspace = true }
+slint-build   = { workspace = true }
+
+[[bin]]
+name = "wsrx-desktop"
+path = "src/main.rs"

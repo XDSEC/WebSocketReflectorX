@@ -1,0 +1,240 @@
+import { Styles } from "../widgets/styles.slint";
+import { Button } from "../widgets/button.slint";
+import { WindowControlBridge, SystemInfoBridge, SettingsBridge, ScopeBridge } from "bridges.slint";
+import { ButtonIndicator } from "button-indicator.slint";
+import { UiState } from "globals.slint";
+
+
+export component SideBar inherits Rectangle {
+
+    background: Styles.palette.layer-1;
+    clip: true;
+
+    animate width {
+        duration: Styles.durations.long;
+        easing: ease-out-expo;
+    }
+    VerticalLayout {
+        spacing: 0;
+        padding: 0;
+
+        HorizontalLayout {
+            spacing: Styles.sizes.s-md;
+            padding: Styles.sizes.p-md;
+
+            if SystemInfoBridge.os == "macos": Button {
+                icon: @image-url("../assets/circle-filled.svg");
+                colored: false;
+                flat: true;
+                horizontal-stretch: 0;
+                icon-color: Styles.palette.error-bg;
+
+                Image {
+                    source: @image-url("../assets/dismiss-filled.svg");
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    colorize: black;
+                    width: Styles.sizes.font - 8px;
+                    height: Styles.sizes.font - 8px;
+                    visible: parent.hover;
+                }
+
+                clicked => {
+                    WindowControlBridge.close();
+                }
+            }
+
+            if SystemInfoBridge.os == "macos": Button {
+                icon: @image-url("../assets/circle-filled.svg");
+                colored: false;
+                flat: true;
+                horizontal-stretch: 0;
+                icon-color: Styles.palette.warn-bg;
+
+                Image {
+                    source: @image-url("../assets/subtract-filled.svg");
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    colorize: black;
+                    width: Styles.sizes.font - 8px;
+                    height: Styles.sizes.font - 8px;
+                    visible: parent.hover;
+                }
+
+                clicked => {
+                    WindowControlBridge.minimize();
+                }
+            }
+
+            if SystemInfoBridge.os == "macos": Button {
+                icon: @image-url("../assets/circle-filled.svg");
+                colored: false;
+                flat: true;
+                horizontal-stretch: 0;
+                icon-color: Styles.palette.success-bg;
+
+                Image {
+                    source: @image-url("../assets/chevron-up-down-filled.svg");
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    colorize: black;
+                    rotation-angle: 135deg;
+                    rotation-origin-x: self.width / 2;
+                    rotation-origin-y: self.height / 2;
+                    width: Styles.sizes.font - 8px;
+                    height: Styles.sizes.font - 8px;
+                    visible: parent.hover;
+                }
+
+                clicked => {
+                    WindowControlBridge.maximize();
+                }
+            }
+
+            Button {
+                text: SystemInfoBridge.os == "macos" ? "" : "WebSocket Reflector X";
+                icon: @image-url("../assets/logo-stroked.svg");
+                colored: true;
+                flat: true;
+                border-radius: 0;
+                font-weight: 700;
+                alignment: LayoutAlignment.start;
+                background: transparent;
+                horizontal-stretch: 1;
+                visible: SystemInfoBridge.os != "macos";
+            }
+        }
+
+        VerticalLayout {
+            spacing: Styles.sizes.s-md;
+            padding: Styles.sizes.p-md;
+            horizontal-stretch: 1;
+
+            Rectangle {
+                height: Styles.sizes.s-md;
+            }
+
+            ButtonIndicator {
+                text: @tr("Get Started");
+                icon: @image-url("../assets/home.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "home";
+
+                clicked => {
+                    UiState.page = "home";
+                }
+            }
+
+            ButtonIndicator {
+                text: @tr("Network logs");
+                icon: @image-url("../assets/code.svg");
+                colored: false;
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "logs";
+
+                clicked => {
+                    UiState.page = "logs";
+                }
+            }
+
+            VerticalLayout {
+                padding: Styles.sizes.p-md;
+
+                Rectangle {
+                    height: 1px;
+                    background: Styles.palette.layer-3;
+                }
+            }
+
+            Flickable {
+                horizontal-stretch: 1;
+                vertical-stretch: 1;
+
+                VerticalLayout {
+                    spacing: Styles.sizes.s-md;
+
+                    ButtonIndicator {
+                        text: @tr("Default Scope");
+                        icon: @image-url("../assets/globe-star.svg");
+                        colored: false;
+                        flat: true;
+                        alignment: LayoutAlignment.start;
+                        active: UiState.page == "default-scope";
+
+                        clicked => {
+                            UiState.page = "default-scope";
+                            UiState.change-scope("default-scope");
+                        }
+                    }
+
+                    for scope in ScopeBridge.scopes: ButtonIndicator {
+                        text: scope.name;
+                        icon: scope.state == "pending" ? @image-url("../assets/warning.svg") : @image-url("../assets/lock-closed.svg");
+                        colored: false;
+                        flat: true;
+                        alignment: LayoutAlignment.start;
+                        active: UiState.page == scope.host;
+
+                        clicked => {
+                            UiState.change-scope(scope.host);
+                            UiState.page = scope.host;
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                background: transparent;
+                vertical-stretch: 1;
+            }
+
+            ButtonIndicator {
+                text: @tr("Settings");
+                icon: @image-url("../assets/settings.svg");
+                flat: true;
+                alignment: LayoutAlignment.start;
+                active: UiState.page == "settings";
+
+                clicked => {
+                    UiState.page = "settings";
+                }
+            }
+
+            Button {
+                text: self.hover ? (SettingsBridge.online ? @tr("Click to copy") : @tr("Click to see log")) : @tr("Controller port");
+                icon: self.hover ? @image-url("../assets/copy.svg") : (SettingsBridge.online ? @image-url("../assets/flash-flow.svg") : @image-url("../assets/globe-warning.svg"));
+                icon-color: self.hover ? (SettingsBridge.online ? Styles.palette.success-bg : Styles.palette.error-bg) : (SettingsBridge.online ? Styles.palette.window-fg : Styles.palette.error-bg);
+                alignment: LayoutAlignment.start;
+                flat: true;
+
+                clicked => {
+                    if SettingsBridge.online {
+                        api-address-input.select-all();
+                        api-address-input.copy();
+                    } else {
+                        UiState.page = "logs";
+                    }
+                }
+
+                api-address-input := TextInput {
+                    text: "http://127.0.0.1:" + SettingsBridge.api-port;
+                    visible: false;
+                    width: 0;
+                    height: 0;
+                    read-only: true;
+                }
+
+                Text {
+                    text: SettingsBridge.api-port;
+                    x: parent.width - self.width - Styles.sizes.p-xl;
+                    color: Styles.palette.info-bg;
+                    y: (parent.height - self.height) / 2;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,70 @@
+import "fonts/reverier-mono-regular.ttf";
+
+import { Styles } from "widgets/styles.slint";
+import { SideBar } from "blocks/side-bar.slint";
+
+import { WindowControlBridge, Log, SystemInfoBridge, Instance, Scope, InstanceBridge, ScopeBridge, SettingsBridge } from "blocks/bridges.slint";
+import { FramelessWindow } from "widgets/frameless-window.slint";
+import { TitleBar } from "blocks/title-bar.slint";
+import { UiState } from "blocks/globals.slint";
+import { Stack } from "blocks/stack.slint";
+
+export { WindowControlBridge, Log, SystemInfoBridge, Instance, Scope, InstanceBridge, ScopeBridge, SettingsBridge, UiState }
+
+export component MainWindow inherits FramelessWindow {
+    title: "WebSocket Reflector X";
+    default-font-family: Styles.font-family;
+    default-font-size: Styles.sizes.font;
+    preferred-width: 1080px;
+    preferred-height: 600px;
+    min-width: 800px;
+    min-height: 540px;
+    icon: @image-url("assets/logo.svg");
+
+    in-out property <bool> main-window-maximized <=> self.maximized;
+    in-out property <bool> main-window-minimized <=> self.minimized;
+
+    callback main-window-resize(string);
+
+    resize(e) => {
+        main-window-resize(e);
+    }
+
+    border-color: Styles.palette.layer-3;
+    forward-focus: global-shortcut-handler;
+
+    global-shortcut-handler := FocusScope {
+        key-pressed(event) => {
+            // Ctrl + Q to quit
+            if (event.text == "q" && event.modifiers.control) {
+                WindowControlBridge.close();
+            }
+            accept
+        }
+    }
+
+    HorizontalLayout {
+        spacing: 0;
+        padding: 0;
+
+        side-bar := SideBar {
+            width: UiState.show-sidebar ? 256px : 0px;
+        }
+
+        VerticalLayout {
+            spacing: 0;
+            padding: 0;
+
+            title-bar := TitleBar {
+                maximized: root.maximized;
+                minimized: root.minimized;
+                vertical-stretch: 0;
+                horizontal-stretch: 1;
+            }
+
+            Stack {
+                vertical-stretch: 1;
+            }
+        }
+    }
+}
