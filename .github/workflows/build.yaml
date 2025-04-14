@@ -34,7 +34,10 @@ jobs:
       # Get current git tag version
       - name: Get git version
         id: git_tag_version
-        run: git describe --tags --abbrev=0
+        run: |
+          export BUILD_VERSION=$(git describe --tags --abbrev=0)
+          echo "Build at version $BUILD_VERSION"
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
       # Setup Rust
       - uses: actions-rs/toolchain@v1
         with:
@@ -69,19 +72,19 @@ jobs:
       - name: Upload Glibc cli package
         uses: actions/upload-artifact@v4
         with:
-          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-linux64-gnu.tar.gz
+          name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux64-gnu.tar.gz
           path: wsrx-cli-linux64-gnu.tar.gz
       # Upload musl cli package
       - name: Upload musl cli package
         uses: actions/upload-artifact@v4
         with:
-          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-linux64-musl.tar.gz
+          name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux64-musl.tar.gz
           path: wsrx-cli-linux64-musl.tar.gz
       # Upload AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-linux-gnu-x86_64.AppImage
+          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
           path: WebSocketReflectorX-x86_64.AppImage
   build-windows:
     name: "Build on Windows"
@@ -96,7 +99,10 @@ jobs:
       # Get current git tag version
       - name: Get git version
         id: git_tag_version
-        run: git describe --tags --abbrev=0
+        run: |
+          export BUILD_VERSION=$(git describe --tags --abbrev=0)
+          echo "Build at version $BUILD_VERSION"
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
       # Setup Rust
       - uses: actions-rs/toolchain@v1
         with:
@@ -120,19 +126,19 @@ jobs:
       - name: Upload application ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-win64.zip
+          name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-win64.zip
           path: wsrx-cli-win64.zip
       # Upload NSIS installer
       - name: Upload NSIS installer
         uses: actions/upload-artifact@v4
         with:
-          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-win64.exe
+          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-win64.exe
           path: WebSocketReflectorX-installer-win64.exe
       # Upload portable package
       - name: Upload Portable package
         uses: actions/upload-artifact@v4
         with:
-          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-portable-win64.zip
+          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-win64.zip
           path: WebSocketReflectorX-portable-win64.zip
   build-mac:
     name: "Build on MacOS"
@@ -147,7 +153,10 @@ jobs:
       # Get current git tag version
       - name: Get git version
         id: git_tag_version
-        run: git describe --tags --abbrev=0
+        run: |
+          export BUILD_VERSION=$(git describe --tags --abbrev=0)
+          echo "Build at version $BUILD_VERSION"
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
       # Setup Rust
       - uses: actions-rs/toolchain@v1
         with:
@@ -164,5 +173,5 @@ jobs:
       - name: Upload cli ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-macOS-arm64.zip
+          name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macOS-arm64.zip
           path: wsrx-cli-macOS-arm64.zip
