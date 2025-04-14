@@ -1,34 +1,34 @@
 {
-	"name": "wsrx",
-	"version": "0.1.0",
-	"description": "Client for WebSocket Reflector X",
-	"license": "MIT",
-	"repository": "XDSEC/WebSocketReflectorX",
-	"author": {
-		"name": "Reverier-Xu",
-		"email": "reverier.xu@xdsec.club"
-	},
-	"type": "module",
-	"exports": {
-		"types": "./distribution/index.d.ts",
-		"default": "./distribution/index.js"
-	},
-	"main": "./distribution/index.js",
-	"types": "./distribution/index.d.ts",
-	"sideEffects": false,
-	"engines": {
-		"node": ">=18"
-	},
-	"scripts": {
-		"build": "tsc -p tsconfig.json"
-	},
-	"files": [
-		"dist",
-		"README.md",
-		"LICENSE"
-	],
-	"dependencies": {
-		"@types/node": "^20.5.7",
-		"typescript": "^5.2.2"
-	}
+  "name": "@xdsec/wsrx",
+  "version": "0.1.0",
+  "description": "Client for WebSocket Reflector X",
+  "license": "MIT",
+  "repository": "XDSEC/WebSocketReflectorX",
+  "author": {
+    "name": "Reverier-Xu",
+    "email": "reverier.xu@xdsec.club"
+  },
+  "type": "module",
+  "exports": {
+    "types": "./distribution/index.d.ts",
+    "default": "./distribution/index.js"
+  },
+  "main": "./distribution/index.js",
+  "types": "./distribution/index.d.ts",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@types/node": "^20.5.7",
+    "typescript": "^5.2.2"
+  }
 }
