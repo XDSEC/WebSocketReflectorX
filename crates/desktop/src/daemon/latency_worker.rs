@@ -7,7 +7,10 @@ use crate::{
     ui::{Instance, InstanceBridge},
 };
 
-use super::model::{InstanceDataPure, ServerState};
+use super::{
+    model::{InstanceDataPure, ServerState},
+    ui_controller::on_instance_del,
+};
 
 pub async fn start(state: ServerState) {
     loop {
@@ -23,9 +26,10 @@ pub async fn start(state: ServerState) {
             let client = client.clone();
             let state = state.clone();
             tokio::spawn(async move {
-                if let Err(e) = update_instance_latency(state, instance, &client).await {
+                if let Err(e) = update_instance_latency(state.clone(), instance, &client).await {
                     error!("Failed to update latency: {:?}", e);
                 }
+                pingfall(state).await;
             });
         }
         sync_scoped_instance(state.ui.clone());
@@ -92,4 +96,24 @@ async fn update_instance_latency(
     }
 
     Ok(0)
+}
+
+async fn pingfall(state: ServerState) {
+    let instances = state.instances.read().await;
+    let instances_pure = instances
+        .iter()
+        .map(|instance| instance.into())
+        .collect::<Vec<InstanceDataPure>>();
+    drop(instances);
+    let scopes = state.scopes.read().await;
+    for instance in instances_pure.iter() {
+        let scope = scopes
+            .iter()
+            .find(|scope| scope.name == instance.scope_host);
+        if let Some(scope) = scope {
+            if scope.features.contains(&"pingfall".to_owned()) {
+                on_instance_del(&state, &instance.local).await;
+            }
+        }
+    }
 }
