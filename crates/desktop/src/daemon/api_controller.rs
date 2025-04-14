@@ -2,6 +2,7 @@ use std::{net::ToSocketAddrs, time::Duration};
 
 use crate::{
     bridges::ui_state::sync_scoped_instance,
+    daemon::model::InstanceDataPure,
     ui::{Instance, InstanceBridge, Scope, ScopeBridge},
 };
 
@@ -64,6 +65,10 @@ pub fn router(state: ServerState) -> axum::Router {
         .merge(
             axum::Router::new()
                 .route("/connect", get(get_control_status).post(request_control))
+                .route(
+                    "/version",
+                    get(|| async { Json(env!("CARGO_PKG_VERSION")) }),
+                )
                 .layer(any_origin_layer)
                 .with_state(state.clone()),
         )
@@ -203,6 +208,7 @@ async fn launch_instance(
             }
         })),
     };
+    let instance_resp: InstanceDataPure = (&instance).into();
     instances.push(instance);
 
     match slint::invoke_from_event_loop(move || {
@@ -225,7 +231,7 @@ async fn launch_instance(
     }) {
         Ok(_) => {
             debug!("Added instance to UI");
-            Ok(StatusCode::OK)
+            Ok(Json(instance_resp))
         }
         Err(e) => {
             debug!("Failed to update UI: {e}");

@@ -1,6 +1,6 @@
 {
 	"name": "wsrx",
-	"version": "0.4.0",
+	"version": "0.1.0",
 	"description": "Client for WebSocket Reflector X",
 	"license": "MIT",
 	"repository": "XDSEC/WebSocketReflectorX",
@@ -22,7 +22,11 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json"
 	},
-	"files": ["dist", "README.md", "LICENSE"],
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
 	"dependencies": {
 		"@types/node": "^20.5.7",
 		"typescript": "^5.2.2"

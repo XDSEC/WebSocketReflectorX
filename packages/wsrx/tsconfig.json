@@ -4,16 +4,15 @@
 		"module": "es2022",
 		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
-		"noEmit": true,
-		"jsx": "preserve",
-		"jsxImportSource": "solid-js",
-		"types": ["vite/client"],
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"sourceMap": true,
 		"strict": true,
-		"baseUrl": "."
+		"baseUrl": ".",
+		"outDir": "dist"
 	},
-	"include": ["src"]
+	"include": [
+		"src"
+	]
 }
