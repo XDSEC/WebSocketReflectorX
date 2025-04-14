@@ -10,8 +10,8 @@ Unicode True
 !define COMPANYNAME                  "XDSEC"
 !define DESCRIPTION                  "Controlled TCP-over-WebSocket forwarding tunnel."
 !define VERSIONMAJOR                 0
-!define VERSIONMINOR                 3
-!define VERSIONBUILD                 3
+!define VERSIONMINOR                 4
+!define VERSIONBUILD                 1
 !define INSTALL_DIR_DEFAULT          "$PROGRAMFILES64\${APPNAME}"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN
@@ -46,7 +46,7 @@ Name "${APPNAME}"
 ManifestDPIAware true
 InstallDir "${INSTALL_DIR_DEFAULT}"
 RequestExecutionLevel admin
-OutFile "${EXECNAME}-${VERSIONMAJOR}.${VERSIONMINOR}.${VERSIONBUILD}-win64.exe"
+OutFile "${EXECNAME}-win64.exe"
 
 Function .onInit
   setShellVarContext all

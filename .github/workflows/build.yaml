@@ -22,7 +22,7 @@ env:
 
 jobs:
   build-linux:
-    name: "Build on linux"
+    name: "Build on Linux"
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -39,6 +39,11 @@ jobs:
       - name: Get git version
         id: git_tag_version
         run: git describe --tags --abbrev=0
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-unknown-linux-musl
       # Install dependencies (from package manager)
       - name: Install dependencies (from package manager)
         run: |
@@ -50,13 +55,117 @@ jobs:
         run: |
           rustup update stable && rustup default stable;
           cargo build --verbose --release --bins;
+      - name: Build cli for musl
+        run: |
+          cargo build --release -p wsrx --target x86_64-unknown-linux-musl
+      # Deploy Glibc application
+      - name: Compress Glibc Binaries
+        run: tar --transform='s!.*/!!' -czvf wsrx-cli-linux64-gnu.tar.gz target/release/wsrx
+      # Deploy musl application
+      - name: Compress musl Binaries
+        run: tar --transform='s!.*/!!' -czvf wsrx-cli-linux64-musl.tar.gz target/x86_64-unknown-linux-musl/release/wsrx
       # Build AppImage
       - name: Build AppImage
         run: |
           ./deployments/appimage.fish
+      # Upload Glibc cli package
+      - name: Upload Glibc cli package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-linux64-gnu.tar.gz
+          path: wsrx-cli-linux64-gnu.tar.gz
+      # Upload musl cli package
+      - name: Upload musl cli package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-linux64-musl.tar.gz
+          path: wsrx-cli-linux64-musl.tar.gz
       # Upload AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: WebSocketReflectorX-x86_64.AppImage
-          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-linux-x86_64.AppImage
+          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-linux-gnu-x86_64.AppImage
+          path: WebSocketReflectorX-x86_64.AppImage
+  build-windows:
+    name: "Build on Windows"
+    runs-on: windows-2022
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      # Get current git tag version
+      - name: Get git version
+        id: git_tag_version
+        run: git describe --tags --abbrev=0
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install NASM for aws-lc-rs on Windows
+        uses: ilammy/setup-nasm@v1
+      - name: Install ninja-build tool for aws-lc-fips-sys on Windows
+        uses: seanmiddleditch/gha-setup-ninja@v5
+      # Build application
+      - name: Build application
+        run: |
+          rustup update stable && rustup default stable;
+          cargo build --verbose --release --bins;
+      # Compress cli binaries
+      - name: Compress CLI Binaries
+        run: 7z a wsrx-cli-win64.zip target/release/wsrx.exe
+        # Deploy application
+      - name: Deploy application
+        run: sh deployments/nsis.sh
+      # Upload application ZIP
+      - name: Upload application ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-win64.zip
+          path: wsrx-cli-win64.zip
+      # Upload NSIS installer
+      - name: Upload NSIS installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-win64.exe
+          path: WebSocketReflectorX-installer-win64.exe
+      # Upload portable package
+      - name: Upload Portable package
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.stdout}}-portable-win64.zip
+          path: WebSocketReflectorX-portable-win64.zip
+  build-mac:
+    name: "Build on MacOS"
+    runs-on: macos-14
+    steps:
+      # Checkout repository (and submodules)
+      - name: Checkout repository (and submodules)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      # Get current git tag version
+      - name: Get git version
+        id: git_tag_version
+        run: git describe --tags --abbrev=0
+      # Setup Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      # Build application
+      - name: Build application
+        run: |
+          rustup update stable && rustup default stable;
+          cargo build --verbose --release --bins;
+      # Compress ARM64 binaries
+      - name: Compress Binaries
+        run: zip -r -y -X wsrx-cli-macOS-arm64.zip target/release/wsrx
+      # Upload application ZIP
+      - name: Upload cli ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-cli-${{steps.git_tag_version.outputs.stdout}}-macOS-arm64.zip
+          path: wsrx-cli-macOS-arm64.zip
