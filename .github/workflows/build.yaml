@@ -24,10 +24,6 @@ jobs:
   build-linux:
     name: "Build on Linux"
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        toolchain:
-          - stable
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
