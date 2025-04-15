@@ -1,18 +1,17 @@
 {
-	"compilerOptions": {
-		"target": "es2022",
-		"module": "es2022",
-		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"sourceMap": true,
-		"strict": true,
-		"baseUrl": ".",
-		"outDir": "dist"
-	},
-	"include": [
-		"src"
-	]
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "baseUrl": ".",
+    "outDir": "dist"
+  },
+  "include": ["src"]
 }
