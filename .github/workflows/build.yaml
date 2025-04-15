@@ -66,24 +66,30 @@ jobs:
       - name: Build AppImage
         run: |
           ./deployments/appimage.fish
+      # Move files
+      - name: move files
+        run: |
+          mv wsrx-cli-linux-gnu-x86_64.tar.gz wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.tar.gz
+          mv wsrx-cli-linux-musl-x86_64.tar.gz wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
+          mv WebSocketReflectorX-x86_64.AppImage WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
       # Upload Glibc cli package
       - name: Upload Glibc cli package
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.tar.gz
-          path: wsrx-cli-linux-gnu-x86_64.tar.gz
+          path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.tar.gz
       # Upload musl cli package
       - name: Upload musl cli package
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
-          path: wsrx-cli-linux-musl-x86_64.tar.gz
+          path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
       # Upload AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
-          path: WebSocketReflectorX-x86_64.AppImage
+          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
       # Upload to github release
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -123,24 +129,30 @@ jobs:
         # Deploy application
       - name: Deploy application
         run: sh deployments/nsis.sh
+      # Move files
+      - name: move files
+        run: |
+          mv wsrx-cli-windows-msvc-x86_64.zip wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-msvc-x86_64.zip
+          mv WebSocketReflectorX-installer-windows-msvc-x86_64.exe WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-installer-windows-msvc-x86_64.exe
+          mv WebSocketReflectorX-portable-windows-msvc-x86_64.zip WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
       # Upload application ZIP
       - name: Upload application ZIP
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-msvc-x86_64.zip
-          path: wsrx-cli-windows-msvc-x86_64.zip
+          path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-msvc-x86_64.zip
       # Upload NSIS installer
       - name: Upload NSIS installer
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-installer-windows-msvc-x86_64.exe
-          path: WebSocketReflectorX-installer-windows-msvc-x86_64.exe
+          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-installer-windows-msvc-x86_64.exe
       # Upload portable package
       - name: Upload Portable package
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
-          path: WebSocketReflectorX-portable-windows-msvc-x86_64.zip
+          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
       # Upload to github release
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -188,30 +200,37 @@ jobs:
       - name: Build DMG
         run: |
           sh deployments/macos.sh
+      # Move files
+      - name: move files
+        run: |
+          mv WebSocketReflectorX.dmg WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
+          mv WebSocketReflectorX.app.zip WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
+          mv wsrx-cli-macos-aarch64.zip wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
+          mv wsrx-cli-macos-x86_64.zip wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
       # Upload cli ZIP for aarch64
       - name: Upload cli ZIP for aarch64
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
-          path: wsrx-cli-macos-aarch64.zip
+          path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
       # Upload cli ZIP for aarch64
       - name: Upload cli ZIP for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
-          path: wsrx-cli-macos-x86_64.zip
+          path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
       # Upload application ZIP for aarch64
       - name: Upload application ZIP for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
-          path: WebSocketReflectorX.app.zip
+          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
       # Upload application DMG for aarch64
       - name: Upload application DMG for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
-          path: WebSocketReflectorX.dmg
+          path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
       # Upload to github release
       - name: Release
         uses: softprops/action-gh-release@v2
