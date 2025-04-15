@@ -3,8 +3,9 @@ use std::{process, rc::Rc, sync::Arc};
 use api_controller::router;
 
 use directories::ProjectDirs;
-use model::ServerState;
-use slint::{ComponentHandle, VecModel};
+use model::{ScopeData, ServerState};
+use serde::{Deserialize, Serialize};
+use slint::{ComponentHandle, Model, VecModel};
 use tokio::{net::TcpListener, sync::RwLock};
 
 use tracing::{debug, error, info, warn};
@@ -15,6 +16,11 @@ mod api_controller;
 mod latency_worker;
 mod model;
 mod ui_controller;
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct ScopesConfig {
+    scopes: Vec<ScopeData>,
+}
 
 pub fn setup(ui: &MainWindow) {
     use rustls::crypto;
@@ -36,20 +42,50 @@ pub fn setup(ui: &MainWindow) {
         }
     }
 
+    // read config scope
+    let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
+        Some(dirs) => dirs,
+        None => {
+            error!("Unable to find project config directories");
+            return;
+        }
+    };
+    let config_file = proj_dirs.config_dir().join("scopes.toml");
+    let config = match std::fs::read_to_string(&config_file) {
+        Ok(config) => config,
+        Err(_) => "".to_owned(),
+    };
+    let scopes: ScopesConfig = match toml::from_str(&config) {
+        Ok(scopes) => scopes,
+        Err(e) => {
+            error!("Failed to parse config file: {}", e);
+            ScopesConfig { scopes: vec![] }
+        }
+    };
+    debug!("Loaded scopes: {:?}", scopes);
+
     let handle = ui.as_weak();
 
     let state_d = ServerState {
         ui: handle.clone(),
         instances: Arc::new(RwLock::new(vec![])),
-        scopes: Arc::new(RwLock::new(vec![])),
+        scopes: Arc::new(RwLock::new(scopes.scopes.clone())),
     };
     // Initialize the global state
     let instances: Rc<VecModel<Instance>> = Rc::new(VecModel::default());
-    let scopes: Rc<VecModel<Scope>> = Rc::new(VecModel::default());
+    let scopes_r: Rc<VecModel<Scope>> = Rc::new(VecModel::default());
+    for scope in scopes.scopes.iter() {
+        scopes_r.push(Scope {
+            host: scope.host.clone().into(),
+            name: scope.name.clone().into(),
+            state: scope.state.clone().into(),
+            features: scope.features.join(",").into(),
+        });
+    }
     let scoped_instances: Rc<VecModel<Instance>> = Rc::new(VecModel::default());
 
     let instances_rc = slint::ModelRc::from(instances.clone());
-    let scopes_rc = slint::ModelRc::from(scopes.clone());
+    let scopes_rc = slint::ModelRc::from(scopes_r.clone());
     let scoped_instances_rc = slint::ModelRc::from(scoped_instances.clone());
 
     let instance_bridge = ui.global::<InstanceBridge>();
@@ -189,4 +225,45 @@ pub fn setup(ui: &MainWindow) {
             error!("Failed to start latency worker: {e}");
         }
     }
+}
+
+pub fn save_scopes(ui: &slint::Weak<MainWindow>) {
+    let window = ui.upgrade().unwrap();
+    let scope_bridge = window.global::<ScopeBridge>();
+    let scopes = scope_bridge.get_scopes();
+    let scopes = scopes.as_any().downcast_ref::<VecModel<Scope>>().unwrap();
+    let mut scopes_vec = vec![];
+    for scope in scopes.iter() {
+        scopes_vec.push(ScopeData {
+            host: scope.host.to_string(),
+            name: scope.name.to_string(),
+            state: scope.state.to_string(),
+            features: scope
+                .features
+                .split(",")
+                .map(|s| s.trim().to_string())
+                .collect(),
+        });
+    }
+    let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
+        Some(dirs) => dirs,
+        None => {
+            error!("Unable to find project config directories");
+            return;
+        }
+    };
+    let config_file = proj_dirs.config_dir().join("scopes.toml");
+    let config_obj = ScopesConfig { scopes: scopes_vec };
+    let config = toml::to_string(&config_obj).unwrap_or_else(|e| {
+        error!("Failed to serialize scopes: {}", e);
+        String::new()
+    });
+    if let Err(e) = std::fs::create_dir_all(proj_dirs.config_dir()) {
+        error!("Failed to create config directory: {}", e);
+        return;
+    }
+    if let Err(e) = std::fs::write(&config_file, config) {
+        error!("Failed to write config file: {}", e);
+    }
+    debug!("Saved scopes to: {:?}", config_file);
 }

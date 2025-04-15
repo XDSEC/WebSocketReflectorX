@@ -66,6 +66,7 @@ pub fn setup() -> Result<MainWindow, PlatformError> {
 pub fn shutdown(ui: &slint::Weak<MainWindow>) {
     let window = ui.upgrade().unwrap();
     bridges::settings::save_config(&window);
+    daemon::save_scopes(ui);
     let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
         Some(dirs) => dirs,
         None => {

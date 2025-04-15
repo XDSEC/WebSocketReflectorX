@@ -46,7 +46,7 @@ pub fn default_label() -> String {
     format!("inst-{:06x}", rand::random::<u32>())
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ScopeData {
     pub host: String,
     pub name: String,

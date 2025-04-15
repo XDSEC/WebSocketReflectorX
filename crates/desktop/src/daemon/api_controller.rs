@@ -108,6 +108,7 @@ struct InstanceResponse {
     from: String,
     /// deprecated
     to: String,
+    latency: i32,
 }
 
 async fn get_instances(
@@ -128,6 +129,7 @@ async fn get_instances(
                     local: instance.local.clone(),
                     from: instance.local.clone(),
                     to: instance.remote.clone(),
+                    latency: instance.latency,
                 })
             } else {
                 None
