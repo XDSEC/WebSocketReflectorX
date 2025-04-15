@@ -3,7 +3,7 @@
 # Workflow configuration
 #-------------------------------------------------------------------------------
 
-name: "Binary build on commit/pr"
+name: "Binary build"
 on:
   release:
     types: [published]
@@ -51,8 +51,7 @@ jobs:
       - name: Build application
         run: |
           rustup update stable && rustup default stable;
-          cargo install cargo-bundle;
-          cargo build --verbose --release --bins;
+          cargo build --release --bins;
       - name: Build cli for musl
         run: |
           rustup target add x86_64-unknown-linux-musl;
@@ -63,9 +62,6 @@ jobs:
       # Deploy musl application
       - name: Compress musl Binaries
         run: tar --transform='s!.*/!!' -czvf wsrx-cli-linux-musl-x86_64.tar.gz target/x86_64-unknown-linux-musl/release/wsrx
-      # Build deb
-      - name: Build Debian package
-        run: cargo bundle --release
       # Build AppImage
       - name: Build AppImage
         run: |
@@ -83,17 +79,20 @@ jobs:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
           path: wsrx-cli-linux-musl-x86_64.tar.gz
       # Upload AppImage
-      - name: Upload Debian package
-        uses: actions/upload-artifact@v4
-        with:
-          name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.deb
-          path: target/release/bundle/deb/wsrx-desktop_${{steps.git_tag_version.outputs.BUILD_VERSION}}_amd64.deb
-      # Upload AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
           path: WebSocketReflectorX-x86_64.AppImage
+      # Upload to github release
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
+            wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.tar.gz
+            WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
   build-windows:
     name: "Build on Windows"
     runs-on: windows-2022
@@ -108,7 +107,7 @@ jobs:
       - name: Get git version
         id: git_tag_version
         run: |
-          echo BUILD_VERSION=$(git describe --tags --abbrev=0) >> $GITHUB_OUTPUT
+          echo BUILD_VERSION=$(git describe --tags --abbrev=0) | Out-File -FilePath $env:GITHUB_OUTPUT -Append
       - name: Install NASM for aws-lc-rs on Windows
         uses: ilammy/setup-nasm@v1
       - name: Install ninja-build tool for aws-lc-fips-sys on Windows
@@ -117,7 +116,7 @@ jobs:
       - name: Build application
         run: |
           rustup update stable && rustup default stable;
-          cargo build --verbose --release --bins;
+          cargo build --release --bins;
       # Compress cli binaries
       - name: Compress CLI Binaries
         run: 7z a wsrx-cli-windows-msvc-x86_64.zip target/release/wsrx.exe
@@ -142,6 +141,15 @@ jobs:
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
           path: WebSocketReflectorX-portable-windows-msvc-x86_64.zip
+      # Upload to github release
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-msvc-x86_64.zip
+            WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-installer-windows-msvc-x86_64.exe
+            WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
   build-mac:
     name: "Build on MacOS"
     runs-on: macos-14
@@ -164,12 +172,12 @@ jobs:
         run: |
           rustup update stable && rustup default stable;
           cargo install cargo-bundle;
-          cargo build --verbose --release --bins;
+          cargo build --release --bins;
       # Build CLI binaries for x86_64
       - name: Build CLI binaries for x86_64
         run: |
           rustup target add x86_64-apple-darwin;
-          cargo build --verbose --release --bins --target x86_64-apple-darwin;
+          cargo build --release --bins --target x86_64-apple-darwin;
       # Compress aarch64 binaries
       - name: Compress Binaries for aarch64
         run: zip -r -y -X wsrx-cli-macos-aarch64.zip target/release/wsrx
@@ -180,27 +188,37 @@ jobs:
       - name: Build DMG
         run: |
           sh deployments/macos.sh
-      ## Upload cli ZIP for aarch64
+      # Upload cli ZIP for aarch64
       - name: Upload cli ZIP for aarch64
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
           path: wsrx-cli-macos-aarch64.zip
-      ## Upload cli ZIP for aarch64
+      # Upload cli ZIP for aarch64
       - name: Upload cli ZIP for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
           path: wsrx-cli-macos-x86_64.zip
-      ## Upload application ZIP for aarch64
+      # Upload application ZIP for aarch64
       - name: Upload application ZIP for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
           path: WebSocketReflectorX.app.zip
-      ## Upload application DMG for aarch64
+      # Upload application DMG for aarch64
       - name: Upload application DMG for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
           path: WebSocketReflectorX.dmg
+      # Upload to github release
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
+            wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
+            WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
+            WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
