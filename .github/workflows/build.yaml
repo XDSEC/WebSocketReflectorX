@@ -197,10 +197,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
-          path: target/release/bundle/osx/wsrx-desktop.app.zip
+          path: WebSocketReflectorX.app.zip
       ## Upload application DMG for aarch64
       - name: Upload application DMG for x86_64
         uses: actions/upload-artifact@v4
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
-          path: wsrx-desktop.dmg
+          path: WebSocketReflectorX.dmg

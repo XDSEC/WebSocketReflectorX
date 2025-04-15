@@ -1,9 +1,9 @@
 #!/bin/bash
 
-APP="target/release/bundle/osx/wsrx-desktop.app"
-APP_NAME="wsrx-desktop"
+APP="target/release/bundle/osx/WebSocketReflectorX.app"
+APP_NAME="WebSocketReflectorX"
 BIN="$APP/Contents/MacOS/wsrx-desktop"
-ZIP="$APP/../wsrx-desktop.app.zip"
+ZIP="./WebSocketReflectorX.app.zip"
 
 cargo bundle --release
 # codesign --timestamp --verify -vvv --deep --options=runtime --sign $IDENT $APP
