@@ -34,7 +34,38 @@ class Wsrx {
   }
 
   private async sync() {
-    await this.list(() => { });
+    try {
+      const resp = await fetch(`${this.options.api}/pool`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (resp.ok) {
+        const data: WsrxInstance[] = await resp.json();
+        let diff = false;
+        for (const i of data) {
+          const index = this.instances.findIndex((j) => j.local === i.local);
+          if (index === -1) {
+            diff = true;
+            break;
+          }
+        }
+        for (const i of this.instances) {
+          const index = data.findIndex((j) => j.local === i.local);
+          if (index === -1) {
+            diff = true;
+            break;
+          }
+        }
+        this.instances = data;
+        if (diff) {
+          for (const cb of this.onInstancesChangeCallbacks) {
+            cb();
+          }
+        }
+      }
+    } catch (e) { }
   }
 
   private async tick() {
@@ -229,32 +260,8 @@ class Wsrx {
     }
   }
 
-  public async list(onError: (e: Error) => void): Promise<WsrxInstance[]> {
-    try {
-      const resp = await fetch(`${this.options.api}/pool`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        this.instances = data;
-        for (const cb of this.onInstancesChangeCallbacks) {
-          cb();
-        }
-        return data;
-      } else {
-        throw new Error("Failed to list instances");
-      }
-    } catch (e) {
-      if (onError) {
-        onError(e as Error);
-      } else {
-        throw e;
-      }
-    }
-    throw new Error("Failed to list instances");
+  public list(): WsrxInstance[] {
+    return this.instances;
   }
 
   public onStateChange(fn: (state: WsrxState) => void): void {
