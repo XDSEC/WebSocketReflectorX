@@ -358,23 +358,21 @@ async fn request_control(
     let (scope_name, scope_features) = if let Some(json_body) = json_body {
         (json_body.name.clone(), json_body.features.clone())
     } else {
-        (req_scope.clone(), vec!["v0".to_string()])
+        (req_scope.clone(), vec!["basic".to_string()])
     };
 
     let mut scopes = state.scopes.write().await;
     if scopes.iter().any(|scope| scope.host == req_scope) {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            format!("Scope {} already exists", req_scope),
-        ));
+        return Ok(StatusCode::ACCEPTED);
     }
+    let scope_name = if scope_name.is_empty() {
+        req_scope.clone()
+    } else {
+        scope_name.clone()
+    };
     let scope = ScopeData {
-        host: if scope_name.is_empty() {
-            req_scope.clone()
-        } else {
-            scope_name.clone()
-        },
-        name: req_scope.clone(),
+        name: scope_name.clone(),
+        host: req_scope.clone(),
         state: "pending".to_string(),
         features: scope_features.clone(),
     };
@@ -390,7 +388,7 @@ async fn request_control(
         }
         let scope = Scope {
             host: req_scope.clone().into(),
-            name: req_scope.into(),
+            name: scope_name.into(),
             state: "pending".into(),
             features: scope_features.join(",").into(),
         };
