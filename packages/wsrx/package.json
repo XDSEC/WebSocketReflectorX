@@ -1,6 +1,6 @@
 {
   "name": "@xdsec/wsrx",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Client for WebSocket Reflector X",
   "license": "MIT",
   "repository": "XDSEC/WebSocketReflectorX",
@@ -10,11 +10,11 @@
   },
   "type": "module",
   "exports": {
-    "types": "./distribution/index.d.ts",
-    "default": "./distribution/index.js"
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
   },
-  "main": "./distribution/index.js",
-  "types": "./distribution/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "engines": {
     "node": ">=18"

@@ -1,5 +1,6 @@
 import {
   WSRX_MINIMUM_REQUIRED,
+  WsrxFeature,
   WsrxInstance,
   WsrxOptions,
   WsrxState,
@@ -33,7 +34,7 @@ class Wsrx {
   }
 
   private async sync() {
-    await this.list(() => {});
+    await this.list(() => { });
   }
 
   private async tick() {
@@ -41,7 +42,7 @@ class Wsrx {
       clearInterval(this.interval);
     }
     this.interval = setInterval(async () => {
-      const state = await this.check().catch(() => {});
+      const state = await this.check().catch(() => { });
       if (state) this.setState(state);
       else this.setState(WsrxState.Invalid);
       if (this.state === WsrxState.Invalid) {
@@ -265,4 +266,4 @@ class Wsrx {
   }
 }
 
-export { Wsrx, WsrxOptions, WsrxInstance, WsrxState };
+export { Wsrx, WsrxOptions, WsrxInstance, WsrxState, WsrxFeature };
