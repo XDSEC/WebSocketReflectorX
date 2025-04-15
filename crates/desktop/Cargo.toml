@@ -51,3 +51,13 @@ slint-build   = { workspace = true }
 [[bin]]
 name = "wsrx-desktop"
 path = "src/main.rs"
+
+[package.metadata.bundle]
+category          = "Utilities"
+copyright         = "Copyright (c) XDSEC"
+deb_depends       = ["libssl-dev", "libstdc++6", "libc6", "libgcc-s1"]
+icon              = ["crates/desktop/ui/assets/logo.png"]
+identifier        = "org.xdsec.wsrx"
+name              = "WebSocketReflectorX"
+osx_url_schemes   = ["org.xdsec.wsrx"]
+short_description = "Controlled TCP-over-WebSocket forwarding tunnel."

@@ -46,7 +46,7 @@ Name "${APPNAME}"
 ManifestDPIAware true
 InstallDir "${INSTALL_DIR_DEFAULT}"
 RequestExecutionLevel admin
-OutFile "${EXECNAME}-win64.exe"
+OutFile "${EXECNAME}-installer-windows-msvc-x86_64.exe"
 
 Function .onInit
   setShellVarContext all

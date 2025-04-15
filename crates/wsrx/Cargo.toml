@@ -66,24 +66,24 @@ disabled-strategies = ["quick-install", "compile"]
 [package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
 bin-dir = "{ bin }"
 pkg-fmt = "tgz"
-pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-linux64-gnu{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-linux-gnu-x86_64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
 bin-dir = "{ bin }"
 pkg-fmt = "tgz"
-pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-linux64-musl{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-linux-musl-x86_64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
 bin-dir = "target/release/{ bin }.exe"
 pkg-ext = "zip"
-pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-win64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-windows-msvc-x86_64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.aarch64-apple-darwin]
 bin-dir = "target/release/{ bin }"
 pkg-ext = "zip"
-pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-macOS-arm64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-macos-aarch64{ archive-suffix }"
 
 [package.metadata.binstall.overrides.x86_64-apple-darwin]
 bin-dir = "target/release/{ bin }"
 pkg-ext = "zip"
-pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-macOS-x86_64{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/{ version }/{ name }-cli-{ version }-macos-x86_64{ archive-suffix }"
