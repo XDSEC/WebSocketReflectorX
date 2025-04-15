@@ -64,7 +64,12 @@ pub fn router(state: ServerState) -> axum::Router {
         )
         .merge(
             axum::Router::new()
-                .route("/connect", get(get_control_status).post(request_control))
+                .route(
+                    "/connect",
+                    get(get_control_status)
+                        .post(request_control)
+                        .put(update_website_info),
+                )
                 .route(
                     "/version",
                     get(|| async { Json(env!("CARGO_PKG_VERSION")) }),
@@ -402,6 +407,62 @@ async fn request_control(
                 "failed to sync state".to_owned(),
             ))
         }
+    }
+}
+
+async fn update_website_info(
+    State(state): State<ServerState>, headers: HeaderMap,
+    axum::Json(scope_data): axum::Json<ScopeData>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let req_scope = headers
+        .get("Origin")
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or_default()
+        .to_owned();
+    let mut scopes = state.scopes.write().await;
+    if let Some(scope) = scopes.iter_mut().find(|s| s.host == req_scope) {
+        scope.name = scope_data.name.clone();
+        scope.features = scope_data.features.clone();
+        let state_d = scope.state.clone();
+
+        match slint::invoke_from_event_loop(move || {
+            let ui_handle = state.ui.upgrade().unwrap();
+            let scope_bridge = ui_handle.global::<ScopeBridge>();
+            let scopes = scope_bridge.get_scopes();
+            let scopes = scopes.as_any().downcast_ref::<VecModel<Scope>>().unwrap();
+            let mut index = 0;
+            for i in scopes.iter() {
+                if i.host == req_scope {
+                    break;
+                }
+                index += 1;
+            }
+            let scope = Scope {
+                host: req_scope.clone().into(),
+                name: scope_data.name.clone().into(),
+                state: state_d.into(),
+                features: scope_data.features.join(",").into(),
+            };
+            scopes.set_row_data(index, scope);
+        }) {
+            Ok(_) => {
+                debug!("Updated scope in UI");
+            }
+            Err(e) => {
+                debug!("Failed to update UI: {e}");
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "failed to update UI".to_owned(),
+                ));
+            }
+        }
+
+        Ok(StatusCode::OK)
+    } else {
+        Err((
+            StatusCode::FORBIDDEN,
+            format!("Scope {} not found", req_scope),
+        ))
     }
 }
 

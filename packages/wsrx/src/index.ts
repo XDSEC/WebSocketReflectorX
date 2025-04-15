@@ -33,7 +33,7 @@ class Wsrx {
     }
   }
 
-  private async sync() {
+  public async sync() {
     try {
       const resp = await fetch(`${this.options.api}/pool`, {
         method: "GET",
@@ -65,7 +65,7 @@ class Wsrx {
           }
         }
       }
-    } catch (e) { }
+    } catch (e) {}
   }
 
   private async tick() {
@@ -73,7 +73,7 @@ class Wsrx {
       clearInterval(this.interval);
     }
     this.interval = setInterval(async () => {
-      const state = await this.check().catch(() => { });
+      const state = await this.check().catch(() => {});
       if (state) this.setState(state);
       else this.setState(WsrxState.Invalid);
       if (this.state === WsrxState.Invalid) {
