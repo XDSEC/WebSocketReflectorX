@@ -1,6 +1,6 @@
 {
   "name": "@xdsec/wsrx",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Client for WebSocket Reflector X",
   "license": "MIT",
   "repository": "XDSEC/WebSocketReflectorX",
@@ -28,6 +28,9 @@
     "LICENSE"
   ],
   "dependencies": {
+    "ky": "^1.8.1"
+  },
+  "devDependencies": {
     "@types/node": "^22.14.1",
     "typescript": "^5.8.3"
   }

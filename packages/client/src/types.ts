@@ -48,3 +48,21 @@ export interface WsrxInstance {
 }
 
 export const WSRX_MINIMUM_REQUIRED = "0.4";
+
+export enum WsrxErrorKind {
+	DaemonUnavailable = "daemon_unavailable",
+	VersionMismatch = "daemon_version_mismatch",
+	DaemonError = "daemon_error",
+	ScopeUnverified = "scope_unverified",
+}
+
+export class WsrxError extends Error {
+	/**
+	 * The kind of error
+	 */
+	kind: WsrxErrorKind;
+	constructor(kind: WsrxErrorKind, message: string) {
+		super(message);
+		this.name = "WsrxError";
+	}
+}

@@ -6,6 +6,9 @@ import {
 	WsrxState,
 } from "./types";
 
+/**
+ * WebSocket Reflector X (wsrx) client.
+ */
 class Wsrx {
 	private options: WsrxOptions;
 	private state: WsrxState;
@@ -16,6 +19,10 @@ class Wsrx {
 
 	private tickCounter = 0;
 
+	/**
+	 * Creates a new Wsrx client.
+	 * @param options - The options for the Wsrx client.
+	 */
 	constructor(options: WsrxOptions) {
 		this.options = options;
 		this.state = WsrxState.Invalid;
@@ -23,6 +30,12 @@ class Wsrx {
 		this.onStateChangeCallbacks = [];
 	}
 
+	/**
+	 * Sets the state of the Wsrx client and calls the state change callbacks.
+	 * @param state - The new state of the Wsrx client.
+	 *
+	 * NOTE: This method is private and should not be called directly.
+	 */
 	private setState(state: WsrxState): void {
 		if (this.state === state) {
 			return;
@@ -33,6 +46,16 @@ class Wsrx {
 		}
 	}
 
+	/**
+	 * Syncs instances with local wsrx daemon.
+	 *
+	 * This method will be automatically called every 15 seconds when the client is in the usable state.
+	 *
+	 * You can also call this method manually to sync the instances immediately.
+	 * For example, if you want to sync the instances after adding or deleting an instance.
+	 *
+	 * @returns A promise that resolves when the sync is complete.
+	 */
 	public async sync() {
 		try {
 			const resp = await fetch(`${this.options.api}/pool`, {
@@ -68,6 +91,14 @@ class Wsrx {
 		} catch (e) {}
 	}
 
+	/**
+	 * Starts the tick interval to check the state of the wsrx client.
+	 *
+	 * This method will be automatically called when the client is connected.
+	 * Because of that, you should not call this method directly.
+	 *
+	 * @returns A promise that resolves when the tick interval is started.
+	 */
 	private async tick() {
 		if (this.interval !== null) {
 			clearInterval(this.interval);
@@ -88,18 +119,39 @@ class Wsrx {
 		}, 1000);
 	}
 
+	/**
+	 * Returns the current state of the wsrx client.
+	 */
 	public getState(): WsrxState {
 		return this.state;
 	}
 
+	/**
+	 * Returns the current options of the wsrx client.
+	 */
 	public getOptions(): WsrxOptions {
 		return this.options;
 	}
 
+	/**
+	 * Sets the options of the Wsrx client.
+	 *
+	 * You should call `connect` after setting the options to apply the changes.
+	 *
+	 * @param options - The new options for the wsrx client.
+	 */
 	public setOptions(options: Partial<WsrxOptions>): void {
 		this.options = { ...this.options, ...options };
 	}
 
+	/**
+	 * Connects to the local wsrx daemon.
+	 *
+	 * This method will automatically check the state of the Wsrx client
+	 * and start the tick interval to check the state every second.
+	 *
+	 * @param onError - Optional callback to handle errors.
+	 */
 	public async connect(onError?: (e: Error) => void): Promise<void> {
 		try {
 			const resp = await fetch(`${this.options.api}/connect`, {
@@ -127,38 +179,49 @@ class Wsrx {
 		}
 	}
 
+	public async checkVersion() {
+		const version = await fetch(`${this.options.api}/version`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		if (!version.ok) {
+			this.setState(WsrxState.Invalid);
+			return WsrxState.Invalid;
+		}
+		if (version.status === 404) {
+			this.setState(WsrxState.Invalid);
+			onError?.(
+				new Error(
+					`The minimum required version of wsrx is ${WSRX_MINIMUM_REQUIRED}, please update your wsrx client.`,
+				),
+			);
+			return WsrxState.Invalid;
+		}
+		const data = await version.json();
+		if (data.version < WSRX_MINIMUM_REQUIRED) {
+			this.setState(WsrxState.Invalid);
+			onError?.(
+				new Error(
+					`The minimum required version of wsrx is ${WSRX_MINIMUM_REQUIRED}, please update your wsrx client.`,
+				),
+			);
+			return WsrxState.Invalid;
+		}
+	}
+
+	/**
+	 * Checks the state of the wsrx client.
+	 *
+	 * This method will check the state of the wsrx client and return the state.
+	 * It will also start the tick interval to check the state every second.
+	 *
+	 * @param onError - Optional callback to handle errors.
+	 * @returns The state of the wsrx client.
+	 */
 	public async check(onError?: (e: Error) => void): Promise<WsrxState> {
 		try {
-			const version = await fetch(`${this.options.api}/version`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-			if (!version.ok) {
-				this.setState(WsrxState.Invalid);
-				return WsrxState.Invalid;
-			}
-			if (version.status === 404) {
-				this.setState(WsrxState.Invalid);
-				onError?.(
-					new Error(
-						`The minimum required version of wsrx is ${WSRX_MINIMUM_REQUIRED}, please update your wsrx client.`,
-					),
-				);
-				return WsrxState.Invalid;
-			}
-			const data = await version.json();
-			if (data.version < WSRX_MINIMUM_REQUIRED) {
-				this.setState(WsrxState.Invalid);
-				onError?.(
-					new Error(
-						`The minimum required version of wsrx is ${WSRX_MINIMUM_REQUIRED}, please update your wsrx client.`,
-					),
-				);
-				return WsrxState.Invalid;
-			}
-
 			const resp = await fetch(`${this.options.api}/connect`, {
 				method: "GET",
 				headers: {
@@ -168,7 +231,6 @@ class Wsrx {
 			if (resp.ok) {
 				if (resp.status === 202) {
 					this.setState(WsrxState.Usable);
-					this.tick();
 					return WsrxState.Usable;
 				} else if (resp.status === 201) {
 					this.setState(WsrxState.Pending);
@@ -191,6 +253,13 @@ class Wsrx {
 		return this.state;
 	}
 
+	/**
+	 * Adds a new instance to the wsrx client.
+	 *
+	 * @param instance - The instance to add.
+	 * @param onError - Optional callback to handle errors.
+	 * @returns The added instance.
+	 */
 	public async add(
 		instance: WsrxInstance,
 		onError?: (e: Error) => void,
