@@ -111,7 +111,7 @@ class Wsrx {
       clearInterval(this.interval);
     }
     this.interval = setInterval(async () => {
-      await this.check().catch(() => {});
+      await this.check().catch(() => { });
       if (this.state === WsrxState.Invalid) {
         this.interval && clearInterval(this.interval);
       } else if (this.state === WsrxState.Usable) {
@@ -346,18 +346,14 @@ class Wsrx {
   }
 
   /**
-   * Returns the list of features.
-   *
-   * @returns The list of features.
+   * Registers a callback to be called when the state of the wsrx client changes.
    */
   public onStateChange(fn: (state: WsrxState) => void): void {
     this.onStateChangeCallbacks.push(fn);
   }
 
   /**
-   * Returns the list of features.
-   *
-   * @returns The list of features.
+   * Registers a callback to be called when the list of instances changes.
    */
   public onInstancesChange(fn: (instances: WsrxInstance[]) => void): void {
     this.onInstancesChangeCallbacks.push(fn);
