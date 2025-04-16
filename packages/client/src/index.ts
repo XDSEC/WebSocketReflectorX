@@ -111,14 +111,12 @@ class Wsrx {
       clearInterval(this.interval);
     }
     this.interval = setInterval(async () => {
-      await this.check().catch(() => { });
+      await this.check().catch(() => {});
       if (this.state === WsrxState.Invalid) {
         this.interval && clearInterval(this.interval);
       } else if (this.state === WsrxState.Usable) {
         if (this.tickCounter % 5 === 0) {
-          await this.sync().catch(() => {
-            this.setState(WsrxState.Invalid);
-          });
+          await this.sync().catch(() => {});
         }
         this.tickCounter++;
         this.tickCounter %= 5;
@@ -201,7 +199,6 @@ class Wsrx {
       }
     } catch (e) {
       if (e instanceof HTTPError) {
-        this.setState(WsrxState.Invalid);
         if (e.response.status === 404)
           throw new WsrxError(
             WsrxErrorKind.VersionMismatch,
@@ -229,16 +226,8 @@ class Wsrx {
         this.setState(WsrxState.Usable);
       } else if (resp.status === 201) {
         this.setState(WsrxState.Pending);
-        throw new WsrxError(
-          WsrxErrorKind.ScopeUnverified,
-          "Your scope is pending, please verify this website in local daemon",
-        );
       } else {
         this.setState(WsrxState.Invalid);
-        throw new WsrxError(
-          WsrxErrorKind.DaemonError,
-          "Daemon returns unexpected status code, is it ok?",
-        );
       }
     } catch (e) {
       if (e instanceof HTTPError) {
@@ -259,7 +248,7 @@ class Wsrx {
         this.setState(WsrxState.Invalid);
         throw new WsrxError(
           WsrxErrorKind.DaemonUnavailable,
-          "Failed to connect to wsrx daemon, is it running?",
+          "Failed to connect to wsrx daemon, maybe network broken?",
         );
       }
     }
