@@ -10,8 +10,12 @@ on:
   push:
     paths:
       - ".github/workflows/build.yaml"
-      - "crates/"
       - "Cargo.toml"
+      - "crates/**"
+      - "macos/**"
+      - "windows/**"
+      - "deployments/**"
+      - "freedesktop/**"
   pull_request_review:
   workflow_dispatch:
 
