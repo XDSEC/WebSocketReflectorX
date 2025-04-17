@@ -35,6 +35,13 @@ class Wsrx {
   }
 
   /**
+   * Returns the current state of the wsrx client.
+   */
+  public getState(): WsrxState {
+    return this.state;
+  }
+
+  /**
    * Sets the state of the Wsrx client and calls the state change callbacks.
    * @param state - The new state of the Wsrx client.
    *
@@ -51,6 +58,50 @@ class Wsrx {
   }
 
   /**
+   * Returns the current options of the wsrx client.
+   */
+  public getOptions(): WsrxOptions {
+    return this.options;
+  }
+
+  /**
+   * Sets the options of the Wsrx client.
+   *
+   * You should call `connect` after setting the options to apply the changes.
+   *
+   * @param options - The new options for the wsrx client.
+   */
+  public setOptions(options: Partial<WsrxOptions>): void {
+    this.options = { ...this.options, ...options };
+  }
+
+  /**
+   * Starts the tick interval to check the state of the wsrx client.
+   *
+   * This method will be automatically called when the client is connected.
+   * Because of that, you should not call this method directly.
+   *
+   * @returns A promise that resolves when the tick interval is started.
+   */
+  private async tick() {
+    if (this.interval !== null) {
+      clearInterval(this.interval);
+    }
+    this.interval = setInterval(async () => {
+      await this.check();
+      if (this.state === WsrxState.Invalid) {
+        this.interval && clearInterval(this.interval);
+      } else if (this.state === WsrxState.Usable) {
+        if (this.tickCounter % 5 === 0) {
+          await this.sync().catch(() => { });
+        }
+        this.tickCounter++;
+        this.tickCounter %= 5;
+      }
+    }, 3000);
+  }
+
+  /**
    * Syncs instances with local wsrx daemon.
    *
    * This method will be automatically called every 15 seconds when the client is in the usable state.
@@ -63,7 +114,7 @@ class Wsrx {
   public async sync() {
     try {
       const data: WsrxInstance[] = await ky
-        .get(`${this.options.api}/pool`)
+        .get(`${this.options.api}/pool`, { retry: 0 })
         .json();
       let diff = false;
       for (const i of data) {
@@ -99,57 +150,6 @@ class Wsrx {
   }
 
   /**
-   * Starts the tick interval to check the state of the wsrx client.
-   *
-   * This method will be automatically called when the client is connected.
-   * Because of that, you should not call this method directly.
-   *
-   * @returns A promise that resolves when the tick interval is started.
-   */
-  private async tick() {
-    if (this.interval !== null) {
-      clearInterval(this.interval);
-    }
-    this.interval = setInterval(async () => {
-      await this.check().catch(() => {});
-      if (this.state === WsrxState.Invalid) {
-        this.interval && clearInterval(this.interval);
-      } else if (this.state === WsrxState.Usable) {
-        if (this.tickCounter % 5 === 0) {
-          await this.sync().catch(() => {});
-        }
-        this.tickCounter++;
-        this.tickCounter %= 5;
-      }
-    }, 3000);
-  }
-
-  /**
-   * Returns the current state of the wsrx client.
-   */
-  public getState(): WsrxState {
-    return this.state;
-  }
-
-  /**
-   * Returns the current options of the wsrx client.
-   */
-  public getOptions(): WsrxOptions {
-    return this.options;
-  }
-
-  /**
-   * Sets the options of the Wsrx client.
-   *
-   * You should call `connect` after setting the options to apply the changes.
-   *
-   * @param options - The new options for the wsrx client.
-   */
-  public setOptions(options: Partial<WsrxOptions>): void {
-    this.options = { ...this.options, ...options };
-  }
-
-  /**
    * Connects to the local wsrx daemon.
    *
    * This method will automatically check the state of the Wsrx client
@@ -158,22 +158,28 @@ class Wsrx {
    * @throws WsrxError if the connection fails.
    */
   public async connect(): Promise<void> {
-    try {
-      await ky.post(`${this.options.api}/connect`, {
-        json: {
-          name: this.options.name,
-          features: this.options.features,
-          host: "IN_HEADER",
-          state: "pending",
-        },
-      });
-    } catch {
-      this.setState(WsrxState.Invalid);
-      throw new WsrxError(
-        WsrxErrorKind.DaemonUnavailable,
-        "Failed to connect to wsrx daemon, is it running?",
-      );
-    }
+    await this.checkVersion();
+    await this.check();
+    if (this.state === WsrxState.Invalid)
+      try {
+        await ky.post(`${this.options.api}/connect`, {
+          json: {
+            name: this.options.name,
+            features: this.options.features,
+            host: "IN_HEADER",
+            state: "pending",
+          },
+          retry: 0,
+        });
+      } catch (e) {
+        if (e instanceof HTTPError) {
+          this.setState(WsrxState.Invalid);
+          throw new WsrxError(
+            WsrxErrorKind.DaemonUnavailable,
+            `Failed to connect to wsrx daemon: ${await e.response.text()}`,
+          );
+        }
+      }
     this.tick();
   }
 
@@ -184,10 +190,10 @@ class Wsrx {
    *
    * @throws WsrxError if the version is lower than required.
    */
-  public async checkVersion() {
+  private async checkVersion() {
     try {
       const data: { version: string } = await ky
-        .get(`${this.options.api}/version`)
+        .get(`${this.options.api}/version`, { retry: 0 })
         .json();
 
       if (data.version < WSRX_MINIMUM_REQUIRED) {
@@ -207,9 +213,10 @@ class Wsrx {
         else
           throw new WsrxError(
             WsrxErrorKind.DaemonError,
-            "Failed to check wsrx version, is it running?",
+            await e.response.text(),
           );
       }
+      throw e;
     }
   }
 
@@ -219,7 +226,7 @@ class Wsrx {
    * This method will check the state of the wsrx client and return the state.
    * It will also start the tick interval to check the state every second.
    */
-  public async check(): Promise<void> {
+  private async check(): Promise<void> {
     try {
       const resp = await ky.get(`${this.options.api}/connect`);
       if (resp.status === 202) {
@@ -230,27 +237,7 @@ class Wsrx {
         this.setState(WsrxState.Invalid);
       }
     } catch (e) {
-      if (e instanceof HTTPError) {
-        if (e.response.status === 404) {
-          this.setState(WsrxState.Invalid);
-          throw new WsrxError(
-            WsrxErrorKind.DaemonUnavailable,
-            "Failed to connect to wsrx daemon, is it running?",
-          );
-        } else if (e.response.status === 403) {
-          this.setState(WsrxState.Invalid);
-          throw new WsrxError(
-            WsrxErrorKind.MissingScope,
-            "Your scope is missing in local daemon, please call `connect` first",
-          );
-        }
-      } else {
-        this.setState(WsrxState.Invalid);
-        throw new WsrxError(
-          WsrxErrorKind.DaemonUnavailable,
-          "Failed to connect to wsrx daemon, maybe network broken?",
-        );
-      }
+      this.setState(WsrxState.Invalid);
     }
   }
 
