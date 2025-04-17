@@ -2,6 +2,7 @@ import { Styles } from "styles.slint";
 export component FramelessWindow inherits Window {
     background: Colors.transparent;
     no-frame: true;
+    in property border-radius <=> central-widget.border-radius;
 
     in property <brush> border-color;
     in-out property <bool> maximized;
@@ -19,7 +20,6 @@ export component FramelessWindow inherits Window {
         border-width: root.maximized ? 0 : Styles.sizes.line;
         border-color: root.border-color;
         animate border-color { duration: 120ms; }
-        border-radius: root.maximized ? 0 : Styles.sizes.r-lg;
         clip: true;
 
         @children

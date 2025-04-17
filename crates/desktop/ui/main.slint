@@ -20,7 +20,7 @@ export component MainWindow inherits FramelessWindow {
     min-width: 800px;
     min-height: 540px;
     icon: @image-url("assets/logo.svg");
-
+    border-radius: (SystemInfoBridge.os == "windows" || self.maximized) ? 0 : Styles.sizes.r-lg;
     in-out property <bool> main-window-maximized <=> self.maximized;
     in-out property <bool> main-window-minimized <=> self.minimized;
 
