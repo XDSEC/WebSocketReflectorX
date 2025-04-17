@@ -178,6 +178,12 @@ class Wsrx {
             WsrxErrorKind.DaemonUnavailable,
             `Failed to connect to wsrx daemon: ${await e.response.text()}`,
           );
+        } else {
+          this.setState(WsrxState.Invalid);
+          throw new WsrxError(
+            WsrxErrorKind.DaemonUnavailable,
+            "Failed to connect to wsrx daemon",
+          );
         }
       }
     this.tick();
@@ -269,12 +275,13 @@ class Wsrx {
     } catch (e) {
       if (e instanceof HTTPError) {
         throw new WsrxError(WsrxErrorKind.DaemonError, await e.response.text());
+      } else {
+        throw new WsrxError(
+          WsrxErrorKind.DaemonError,
+          "Failed to add instance, is wsrx daemon running?",
+        );
       }
     }
-    throw new WsrxError(
-      WsrxErrorKind.DaemonError,
-      "Failed to add instance, is wsrx daemon running?",
-    );
   }
 
   /**
