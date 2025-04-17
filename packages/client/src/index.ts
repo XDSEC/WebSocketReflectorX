@@ -171,6 +171,7 @@ class Wsrx {
           },
           retry: 0,
         });
+        await this.check();
       } catch (e) {
         if (e instanceof HTTPError) {
           this.setState(WsrxState.Invalid);
