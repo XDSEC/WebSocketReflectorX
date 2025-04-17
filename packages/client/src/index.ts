@@ -222,7 +222,10 @@ class Wsrx {
             await e.response.text(),
           );
       }
-      throw e;
+      throw new WsrxError(
+        WsrxErrorKind.DaemonUnavailable,
+        "Failed to check wsrx version, is wsrx daemon running?",
+      );
     }
   }
 
