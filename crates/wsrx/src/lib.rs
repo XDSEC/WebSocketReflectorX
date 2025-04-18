@@ -5,4 +5,4 @@
 
 pub mod proxy;
 
-pub use proxy::{proxy, Error, Message, WrappedWsStream};
+pub use proxy::{Error, Message, WrappedWsStream, proxy};

@@ -1,6 +1,6 @@
 use std::process;
 
-use clap::{command, Parser};
+use clap::{Parser, command};
 use rustls::crypto;
 use tracing::{error, info, warn};
 

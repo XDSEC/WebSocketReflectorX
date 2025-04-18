@@ -1,9 +1,10 @@
-// Prevent console window in addition to Slint window in Windows release builds when, e.g., starting the app via file manager. Ignored on other platforms.
+// Prevent console window in addition to Slint window in Windows release builds
+// when, e.g., starting the app via file manager. Ignored on other platforms.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use slint::ComponentHandle;
 use std::error::Error;
 
+use slint::ComponentHandle;
 use wsrx_desktop::{launcher, logging};
 
 fn main() -> Result<(), Box<dyn Error>> {

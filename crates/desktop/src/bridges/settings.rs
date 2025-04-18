@@ -1,11 +1,11 @@
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use slint::ComponentHandle;
-use tracing::{debug, error};
+use tracing::{debug, error, warn};
 
 use crate::ui::{MainWindow, SettingsBridge};
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WsrxDesktopConfig {
     #[serde(default = "default_theme")]
     pub theme: String,
@@ -15,17 +15,54 @@ pub struct WsrxDesktopConfig {
     pub language: String,
 }
 
+impl Default for WsrxDesktopConfig {
+    fn default() -> Self {
+        Self {
+            theme: default_theme(),
+            running_in_tray: default_running_in_tray(),
+            language: default_language(),
+        }
+    }
+}
+
+// handle "en-US" / "en" / "zh" / "zh-CN" / "zh-Hans-CN" / "zh-Hant-TW"
+// into one of "en_US" / "zh_CN" / "zh_TW"
+fn normalize_language(locale: String) -> String {
+    let mut parts = locale.split('-');
+    let lang = parts.next().unwrap_or("en");
+    let region = parts.next().map(|s| match s {
+        "CN" => "CN",
+        "TW" => "TW",
+        "HK" => "TW",
+        "Hans" => "CN",
+        "Hant" => "TW",
+        _ => "US",
+    });
+
+    match lang {
+        "en" => format!("en_{}", region.unwrap_or("US")),
+        "zh" => format!("zh_{}", region.unwrap_or("CN")),
+        _ => {
+            warn!("Unsupported language: {}, defaulting to en_US", locale);
+            "en_US".to_string()
+        }
+    }
+}
+
 fn default_language() -> String {
     sys_locale::get_locale()
-        .unwrap_or("en-US".to_string())
-        .replace("-", "_")
+        .map(normalize_language)
+        .unwrap_or_else(|| {
+            warn!("Failed to get system locale, defaulting to en_US");
+            "en_US".to_string()
+        })
 }
 
 fn default_theme() -> String {
     "dark".to_string()
 }
 
-fn default_running_in_tray() -> bool {
+const fn default_running_in_tray() -> bool {
     false
 }
 

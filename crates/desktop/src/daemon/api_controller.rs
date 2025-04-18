@@ -1,12 +1,5 @@
 use std::{net::ToSocketAddrs, time::Duration};
 
-use crate::{
-    bridges::ui_state::sync_scoped_instance,
-    daemon::model::InstanceDataPure,
-    ui::{Instance, InstanceBridge, Scope, ScopeBridge},
-};
-
-use super::model::{InstanceData, ScopeData, ServerState};
 use axum::{
     Json,
     body::Body,
@@ -24,6 +17,13 @@ use tower_http::{
     trace::TraceLayer,
 };
 use tracing::{Span, debug, error, info};
+
+use super::model::{InstanceData, ScopeData, ServerState};
+use crate::{
+    bridges::ui_state::sync_scoped_instance,
+    daemon::model::InstanceDataPure,
+    ui::{Instance, InstanceBridge, Scope, ScopeBridge},
+};
 
 pub fn router(state: ServerState) -> axum::Router {
     let cors_state = state.clone();
