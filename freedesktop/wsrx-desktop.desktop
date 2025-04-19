@@ -8,5 +8,5 @@ Exec=wsrx-desktop
 TryExec=wsrx-desktop
 Icon=wsrx-desktop
 Terminal=false
-Categories=Network;Utilities;
+Categories=Network;
 StartupWMClass=wsrx-desktop
