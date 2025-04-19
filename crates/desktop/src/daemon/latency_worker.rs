@@ -108,7 +108,7 @@ async fn pingfall(state: ServerState) {
     for instance in instances_pure.iter() {
         let scope = scopes
             .iter()
-            .find(|scope| scope.name == instance.scope_host);
+            .find(|scope| scope.host == instance.scope_host);
         if let Some(scope) = scope {
             if scope.features.contains(&"pingfall".to_owned()) {
                 on_instance_del(&state, &instance.local).await;

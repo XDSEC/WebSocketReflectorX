@@ -182,6 +182,13 @@ async fn launch_instance(
         ));
     }
 
+    if let Some(instance) = instances
+        .iter()
+        .find(|i| i.remote == remote && i.scope_host == scope)
+    {
+        return Ok(Json(instance.into()));
+    }
+
     let instance = InstanceData {
         label: instance_data.label.clone(),
         remote: instance_data.remote.clone(),
