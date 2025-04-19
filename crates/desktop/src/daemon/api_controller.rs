@@ -10,7 +10,7 @@ use axum::{
 };
 use i_slint_backend_winit::WinitWindowAccessor;
 use serde::{Deserialize, Serialize};
-use slint::{ComponentHandle, Model, VecModel};
+use slint::{ComponentHandle, Model, ToSharedString, VecModel};
 use tokio::net::TcpListener;
 use tower_http::{
     cors::{AllowOrigin, Any, CorsLayer},
@@ -18,7 +18,7 @@ use tower_http::{
 };
 use tracing::{Span, debug, error, info};
 
-use super::model::{InstanceData, ScopeData, ServerState};
+use super::model::{FeatureFlags, InstanceData, ScopeData, ServerState};
 use crate::{
     bridges::ui_state::sync_scoped_instance,
     daemon::model::InstanceDataPure,
@@ -365,9 +365,9 @@ async fn request_control(
         .await
         .ok();
     let (scope_name, scope_features) = if let Some(json_body) = json_body {
-        (json_body.name.clone(), json_body.features.clone())
+        (json_body.name.clone(), json_body.features)
     } else {
-        (req_scope.clone(), vec!["basic".to_string()])
+        (req_scope.clone(), FeatureFlags::Basic)
     };
 
     let mut scopes = state.scopes.write().await;
@@ -383,7 +383,7 @@ async fn request_control(
         name: scope_name.clone(),
         host: req_scope.clone(),
         state: "pending".to_string(),
-        features: scope_features.clone(),
+        features: scope_features,
     };
     scopes.push(scope);
 
@@ -399,7 +399,7 @@ async fn request_control(
             host: req_scope.clone().into(),
             name: scope_name.into(),
             state: "pending".into(),
-            features: scope_features.join(",").into(),
+            features: scope_features.to_shared_string(),
         };
         scopes.push(scope);
     }) {
@@ -429,7 +429,7 @@ async fn update_website_info(
     let mut scopes = state.scopes.write().await;
     if let Some(scope) = scopes.iter_mut().find(|s| s.host == req_scope) {
         scope.name = scope_data.name.clone();
-        scope.features = scope_data.features.clone();
+        scope.features = scope_data.features;
         let state_d = scope.state.clone();
 
         match slint::invoke_from_event_loop(move || {
@@ -448,7 +448,7 @@ async fn update_website_info(
                 host: req_scope.clone().into(),
                 name: scope_data.name.clone().into(),
                 state: state_d.into(),
-                features: scope_data.features.join(",").into(),
+                features: scope_data.features.to_shared_string(),
             };
             scopes.set_row_data(index, scope);
         }) {
