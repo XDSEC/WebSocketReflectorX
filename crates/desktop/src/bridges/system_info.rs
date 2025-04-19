@@ -1,9 +1,11 @@
+use std::rc::Rc;
+
 use async_compat::Compat;
 use chrono::{DateTime, Utc};
 use directories::ProjectDirs;
+use local_ip_address::list_afinet_netifas;
 use serde::Deserialize;
 use slint::{ComponentHandle, Model, ModelRc, SharedString, VecModel};
-use std::rc::Rc;
 use sysinfo::System;
 use tokio::{fs, io::AsyncBufReadExt, time::timeout};
 use tracing::{debug, error, warn};
@@ -12,7 +14,6 @@ use crate::{
     WSRX_FULL_VERSION,
     ui::{Log, MainWindow, SystemInfoBridge},
 };
-use local_ip_address::list_afinet_netifas;
 
 pub fn setup(window: &MainWindow) {
     let bridge = window.global::<SystemInfoBridge>();
@@ -25,8 +26,9 @@ pub fn setup(window: &MainWindow) {
 
     bridge.set_info(
         format!(
-            "System    : {}\nCPU       : {}\nKernel    : {}\nWSRX      : {}",
+            "System    : {}\nLocale    : {}\nCPU       : {}\nKernel    : {}\nWSRX      : {}",
             System::name().unwrap_or_else(|| "Unknown".into()),
+            sys_locale::get_locale().unwrap_or_else(|| "Unknown".into()),
             System::cpu_arch(),
             System::kernel_long_version(),
             WSRX_FULL_VERSION,

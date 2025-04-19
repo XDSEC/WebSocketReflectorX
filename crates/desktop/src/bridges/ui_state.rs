@@ -1,7 +1,7 @@
 use slint::{ComponentHandle, Model, SharedString, VecModel};
+use tracing::debug;
 
 use crate::ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge, UiState};
-use tracing::debug;
 
 pub fn setup(window: &MainWindow) {
     let bridge = window.global::<UiState>();

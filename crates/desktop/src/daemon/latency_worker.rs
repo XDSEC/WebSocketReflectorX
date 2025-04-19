@@ -2,14 +2,13 @@ use reqwest::Method;
 use slint::{ComponentHandle, Model, VecModel};
 use tracing::{debug, error};
 
-use crate::{
-    bridges::ui_state::sync_scoped_instance,
-    ui::{Instance, InstanceBridge},
-};
-
 use super::{
     model::{InstanceDataPure, ServerState},
     ui_controller::on_instance_del,
+};
+use crate::{
+    bridges::ui_state::sync_scoped_instance,
+    ui::{Instance, InstanceBridge},
 };
 
 pub async fn start(state: ServerState) {

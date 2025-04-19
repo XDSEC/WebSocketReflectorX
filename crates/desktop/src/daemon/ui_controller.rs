@@ -4,13 +4,12 @@ use slint::{ComponentHandle, Model, VecModel};
 use tokio::net::TcpListener;
 use tracing::{debug, error, info, warn};
 
+use super::model::ServerState;
 use crate::{
     bridges::ui_state::sync_scoped_instance,
     daemon::model::InstanceData,
     ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge},
 };
-
-use super::model::ServerState;
 
 pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
     let mut tcp_addr_obj = match local.to_string().to_socket_addrs() {

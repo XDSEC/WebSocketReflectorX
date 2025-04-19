@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc, time::Duration};
 use axum::{
     body::Body,
     extract::{FromRef, Path, Request as ExtractRequest, State, WebSocketUpgrade},
-    http::{header::CONTENT_TYPE, Request, StatusCode},
+    http::{Request, StatusCode, header::CONTENT_TYPE},
     middleware::Next,
     response::{IntoResponse, Response},
     routing::get,
@@ -14,7 +14,7 @@ use tokio::{
     sync::RwLock,
 };
 use tower_http::trace::TraceLayer;
-use tracing::{error, info, Span};
+use tracing::{Span, error, info};
 use wsrx::proxy;
 
 use crate::cli::logger::init_logger;
@@ -52,7 +52,6 @@ pub struct GlobalState {
     pub secret: Option<String>,
     pub connections: Arc<RwLock<HashMap<String, String>>>,
 }
-
 
 /// Build the router with the given secret.
 fn build_router(secret: Option<String>) -> axum::Router {
