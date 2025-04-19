@@ -222,7 +222,7 @@ export component ConnectionsPage inherits Rectangle {
                             }
 
                             Text {
-                                text: UiState.page == "default-scope" && (item-touch-area.has-hover || close-touch-area.has-hover) ? @tr("Click to close") : ((instance.latency >= 0 ? instance.latency : "--") + " ms");
+                                text: (item-touch-area.has-hover || close-touch-area.has-hover) ? @tr("Click to close") : ((instance.latency >= 0 ? instance.latency : "--") + " ms");
                                 font-size: Styles.sizes.font;
                                 font-weight: 400;
                                 color: item-touch-area.has-hover || close-touch-area.has-hover ? Styles.palette.warn-bg : instance.latency >= 0 ? Styles.palette.success-bg : Styles.palette.error-bg;
@@ -232,7 +232,7 @@ export component ConnectionsPage inherits Rectangle {
                                     clicked => {
                                         InstanceBridge.del(instance.local);
                                     }
-                                    enabled: UiState.page == "default-scope";
+                                    // enabled: UiState.page == "default-scope";
                                 }
                             }
                         }
