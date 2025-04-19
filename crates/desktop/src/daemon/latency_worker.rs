@@ -1,6 +1,6 @@
 use reqwest::Method;
 use slint::{ComponentHandle, Model, VecModel};
-use tracing::{debug, error};
+use tracing::debug;
 
 use super::{
     model::{InstanceDataPure, ServerState},
@@ -25,10 +25,8 @@ pub async fn start(state: ServerState) {
             let client = client.clone();
             let state = state.clone();
             tokio::spawn(async move {
-                if let Err(e) = update_instance_latency(state.clone(), instance, &client).await {
-                    error!("Failed to update latency: {:?}", e);
-                }
-                pingfall(state).await;
+                update_instance_latency(state.clone(), instance.clone(), &client).await;
+                pingfall(state, instance).await;
             });
         }
         sync_scoped_instance(state.ui.clone());
@@ -39,29 +37,29 @@ pub async fn start(state: ServerState) {
 
 async fn update_instance_latency(
     state: ServerState, instance: InstanceDataPure, client: &reqwest::Client,
-) -> Result<i32, reqwest::Error> {
+) {
     let start_time = std::time::Instant::now();
     let resp = client
         .request(Method::OPTIONS, instance.remote.replace("ws", "http"))
         .header("User-Agent", format!("wsrx/{}", env!("CARGO_PKG_VERSION")))
         .send()
-        .await?;
-    let elapsed = start_time.elapsed();
+        .await
+        .ok();
+
+    let elapsed = if let Some(resp) = resp {
+        if resp.status().is_success() {
+            start_time.elapsed().as_millis() as i32 / 2
+        } else {
+            debug!("Failed to ping instance: {}", resp.status());
+            -1
+        }
+    } else {
+        -1
+    };
     let mut instances = state.instances.write().await;
     for instance_d in instances.iter_mut() {
         if instance.remote == instance_d.remote {
-            let mut latency = elapsed.as_millis() as i32 / 2;
-            if resp.status().is_success() {
-                instance_d.latency = latency;
-            } else {
-                debug!(
-                    "Failed to get latency for link {}: {:?}",
-                    instance_d.remote,
-                    resp.status()
-                );
-                instance_d.latency = -1;
-                latency = -1;
-            }
+            instance_d.latency = elapsed;
             let window = state.ui.clone();
             slint::invoke_from_event_loop(move || {
                 let window = window.upgrade().unwrap();
@@ -83,7 +81,7 @@ async fn update_instance_latency(
                     Instance {
                         local: instance.local.clone().into(),
                         remote: instance.remote.clone().into(),
-                        latency,
+                        latency: elapsed,
                         label: instance.label.clone().into(),
                         scope_host: instance.scope_host.clone().into(),
                     },
@@ -93,26 +91,16 @@ async fn update_instance_latency(
             break;
         }
     }
-
-    Ok(0)
 }
 
-async fn pingfall(state: ServerState) {
-    let instances = state.instances.read().await;
-    let instances_pure = instances
-        .iter()
-        .map(|instance| instance.into())
-        .collect::<Vec<InstanceDataPure>>();
-    drop(instances);
+async fn pingfall(state: ServerState, instance: InstanceDataPure) {
     let scopes = state.scopes.read().await;
-    for instance in instances_pure.iter() {
-        let scope = scopes
-            .iter()
-            .find(|scope| scope.host == instance.scope_host);
-        if let Some(scope) = scope {
-            if scope.features.contains(&"pingfall".to_owned()) {
-                on_instance_del(&state, &instance.local).await;
-            }
+    let scope = scopes
+        .iter()
+        .find(|scope| scope.host == instance.scope_host);
+    if let Some(scope) = scope {
+        if scope.features.contains(&"pingfall".to_owned()) {
+            on_instance_del(&state, &instance.local).await;
         }
     }
 }
