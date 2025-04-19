@@ -28,7 +28,9 @@ pub async fn launch(
         "Hi, I am not RX, RX is here -> {}",
         listener.local_addr().unwrap()
     );
-    warn!("wsrx will not report non-critical errors by default, you can set `RUST_LOG=wsrx=debug` to see more details.");
+    warn!(
+        "wsrx will not report non-critical errors by default, you can set `RUST_LOG=wsrx=debug` to see more details."
+    );
     loop {
         let Ok((tcp, _)) = listener.accept().await else {
             error!("Failed to accept tcp connection, exiting.");

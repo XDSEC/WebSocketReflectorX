@@ -6,13 +6,13 @@ use std::{
 };
 
 use axum::{
+    Json,
     body::Body,
     extract::{FromRef, Request as ExtractRequest, State},
-    http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, Method, Request, StatusCode},
+    http::{HeaderMap, HeaderValue, Method, Request, StatusCode, header::CONTENT_TYPE},
     middleware::Next,
     response::{IntoResponse, Response},
     routing::get,
-    Json,
 };
 use chrono::{DateTime, Utc};
 use once_cell::sync::Lazy;
@@ -22,7 +22,7 @@ use tower_http::{
     cors::{AllowOrigin, Any, CorsLayer},
     trace::TraceLayer,
 };
-use tracing::{debug, error, info, Span};
+use tracing::{Span, debug, error, info};
 use wsrx::proxy;
 
 use crate::cli::logger::init_logger;

@@ -1,13 +1,11 @@
 use std::{process, rc::Rc, sync::Arc};
 
 use api_controller::router;
-
 use directories::ProjectDirs;
 use model::{ScopeData, ServerState};
 use serde::{Deserialize, Serialize};
 use slint::{ComponentHandle, Model, VecModel};
 use tokio::{net::TcpListener, sync::RwLock};
-
 use tracing::{debug, error, info, warn};
 
 use crate::ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge, SettingsBridge};
