@@ -239,9 +239,8 @@ export component ConnectionsPage inherits Rectangle {
 
                         Rectangle {
                             height: 1px;
-                            background: Styles.palette.layer-3;
+                            background: !item-touch-area.has-hover && !close-touch-area.has-hover ? Styles.palette.layer-3 : transparent;
                             vertical-stretch: 0;
-                            visible: !item-touch-area.has-hover && !close-touch-area.has-hover;
                         }
                     }
                 }
