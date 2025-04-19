@@ -12,8 +12,8 @@ mkdir -p dist
 set APP_ROOT dist
 install -D ./target/release/wsrx $APP_ROOT/usr/bin/wsrx
 install -D ./target/release/wsrx-desktop $APP_ROOT/usr/bin/wsrx-desktop
-install -Dm644 ./freedesktop/tech.woooo.wsrx.desktop $APP_ROOT/usr/share/applications/tech.woooo.wsrx.desktop
-install -Dm644 ./freedesktop/tech.woooo.wsrx.svg $APP_ROOT/usr/share/icons/hicolor/scalable/apps/tech.woooo.wsrx.svg
+install -Dm644 ./freedesktop/wsrx.desktop $APP_ROOT/usr/share/applications/wsrx.desktop
+install -Dm644 ./freedesktop/wsrx.svg $APP_ROOT/usr/share/icons/hicolor/scalable/apps/wsrx.svg
 
 set USRDIR /usr
 export NO_STRIP=true
