@@ -3,7 +3,7 @@ use slint::{ComponentHandle, Model, VecModel};
 use tracing::debug;
 
 use super::{
-    model::{InstanceDataPure, ServerState},
+    model::{FeatureFlags, InstanceDataPure, ServerState},
     ui_controller::on_instance_del,
 };
 use crate::{
@@ -99,7 +99,7 @@ async fn pingfall(state: ServerState, instance: InstanceDataPure) {
         .iter()
         .find(|scope| scope.host == instance.scope_host);
     if let Some(scope) = scope {
-        if scope.features.contains(&"pingfall".to_owned()) {
+        if scope.features.contains(FeatureFlags::PingFall) {
             on_instance_del(&state, &instance.local).await;
         }
     }
