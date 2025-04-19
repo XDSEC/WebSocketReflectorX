@@ -90,14 +90,15 @@ impl FeatureFlags {
 
 impl Display for FeatureFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.as_feature_vec().join(", "))
+        f.write_str(&self.as_feature_vec().join(","))
     }
 }
 
 impl Serialize for FeatureFlags {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: serde::Serializer, {
+        S: serde::Serializer,
+    {
         self.as_feature_vec().serialize(serializer)
     }
 }
@@ -105,7 +106,8 @@ impl Serialize for FeatureFlags {
 impl<'de> Deserialize<'de> for FeatureFlags {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: serde::Deserializer<'de>, {
+        D: serde::Deserializer<'de>,
+    {
         Ok(Vec::<String>::deserialize(deserializer)?.into_iter().into())
     }
 }
