@@ -58,13 +58,13 @@ name = "WebSocketReflectorX"
 
 category          = "Utilities"
 copyright         = "Copyright (c) XDSEC"
-deb_depends       = [ "libc6", "libgcc-s1", "libssl-dev", "libstdc++6" ]
+deb_depends       = ["libc6", "libgcc-s1", "libssl-dev", "libstdc++6"]
 identifier        = "org.xdsec.wsrx"
-osx_url_schemes   = [ "org.xdsec.wsrx" ]
+osx_url_schemes   = ["org.xdsec.wsrx"]
 short_description = "Controlled TCP-over-WebSocket forwarding tunnel."
 
 icon = [
   "arts/logo.png",
   "macos/WebSocketReflectorX.icns",
-  "windows/WebSocketReflectorX.ico"
+  "windows/WebSocketReflectorX.ico",
 ]

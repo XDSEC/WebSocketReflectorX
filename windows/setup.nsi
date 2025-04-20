@@ -11,7 +11,7 @@ Unicode True
 !define DESCRIPTION                  "Controlled TCP-over-WebSocket forwarding tunnel."
 !define VERSIONMAJOR                 0
 !define VERSIONMINOR                 4
-!define VERSIONBUILD                 5
+!define VERSIONBUILD                 6
 !define INSTALL_DIR_DEFAULT          "$PROGRAMFILES64\${APPNAME}"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN
