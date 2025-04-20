@@ -25,8 +25,10 @@ pub async fn start(state: ServerState) {
             let client = client.clone();
             let state = state.clone();
             tokio::spawn(async move {
-                update_instance_latency(state.clone(), instance.clone(), &client).await;
-                pingfall(state, instance).await;
+                let resp = update_instance_latency(state.clone(), instance.clone(), &client).await;
+                if resp < 0 {
+                    pingfall(state, instance).await;
+                }
             });
         }
         sync_scoped_instance(state.ui.clone());
@@ -37,7 +39,7 @@ pub async fn start(state: ServerState) {
 
 async fn update_instance_latency(
     state: ServerState, instance: InstanceDataPure, client: &reqwest::Client,
-) {
+) -> i32 {
     let start_time = std::time::Instant::now();
     let resp = client
         .request(Method::OPTIONS, instance.remote.replace("ws", "http"))
@@ -91,12 +93,10 @@ async fn update_instance_latency(
             break;
         }
     }
+    elapsed
 }
 
 async fn pingfall(state: ServerState, instance: InstanceDataPure) {
-    if instance.latency > 0 {
-        return;
-    }
     let scopes = state.scopes.read().await;
     let scope = scopes
         .iter()
