@@ -4,7 +4,7 @@ use api_controller::router;
 use directories::ProjectDirs;
 use model::{ScopeData, ServerState};
 use serde::{Deserialize, Serialize};
-use slint::{ComponentHandle, Model, VecModel};
+use slint::{ComponentHandle, Model, ToSharedString, VecModel};
 use tokio::{net::TcpListener, sync::RwLock};
 use tracing::{debug, error, info, warn};
 
@@ -77,7 +77,7 @@ pub fn setup(ui: &MainWindow) {
             host: scope.host.clone().into(),
             name: scope.name.clone().into(),
             state: scope.state.clone().into(),
-            features: scope.features.join(",").into(),
+            features: scope.features.to_shared_string(),
         });
     }
     let scoped_instances: Rc<VecModel<Instance>> = Rc::new(VecModel::default());
@@ -240,7 +240,7 @@ pub fn save_scopes(ui: &slint::Weak<MainWindow>) {
                 .features
                 .split(",")
                 .map(|s| s.trim().to_string())
-                .collect(),
+                .into(),
         });
     }
     let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {

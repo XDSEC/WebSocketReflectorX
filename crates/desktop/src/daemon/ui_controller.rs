@@ -1,6 +1,6 @@
 use std::net::ToSocketAddrs;
 
-use slint::{ComponentHandle, Model, VecModel};
+use slint::{ComponentHandle, Model, ToSharedString, VecModel};
 use tokio::net::TcpListener;
 use tracing::{debug, error, info, warn};
 
@@ -159,7 +159,7 @@ pub async fn on_scope_allow(state: &ServerState, ui: slint::Weak<MainWindow>, sc
     if let Some(scope) = scopes.iter_mut().find(|s| s.host == scope_host) {
         scope.state = "allowed".to_string();
         scope_name = scope.name.clone();
-        scope_features = scope.features.clone();
+        scope_features = scope.features;
     } else {
         return;
     }
@@ -185,7 +185,7 @@ pub async fn on_scope_allow(state: &ServerState, ui: slint::Weak<MainWindow>, sc
                     host: scope_host.into(),
                     name: scope_name.into(),
                     state: "allowed".into(),
-                    features: scope_features.join(",").into(),
+                    features: scope_features.to_shared_string(),
                 },
             );
         }
