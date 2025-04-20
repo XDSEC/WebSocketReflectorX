@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import {
   WSRX_MINIMUM_REQUIRED,
   WsrxError,
@@ -16,9 +17,12 @@ class Wsrx {
   private options: WsrxOptions;
   private state: WsrxState;
   private instances: WsrxInstance[];
-  private onStateChangeCallbacks: ((state: WsrxState) => void)[];
-  private onInstancesChangeCallbacks: ((instances: WsrxInstance[]) => void)[] =
-    [];
+  private onStateChangeCallbacks: Map<string, (state: WsrxState) => void> =
+    new Map();
+  private onInstancesChangeCallbacks: Map<
+    string,
+    (instances: WsrxInstance[]) => void
+  > = new Map();
   private interval: ReturnType<typeof setInterval> | null = null;
 
   private tickCounter = 0;
@@ -31,7 +35,6 @@ class Wsrx {
     this.options = options;
     this.state = WsrxState.Invalid;
     this.instances = [];
-    this.onStateChangeCallbacks = [];
   }
 
   /**
@@ -52,7 +55,7 @@ class Wsrx {
       return;
     }
     this.state = state;
-    for (const cb of this.onStateChangeCallbacks) {
+    for (const cb of this.onStateChangeCallbacks.values()) {
       cb(state);
     }
   }
@@ -133,7 +136,7 @@ class Wsrx {
       }
       this.instances = data;
       if (diff) {
-        for (const cb of this.onInstancesChangeCallbacks) {
+        for (const cb of this.onInstancesChangeCallbacks.values()) {
           cb(data);
         }
       }
@@ -272,7 +275,7 @@ class Wsrx {
         })
         .json();
       this.instances.push(data);
-      for (const cb of this.onInstancesChangeCallbacks) {
+      for (const cb of this.onInstancesChangeCallbacks.values()) {
         cb(this.instances);
       }
       return data;
@@ -309,7 +312,7 @@ class Wsrx {
         json: { local },
       });
       this.instances = this.instances.filter((i) => i.local !== local);
-      for (const cb of this.onInstancesChangeCallbacks) {
+      for (const cb of this.onInstancesChangeCallbacks.values()) {
         cb(this.instances);
       }
     } catch (e) {
@@ -335,15 +338,33 @@ class Wsrx {
   /**
    * Registers a callback to be called when the state of the wsrx client changes.
    */
-  public onStateChange(fn: (state: WsrxState) => void): void {
-    this.onStateChangeCallbacks.push(fn);
+  public onStateChange(fn: (state: WsrxState) => void): string {
+    const id = nanoid();
+    this.onStateChangeCallbacks.set(id, fn);
+    return id;
+  }
+
+  /**
+   * Unregisters a callback to be called when the state of the wsrx client changes.
+   */
+  public offStateChange(id: string): void {
+    this.onStateChangeCallbacks.delete(id);
   }
 
   /**
    * Registers a callback to be called when the list of instances changes.
    */
-  public onInstancesChange(fn: (instances: WsrxInstance[]) => void): void {
-    this.onInstancesChangeCallbacks.push(fn);
+  public onInstancesChange(fn: (instances: WsrxInstance[]) => void): string {
+    const id = nanoid();
+    this.onInstancesChangeCallbacks.set(id, fn);
+    return id;
+  }
+
+  /**
+   * Unregisters a callback to be called when the list of instances changes.
+   */
+  public offInstancesChange(id: string): void {
+    this.onInstancesChangeCallbacks.delete(id);
   }
 }
 
