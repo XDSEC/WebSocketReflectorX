@@ -94,6 +94,9 @@ async fn update_instance_latency(
 }
 
 async fn pingfall(state: ServerState, instance: InstanceDataPure) {
+    if instance.latency > 0 {
+        return;
+    }
     let scopes = state.scopes.read().await;
     let scope = scopes
         .iter()
