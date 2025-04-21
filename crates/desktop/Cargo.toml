@@ -48,6 +48,7 @@ build-target  = { workspace = true }
 git-version   = { workspace = true }
 rustc_version = { workspace = true }
 slint-build   = { workspace = true }
+winres        = { workspace = true }
 
 [[bin]]
 name = "wsrx-desktop"

@@ -35,4 +35,9 @@ fn main() {
         format!("pub const WSRX_VERSION: &str = \"{version}\";\npub const WSRX_FULL_VERSION: &str = \"{full_version}\";\n"),
     )
     .unwrap();
+    if cfg!(target_os = "windows") {
+        let mut res = winres::WindowsResource::new();
+        res.set_icon("ui/assets/logo.ico");
+        res.compile().expect("Failed to set icon");
+    }
 }
