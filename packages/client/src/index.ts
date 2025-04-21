@@ -119,26 +119,9 @@ class Wsrx {
       const data: WsrxInstance[] = await ky
         .get(`${this.options.api}/pool`, { retry: 0 })
         .json();
-      let diff = false;
-      for (const i of data) {
-        const index = this.instances.findIndex((j) => j.local === i.local);
-        if (index === -1) {
-          diff = true;
-          break;
-        }
-      }
-      for (const i of this.instances) {
-        const index = data.findIndex((j) => j.local === i.local);
-        if (index === -1) {
-          diff = true;
-          break;
-        }
-      }
       this.instances = data;
-      if (diff) {
-        for (const cb of this.onInstancesChangeCallbacks.values()) {
-          cb(data);
-        }
+      for (const cb of this.onInstancesChangeCallbacks.values()) {
+        cb(data);
       }
     } catch (e) {
       if (e instanceof HTTPError) {
