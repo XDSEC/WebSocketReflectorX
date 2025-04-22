@@ -22,7 +22,7 @@ Download from [Releases](https://github.com/XDSEC/WebSocketReflectorX/releases) 
 Run the command before using:
 
 ```
-sudo xattr -cr ./WebSocketReflectorX-0.4.9-macos-aarch64.dmg
+sudo xattr -cr ./WebSocketReflectorX-x.x.x-macos-aarch64.dmg
 ```
 
 ### Command Line Tools
