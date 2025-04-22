@@ -73,16 +73,22 @@ impl Tunnel {
                 let proxy_token = loop_token.clone();
 
                 tokio::spawn(async move {
-                    let ws = match tokio_tungstenite::connect_async(proxy_config.remote.as_str())
-                        .await
-                    {
+                    use axum::http::StatusCode;
+                    use tokio_tungstenite::{connect_async, tungstenite::Error};
+
+                    let ws = match connect_async(proxy_config.remote.as_str()).await {
                         Ok((ws, _)) => ws,
                         Err(e) => {
-                            error!("Failed to connect to {}: {}", proxy_config.remote, e);
-                            proxy_token.cancel();
+                            if matches!(&e, Error::Http(http_err) if http_err.status() == StatusCode::IM_A_TEAPOT)
+                            {
+                                info!("Remote is not ready yet, please wait a moment.",);
+                            } else {
+                                error!("Failed to connect to {}: {}", proxy_config.remote, e);
+                            }
                             return;
                         }
                     };
+
                     match proxy(ws.into(), tcp, proxy_token).await {
                         Ok(_) => {}
                         Err(e) => {
