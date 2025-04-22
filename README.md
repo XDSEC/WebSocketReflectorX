@@ -12,6 +12,19 @@ Download from [Releases](https://github.com/XDSEC/WebSocketReflectorX/releases) 
 
 [#madewithslint](https://slint.dev/showcase.html) !
 
+#### For Mac Users
+
+> [!CAUTION]
+> Apple Developer requires a mac and developer account, which I neither have.
+>
+> so that's required you to do some operations manually before using it, apologize for that.
+
+Run the command before using:
+
+```
+sudo xattr -cr ./WebSocketReflectorX-0.4.9-macos-aarch64.dmg
+```
+
 ### Command Line Tools
 
 This release contains the desktop GUI application and the cli daemon, so it's size may too big for some users.
