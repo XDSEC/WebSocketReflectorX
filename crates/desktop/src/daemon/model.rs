@@ -2,7 +2,8 @@ use std::{fmt::Display, sync::Arc};
 
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
-use tokio::{sync::RwLock, task::JoinHandle};
+use tokio::sync::RwLock;
+use tokio_util::sync::CancellationToken;
 
 use crate::ui::MainWindow;
 
@@ -19,7 +20,7 @@ pub struct InstanceData {
     #[serde(default)]
     pub scope_host: String,
     #[serde(skip)]
-    pub handle: Option<JoinHandle<()>>,
+    pub handle: Option<CancellationToken>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

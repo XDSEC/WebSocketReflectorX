@@ -11,7 +11,8 @@ use axum::{
 use i_slint_backend_winit::WinitWindowAccessor;
 use serde::{Deserialize, Serialize};
 use slint::{ComponentHandle, Model, ToSharedString, VecModel};
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, select};
+use tokio_util::sync::CancellationToken;
 use tower_http::{
     cors::{AllowOrigin, Any, CorsLayer},
     trace::TraceLayer,
@@ -189,39 +190,46 @@ async fn launch_instance(
         return Ok(Json(instance.into()));
     }
 
+    let handle = CancellationToken::new();
+
     let instance = InstanceData {
         label: instance_data.label.clone(),
         remote: instance_data.remote.clone(),
         local: local.clone(),
         latency: -1,
         scope_host: scope.clone(),
-        handle: Some(tokio::task::spawn(async move {
-            loop {
-                let remote = remote.clone();
-                let Ok((tcp, _)) = listener.accept().await else {
-                    error!("Failed to accept tcp connection, exiting.");
-                    return;
-                };
-                let peer_addr = tcp.peer_addr().unwrap();
-                tokio::spawn(async move {
-                    info!("LINK {remote} <- wsrx -> {peer_addr}");
-                    let (ws, _) = match tokio_tungstenite::connect_async(&remote).await {
-                        Ok(ws) => ws,
-                        Err(e) => {
-                            error!("Failed to connect to {remote}: {e}");
-                            return;
-                        }
-                    };
-                    match wsrx::proxy(ws.into(), tcp).await {
-                        Ok(_) => {}
-                        Err(e) => {
-                            info!("REMOVE {remote} <- wsrx -> {peer_addr}: {e}");
-                        }
-                    }
-                });
-            }
-        })),
+        handle: Some(handle.clone()),
     };
+    tokio::task::spawn(async move {
+        loop {
+            let remote = remote.clone();
+            select! {
+                _ = handle.cancelled() => {
+                    info!("CANCEL proxy for {remote}");
+                    return;
+                }
+                Ok((tcp, _)) = listener.accept() => {
+                    let peer_addr = tcp.peer_addr().unwrap();
+                    tokio::spawn(async move {
+                        info!("LINK {remote} <- wsrx -> {peer_addr}");
+                        let (ws, _) = match tokio_tungstenite::connect_async(&remote).await {
+                            Ok(ws) => ws,
+                            Err(e) => {
+                                error!("Failed to connect to {remote}: {e}");
+                                return;
+                            }
+                        };
+                        match wsrx::proxy(ws.into(), tcp).await {
+                            Ok(_) => {}
+                            Err(e) => {
+                                error!("Failed to proxy: {e}");
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    });
     let instance_resp: InstanceDataPure = (&instance).into();
     instances.push(instance);
 
@@ -286,7 +294,7 @@ async fn close_instance(
             req.local, tunnel.remote
         );
         if let Some(handle) = tunnel.handle.as_ref() {
-            handle.abort();
+            handle.cancel();
         }
 
         instances.retain(|i| i.local != req.local);
