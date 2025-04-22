@@ -19,6 +19,7 @@ pub fn setup(window: &MainWindow) {
     resize_map.insert("br".to_string(), ResizeDirection::SouthEast);
     resize_map.insert("bl".to_string(), ResizeDirection::SouthWest);
     resize_map.insert("l".to_string(), ResizeDirection::West);
+
     let window_weak = window.as_weak();
 
     window.window().on_winit_window_event(move |w, e| {
@@ -72,7 +73,22 @@ pub fn setup(window: &MainWindow) {
     window_control_bridge.on_maximize(move || {
         let window_clone = window_clone_pin.unwrap();
         window_clone.window().with_winit_window(|winit_window| {
-            winit_window.set_maximized(!winit_window.is_maximized());
+            #[cfg(target_os = "macos")]
+            {
+                use winit::window::Fullscreen;
+
+                if winit_window.fullscreen().is_some() {
+                    winit_window.set_fullscreen(None);
+                } else {
+                    winit_window.set_fullscreen(Some(Fullscreen::Borderless(
+                        winit_window.current_monitor(),
+                    )));
+                }
+            }
+            #[cfg(not(target_os = "macos"))]
+            {
+                winit_window.set_maximized(!winit_window.is_maximized());
+            }
         });
     });
 

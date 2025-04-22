@@ -6,6 +6,7 @@ import { UiState } from "globals.slint";
 
 
 export component SideBar inherits Rectangle {
+    in property <bool> maximized;
 
     background: Styles.palette.layer-1;
     clip: true;
@@ -18,81 +19,12 @@ export component SideBar inherits Rectangle {
         spacing: 0;
         padding: 0;
 
-        HorizontalLayout {
+        if SystemInfoBridge.os != "macos" || root.maximized: HorizontalLayout {
             spacing: Styles.sizes.s-md;
             padding: Styles.sizes.p-md;
 
-            if SystemInfoBridge.os == "macos": Button {
-                icon: @image-url("../assets/circle-filled.svg");
-                colored: false;
-                flat: true;
-                horizontal-stretch: 0;
-                icon-color: Styles.palette.error-bg;
-
-                Image {
-                    source: @image-url("../assets/dismiss-filled.svg");
-                    x: (parent.width - self.width) / 2;
-                    y: (parent.height - self.height) / 2;
-                    colorize: black;
-                    width: Styles.sizes.font - 8px;
-                    height: Styles.sizes.font - 8px;
-                    visible: parent.hover;
-                }
-
-                clicked => {
-                    WindowControlBridge.close();
-                }
-            }
-
-            if SystemInfoBridge.os == "macos": Button {
-                icon: @image-url("../assets/circle-filled.svg");
-                colored: false;
-                flat: true;
-                horizontal-stretch: 0;
-                icon-color: Styles.palette.warn-bg;
-
-                Image {
-                    source: @image-url("../assets/subtract-filled.svg");
-                    x: (parent.width - self.width) / 2;
-                    y: (parent.height - self.height) / 2;
-                    colorize: black;
-                    width: Styles.sizes.font - 8px;
-                    height: Styles.sizes.font - 8px;
-                    visible: parent.hover;
-                }
-
-                clicked => {
-                    WindowControlBridge.minimize();
-                }
-            }
-
-            if SystemInfoBridge.os == "macos": Button {
-                icon: @image-url("../assets/circle-filled.svg");
-                colored: false;
-                flat: true;
-                horizontal-stretch: 0;
-                icon-color: Styles.palette.success-bg;
-
-                Image {
-                    source: @image-url("../assets/chevron-up-down-filled.svg");
-                    x: (parent.width - self.width) / 2;
-                    y: (parent.height - self.height) / 2;
-                    colorize: black;
-                    rotation-angle: 135deg;
-                    rotation-origin-x: self.width / 2;
-                    rotation-origin-y: self.height / 2;
-                    width: Styles.sizes.font - 8px;
-                    height: Styles.sizes.font - 8px;
-                    visible: parent.hover;
-                }
-
-                clicked => {
-                    WindowControlBridge.maximize();
-                }
-            }
-
             Button {
-                text: SystemInfoBridge.os == "macos" ? "" : "WebSocket Reflector X";
+                text: "WebSocket Reflector X";
                 icon: @image-url("../assets/logo-stroked.svg");
                 colored: true;
                 flat: true;
@@ -101,7 +33,6 @@ export component SideBar inherits Rectangle {
                 alignment: LayoutAlignment.start;
                 background: transparent;
                 horizontal-stretch: 1;
-                visible: SystemInfoBridge.os != "macos";
             }
         }
 
@@ -111,7 +42,7 @@ export component SideBar inherits Rectangle {
             horizontal-stretch: 1;
 
             Rectangle {
-                height: Styles.sizes.s-md;
+                height: SystemInfoBridge.os != "macos" || root.maximized ? Styles.sizes.s-md : Styles.sizes.h-sm;
             }
 
             ButtonIndicator {

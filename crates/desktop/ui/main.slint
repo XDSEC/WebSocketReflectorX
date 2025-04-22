@@ -21,6 +21,8 @@ export component MainWindow inherits FramelessWindow {
     min-height: 540px;
     icon: SystemInfoBridge.os == "windows" ? @image-url("assets/logo.png") : @image-url("assets/logo.svg");
     border-radius: (SystemInfoBridge.os == "windows" || self.maximized) ? 0 : Styles.sizes.r-lg;
+    no-frame: SystemInfoBridge.os == "macos" ? false : true;
+
     in-out property <bool> main-window-maximized <=> self.maximized;
     in-out property <bool> main-window-minimized <=> self.minimized;
 
@@ -48,6 +50,7 @@ export component MainWindow inherits FramelessWindow {
         padding: 0;
 
         side-bar := SideBar {
+            maximized: root.maximized;
             width: UiState.show-sidebar ? 256px : 0px;
         }
 
