@@ -3,49 +3,22 @@ use std::{fmt::Display, sync::Arc};
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
-use tokio_util::sync::CancellationToken;
 
+use super::{default_label, proxy_instance::ProxyInstance};
 use crate::ui::MainWindow;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InstanceData {
     #[serde(default = "default_label")]
-    pub label: String,
+    pub label: Arc<String>,
     #[serde(alias = "to")]
-    pub remote: String,
+    pub remote: Arc<String>,
     #[serde(alias = "from")]
-    pub local: String,
+    pub local: Arc<String>,
     #[serde(default)]
     pub latency: i32,
     #[serde(default)]
-    pub scope_host: String,
-    #[serde(skip)]
-    pub handle: Option<CancellationToken>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InstanceDataPure {
-    pub label: String,
-    pub remote: String,
-    pub local: String,
-    pub latency: i32,
-    pub scope_host: String,
-}
-
-impl From<&InstanceData> for InstanceDataPure {
-    fn from(data: &InstanceData) -> Self {
-        InstanceDataPure {
-            label: data.label.clone(),
-            remote: data.remote.clone(),
-            local: data.local.clone(),
-            latency: data.latency,
-            scope_host: data.scope_host.clone(),
-        }
-    }
-}
-
-pub fn default_label() -> String {
-    format!("inst-{:06x}", rand::random::<u32>())
+    pub scope_host: Arc<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -59,7 +32,7 @@ pub struct ScopeData {
 #[derive(Clone)]
 pub struct ServerState {
     pub ui: slint::Weak<MainWindow>,
-    pub instances: Arc<RwLock<Vec<InstanceData>>>,
+    pub instances: Arc<RwLock<Vec<ProxyInstance>>>,
     pub scopes: Arc<RwLock<Vec<ScopeData>>>,
 }
 

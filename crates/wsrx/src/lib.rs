@@ -4,5 +4,7 @@
 //! and vice versa.
 
 pub mod proxy;
+pub mod tunnel;
+pub mod utils;
 
 pub use proxy::{Error, Message, WrappedWsStream, proxy};

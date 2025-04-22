@@ -13,6 +13,7 @@ use crate::ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge, Settin
 mod api_controller;
 mod latency_worker;
 mod model;
+mod proxy_instance;
 mod ui_controller;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -264,4 +265,8 @@ pub fn save_scopes(ui: &slint::Weak<MainWindow>) {
         error!("Failed to write config file: {}", e);
     }
     debug!("Saved scopes to: {:?}", config_file);
+}
+
+fn default_label() -> Arc<String> {
+    Arc::new(format!("inst-{:06x}", rand::random::<u32>()))
 }

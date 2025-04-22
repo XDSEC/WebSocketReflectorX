@@ -1,15 +1,15 @@
 [workspace]
-members  = ["crates/*"]
+members  = [ "crates/*" ]
 resolver = "2"
 
 [workspace.package]
-authors      = ["Reverier-Xu <reverier.xu@xdsec.club>"]
+authors      = [ "Reverier-Xu <reverier.xu@xdsec.club>" ]
 edition      = "2024"
 homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
-rust-version = "1.85.0"
-version      = "0.4.9"
+rust-version = "1.86.0"
+version      = "0.5.0"
 
 [profile.release]
 codegen-units = 1
@@ -20,31 +20,33 @@ strip         = true
 
 [workspace.dependencies]
 directories      = "6.0"
-futures-util     = { version = "0.3", features = ["sink"] }
+futures-util     = { version = "0.3", features = [ "sink" ] }
 local-ip-address = "0.6"
-rustls           = { version = "0.23", features = ["ring"] }
+rustls           = { version = "0.23", features = [ "ring" ] }
 sysinfo          = "0.34"
 thiserror        = "2.0"
-tokio            = { version = "1.44", features = ["full"] }
-tokio-util       = { version = "0.7", features = ["codec"] }
+tokio            = { version = "1.44", features = [ "full" ] }
+tokio-util       = { version = "0.7", features = [ "codec" ] }
 
-axum = { version = "0.8", features = ["macros", "ws"] }
+axum = { version = "0.8", features = [ "macros", "ws" ] }
 # optional
-tokio-tungstenite = { version = "0.26", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.26", features = [
+  "rustls-tls-native-roots"
+] }
 
 # binary cli only
 bitflags           = { version = "2.9" }
-chrono             = { version = "0.4", features = ["serde"] }
-clap               = { version = "4.5", features = ["derive"] }
+chrono             = { version = "0.4", features = [ "serde" ] }
+clap               = { version = "4.5", features = [ "derive" ] }
 once_cell          = { version = "1.21" }
 rand               = { version = "0.9" }
-serde              = { version = "1.0", features = ["derive"] }
+serde              = { version = "1.0", features = [ "derive", "rc" ] }
 serde_json         = { version = "1.0" }
 subprocess         = { version = "0.2" }
-tower-http         = { version = "0.6", features = ["cors", "trace"] }
+tower-http         = { version = "0.6", features = [ "cors", "trace" ] }
 tracing            = { version = "0.1" }
 tracing-appender   = { version = "0.2" }
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-subscriber = { version = "0.3", features = [ "env-filter", "json" ] }
 url                = { version = "2.5" }
 
 # GUI
@@ -56,7 +58,7 @@ reqwest = { version = "0.12", default-features = false, features = [
   "charset",
   "http2",
   "json",
-  "rustls-tls",
+  "rustls-tls"
 ] }
 slint = { version = "1.10", default-features = false, features = [
   "accessibility",
@@ -66,7 +68,7 @@ slint = { version = "1.10", default-features = false, features = [
   "renderer-skia",
   "renderer-software",
   "serde",
-  "std",
+  "std"
 ] }
 sys-locale = "0.3"
 toml = "0.8"

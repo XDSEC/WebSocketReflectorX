@@ -18,6 +18,7 @@ use tokio_tungstenite::{
 use tokio_util::{
     bytes::{BufMut, Bytes, BytesMut},
     codec::{Decoder, Encoder, Framed},
+    sync::CancellationToken,
 };
 
 /// An error type for WebSocket Reflector X.
@@ -79,10 +80,10 @@ impl From<AxMessage> for Message {
 pub enum WsStream {
     /// Tungstenite WebSocket stream.
     #[cfg(feature = "client")]
-    Tungstenite(WebSocketStream<MaybeTlsStream<TcpStream>>),
+    Tungstenite(Box<WebSocketStream<MaybeTlsStream<TcpStream>>>),
     /// Axum WebSocket stream.
     #[cfg(feature = "server")]
-    AxumWebsocket(WebSocket),
+    AxumWebsocket(Box<WebSocket>),
 }
 
 /// A wrapper around WebSocket stream.
@@ -96,7 +97,7 @@ impl From<WebSocketStream<MaybeTlsStream<TcpStream>>> for WrappedWsStream {
     /// Creates a new `WrappedWsStream` from tungstenite's WebSocket stream.
     fn from(stream: WebSocketStream<MaybeTlsStream<TcpStream>>) -> Self {
         WrappedWsStream {
-            stream: WsStream::Tungstenite(stream),
+            stream: WsStream::Tungstenite(Box::new(stream)),
         }
     }
 }
@@ -106,7 +107,7 @@ impl From<WebSocket> for WrappedWsStream {
     /// Creates a new `WrappedWsStream` from axum's WebSocket stream.
     fn from(stream: WebSocket) -> Self {
         WrappedWsStream {
-            stream: WsStream::AxumWebsocket(stream),
+            stream: WsStream::AxumWebsocket(Box::new(stream)),
         }
     }
 }
@@ -209,20 +210,39 @@ impl Sink<Message> for WrappedWsStream {
     }
 }
 
+/// Proxies a WebSocket stream with a TCP stream.
+///
+/// * `ws` - The WebSocket stream, either axum's stream or tungstenite stream
+///   are supported.
+/// * `tcp` - The TCP stream.
+/// * `token` - The cancellation token to cancel the proxying.
+pub async fn proxy(
+    ws: WrappedWsStream, tcp: TcpStream, token: CancellationToken,
+) -> Result<(), Error> {
+    let framed_tcp_stream = Framed::new(tcp, MessageCodec::new());
+    proxy_stream(ws, framed_tcp_stream, token).await
+}
+
 /// Proxies two streams.
 ///
 /// * `s1` - The first stream.
 /// * `s2` - The second stream.
-pub async fn proxy_stream<S, T>(s1: S, s2: T) -> Result<(), Error>
+/// * `token` - The cancellation token to cancel the proxying.
+pub async fn proxy_stream<S, T>(s1: S, s2: T, token: CancellationToken) -> Result<(), Error>
 where
     S: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
-    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin, {
+    T: Sink<Message, Error = Error> + Stream<Item = Result<Message, Error>> + Unpin,
+{
     let (s1sink, s1stream) = s1.split();
     let (s2sink, s2stream) = s2.split();
     let f1 = s1stream.forward(s2sink);
     let f2 = s2stream.forward(s1sink);
-    tokio::try_join!(f1, f2)?;
-    Ok(())
+
+    tokio::select! {
+        res = f1 => res,
+        res = f2 => res,
+        _ = token.cancelled() => Ok(())
+    }
 }
 
 /// A codec for WebSocket messages.
@@ -232,7 +252,7 @@ pub struct MessageCodec;
 impl MessageCodec {
     /// Creates a new `MessageCodec` for shipping around raw bytes.
     pub fn new() -> MessageCodec {
-        Self {}
+        Self
     }
 }
 
@@ -267,15 +287,4 @@ impl Encoder<Message> for MessageCodec {
             Message::Others => Ok(()),
         }
     }
-}
-
-/// Proxies a WebSocket stream with a TCP stream.
-///
-/// * `ws` - The WebSocket stream, either axum's stream or tungstenite stream
-///   are supported.
-/// * `tcp` - The TCP stream.
-pub async fn proxy(ws: WrappedWsStream, tcp: TcpStream) -> Result<(), Error> {
-    let framed_tcp_stream = Framed::new(tcp, MessageCodec::new());
-    proxy_stream(ws, framed_tcp_stream).await?;
-    Ok(())
 }

@@ -1,4 +1,5 @@
 use tokio::net::{TcpListener, TcpStream};
+use tokio_util::sync::CancellationToken;
 use tracing::{debug, error, info, warn};
 use url::Url;
 use wsrx::proxy;
@@ -31,16 +32,29 @@ pub async fn launch(
     warn!(
         "wsrx will not report non-critical errors by default, you can set `RUST_LOG=wsrx=debug` to see more details."
     );
+
+    let token = CancellationToken::new();
+
+    // This loop will "run forever"
     loop {
         let Ok((tcp, _)) = listener.accept().await else {
             error!("Failed to accept tcp connection, exiting.");
+            token.cancel();
             return;
         };
+
+        if token.is_cancelled() {
+            return;
+        }
+
         let url = url.clone();
         let peer_addr = tcp.peer_addr().unwrap();
+
         info!("CREATE remote <-wsrx-> {}", peer_addr);
+
+        let token = token.clone();
         tokio::spawn(async move {
-            match proxy_ws_addr(url, tcp).await {
+            match proxy_ws_addr(url, tcp, token).await {
                 Ok(_) => {}
                 Err(e) => {
                     info!("REMOVE remote <-wsrx-> {} with error", peer_addr);
@@ -51,10 +65,12 @@ pub async fn launch(
     }
 }
 
-async fn proxy_ws_addr(addr: impl AsRef<str>, tcp: TcpStream) -> Result<(), wsrx::Error> {
+async fn proxy_ws_addr(
+    addr: impl AsRef<str>, tcp: TcpStream, token: CancellationToken,
+) -> Result<(), wsrx::Error> {
     let peer_addr = tcp.peer_addr().unwrap();
     let (ws, _) = tokio_tungstenite::connect_async(addr.as_ref()).await?;
-    proxy(ws.into(), tcp).await?;
+    proxy(ws.into(), tcp, token).await?;
     info!("REMOVE remote <-wsrx-> {}", peer_addr);
     Ok(())
 }

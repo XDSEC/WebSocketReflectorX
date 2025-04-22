@@ -20,6 +20,7 @@ pub fn setup(window: &MainWindow) {
     resize_map.insert("bl".to_string(), ResizeDirection::SouthWest);
     resize_map.insert("l".to_string(), ResizeDirection::West);
     let window_weak = window.as_weak();
+
     window.window().on_winit_window_event(move |w, e| {
         // println!("{:?}", e);
         match e {
@@ -60,11 +61,13 @@ pub fn setup(window: &MainWindow) {
             winit_window.drag_window().ok();
         });
     });
+
     let window_clone_pin = window.as_weak();
     window_control_bridge.on_close(move || {
         // TODO: system tray implementation
         launcher::shutdown(&window_clone_pin);
     });
+
     let window_clone_pin = window.as_weak();
     window_control_bridge.on_maximize(move || {
         let window_clone = window_clone_pin.unwrap();
@@ -72,6 +75,7 @@ pub fn setup(window: &MainWindow) {
             winit_window.set_maximized(!winit_window.is_maximized());
         });
     });
+
     let window_clone_pin = window.as_weak();
     window_control_bridge.on_minimize(move || {
         let window_clone = window_clone_pin.unwrap();

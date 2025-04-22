@@ -16,6 +16,7 @@ pub fn setup() -> Result<MainWindow, PlatformError> {
         }
     };
     let lock_file = proj_dirs.data_local_dir().join(".rx.is.alive");
+
     if lock_file.exists() {
         eprintln!("Another instance of the application is already running.");
         let api_port = std::fs::read_to_string(&lock_file).unwrap_or_else(|_| {
@@ -67,6 +68,7 @@ pub fn shutdown(ui: &slint::Weak<MainWindow>) {
     let window = ui.upgrade().unwrap();
     bridges::settings::save_config(&window);
     daemon::save_scopes(ui);
+
     let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
         Some(dirs) => dirs,
         None => {
@@ -74,13 +76,16 @@ pub fn shutdown(ui: &slint::Weak<MainWindow>) {
             return;
         }
     };
+
     let log_dir = proj_dirs.data_local_dir().join("logs");
     std::fs::remove_dir_all(log_dir).unwrap_or_else(|_| {
         eprintln!("Failed to remove log directory");
     });
+
     let lock_file = proj_dirs.data_local_dir().join(".rx.is.alive");
     std::fs::remove_file(lock_file).unwrap_or_else(|_| {
         eprintln!("Failed to remove lock file");
     });
+
     std::process::exit(0);
 }
