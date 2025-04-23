@@ -2,6 +2,8 @@ use std::net::ToSocketAddrs;
 
 use axum::http::StatusCode;
 use tokio::net::TcpListener;
+
+#[cfg(feature = "log")]
 use tracing::error;
 
 
@@ -12,6 +14,7 @@ use tracing::error;
 /// @returns A `Result` containing the `TcpListener` if successful, or an error tuple
 pub async fn create_tcp_listener(local: &str) -> Result<TcpListener, (StatusCode, String)> {
     let mut tcp_addr_obj = local.to_socket_addrs().map_err(|err| {
+        #[cfg(feature = "log")]
         error!("Failed to parse from address: {err}");
         (
             StatusCode::BAD_REQUEST,
@@ -20,6 +23,7 @@ pub async fn create_tcp_listener(local: &str) -> Result<TcpListener, (StatusCode
     })?;
 
     let tcp_addr_obj = tcp_addr_obj.next().ok_or_else(|| {
+        #[cfg(feature = "log")]
         error!("Failed to get socket addr");
         (
             StatusCode::BAD_REQUEST,
@@ -28,6 +32,7 @@ pub async fn create_tcp_listener(local: &str) -> Result<TcpListener, (StatusCode
     })?;
 
     TcpListener::bind(tcp_addr_obj).await.map_err(|err| {
+        #[cfg(feature = "log")]
         error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
         (
             StatusCode::INTERNAL_SERVER_ERROR,
