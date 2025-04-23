@@ -25,6 +25,17 @@ Run the command before using:
 sudo xattr -cr ./WebSocketReflectorX-x.x.x-macos-aarch64.dmg
 ```
 
+#### For Arch Linux Users
+
+We do not have desktop app binary packages in release, so `wsrx-bin` is deprecated and package ownership was taken by unknown one, do not use it.
+
+```bash
+# Use the appimage version from release package
+paru -S wsrx-appimage
+# Use git version and build it from scratch
+paru -S wsrx-git
+```
+
 ### Command Line Tools
 
 This release contains the desktop GUI application and the cli daemon, so it's size may too big for some users.
