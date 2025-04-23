@@ -4,9 +4,11 @@
 //! and vice versa.
 
 pub mod proxy;
+
+#[cfg(feature = "client")]
 pub mod utils;
 
 #[cfg(feature = "client")]
 pub mod tunnel;
 
-pub use proxy::{Error, Message, WrappedWsStream, proxy};
+pub use proxy::{proxy, Error, Message, WrappedWsStream};
