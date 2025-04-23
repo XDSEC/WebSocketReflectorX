@@ -40,7 +40,7 @@ pub async fn start(state: ServerState) {
     }
 }
 
-async fn update_instance_latency(
+pub async fn update_instance_latency(
     state: ServerState, instance: InstanceData, client: &reqwest::Client,
 ) -> Option<i32> {
     let req = client

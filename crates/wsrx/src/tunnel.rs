@@ -7,14 +7,21 @@ use tracing::{error, info};
 
 use super::proxy;
 
+/// Configuration for a tunnel, contains the local and remote addresses.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TunnelConfig {
     #[serde(alias = "from")]
-    pub local: Arc<String>,
+    pub local: String,
     #[serde(alias = "to")]
-    pub remote: Arc<String>,
+    pub remote: String,
 }
 
+/// A tunnel that proxies TCP connections to a remote WebSocket server.
+///
+/// This struct is responsible for creating a TCP listener and accepting incoming
+/// connections. It will then establish a WebSocket connection to the remote
+/// server and proxy the data between the TCP connection and the WebSocket
+/// connection.
 #[derive(Debug)]
 pub struct Tunnel {
     config: TunnelConfig,
@@ -33,23 +40,25 @@ impl Serialize for Tunnel {
 }
 
 impl Tunnel {
-    pub fn new(remote: Arc<String>, listener: TcpListener) -> Self {
-        let local = Arc::new(
-            listener
-                .local_addr()
-                .expect("failed to bind port")
-                .to_string(),
-        );
+    /// Creates a new `Tunnel` instance.
+    pub fn new(remote: impl AsRef<str>, listener: TcpListener) -> Self {
+        let local = listener
+            .local_addr()
+            .expect("failed to bind port")
+            .to_string();
 
-        info!("CREATE tcp server: {} <-wsrx-> {}", local, remote);
+        info!("CREATE tcp server: {} <-wsrx-> {}", local, remote.as_ref());
 
         let token = CancellationToken::new();
 
-        let config = TunnelConfig { local, remote };
+        let config = TunnelConfig {
+            local,
+            remote: remote.as_ref().to_string(),
+        };
 
-        let loop_config = config.clone();
+        let loop_config = Arc::new(config.clone());
         let loop_token = token.clone();
-        let handle = tokio::task::spawn(async move {
+        let handle = tokio::spawn(async move {
             loop {
                 let Ok((tcp, _)) = listener.accept().await else {
                     error!("Failed to accept tcp connection, exiting.");
@@ -73,18 +82,12 @@ impl Tunnel {
                 let proxy_token = loop_token.clone();
 
                 tokio::spawn(async move {
-                    use axum::http::StatusCode;
-                    use tokio_tungstenite::{connect_async, tungstenite::Error};
+                    use tokio_tungstenite::connect_async;
 
                     let ws = match connect_async(proxy_config.remote.as_str()).await {
                         Ok((ws, _)) => ws,
                         Err(e) => {
-                            if matches!(&e, Error::Http(http_err) if http_err.status() == StatusCode::IM_A_TEAPOT)
-                            {
-                                info!("Remote is not ready yet, please wait a moment.",);
-                            } else {
-                                error!("Failed to connect to {}: {}", proxy_config.remote, e);
-                            }
+                            error!("Failed to connect to {}: {}", proxy_config.remote, e);
                             return;
                         }
                     };
@@ -107,6 +110,10 @@ impl Tunnel {
     }
 }
 
+/// Implements the `Drop` trait for the `Tunnel` struct.
+///
+/// This will cancel the cancellation token and abort the task when the
+/// `Tunnel` instance is dropped.
 impl Drop for Tunnel {
     fn drop(&mut self) {
         info!(

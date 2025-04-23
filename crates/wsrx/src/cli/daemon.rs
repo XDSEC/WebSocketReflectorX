@@ -60,7 +60,7 @@ pub async fn launch(
         .expect("failed to launch server");
 }
 
-type ConnectionMap = Arc<RwLock<HashMap<Arc<String>, Tunnel>>>;
+type ConnectionMap = Arc<RwLock<HashMap<String, Tunnel>>>;
 
 #[derive(Clone, FromRef)]
 pub struct GlobalState {

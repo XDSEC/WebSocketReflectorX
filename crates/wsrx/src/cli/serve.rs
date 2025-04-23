@@ -155,7 +155,7 @@ async fn process_traffic(
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
     let pool = connections.read().await;
     if let Some(conn) = pool.get(&key) {
-        let tcp_addr = conn.clone();
+        let tcp_addr = conn.to_owned();
         Ok(ws.on_upgrade(move |socket| async move {
             let tcp = TcpStream::connect(&tcp_addr).await;
             if tcp.is_err() {

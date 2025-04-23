@@ -199,7 +199,7 @@ fn stream_logs(window: &slint::Weak<MainWindow>) {
                     };
                     let logs = system_info_bridge.get_logs();
                     let logs = logs.as_any().downcast_ref::<VecModel<Log>>().unwrap();
-                    logs.push(log.clone());
+                    logs.push(log.to_owned());
                 })
                 .ok();
             }

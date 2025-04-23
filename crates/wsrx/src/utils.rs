@@ -4,6 +4,11 @@ use axum::http::StatusCode;
 use tokio::net::TcpListener;
 use tracing::error;
 
+/// Creates a TCP listener on the specified local address.
+///
+/// @param local The local address to bind the TCP listener to.
+///
+/// @returns A `Result` containing the `TcpListener` if successful, or an error tuple
 pub async fn create_tcp_listener(local: &str) -> Result<TcpListener, (StatusCode, String)> {
     let mut tcp_addr_obj = local.to_socket_addrs().map_err(|err| {
         error!("Failed to parse from address: {err}");

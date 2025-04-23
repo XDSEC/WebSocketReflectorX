@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use tokio::net::{TcpListener, TcpStream};
 use tokio_util::sync::CancellationToken;
 use tracing::{debug, error, info, warn};
@@ -34,6 +36,7 @@ pub async fn launch(
     );
 
     let token = CancellationToken::new();
+    let url = Arc::new(url);
 
     // This loop will "run forever"
     loop {
@@ -54,7 +57,7 @@ pub async fn launch(
 
         let token = token.clone();
         tokio::spawn(async move {
-            match proxy_ws_addr(url, tcp, token).await {
+            match proxy_ws_addr(url.as_ref(), tcp, token).await {
                 Ok(_) => {}
                 Err(e) => {
                     info!("REMOVE remote <-wsrx-> {} with error", peer_addr);

@@ -1,15 +1,16 @@
-use std::sync::Arc;
-
+use crate::{
+    bridges::ui_state::sync_scoped_instance,
+    daemon::{
+        default_label,
+        model::{ProxyInstance, ServerState},
+    },
+    ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge},
+};
 use slint::{ComponentHandle, Model, ToSharedString, VecModel};
 use tracing::{debug, info, warn};
 use wsrx::utils::create_tcp_listener;
 
-use super::{default_label, model::ServerState};
-use crate::{
-    bridges::ui_state::sync_scoped_instance,
-    daemon::proxy_instance::ProxyInstance,
-    ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge},
-};
+use super::latency_worker::update_instance_latency;
 
 pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
     let listener = match create_tcp_listener(local).await {
@@ -33,10 +34,18 @@ pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
         return;
     }
 
-    let remote = Arc::new(remote.to_string());
-    let scope = Arc::new("default-scope".to_string());
+    let remote = remote.to_string();
+    let scope = "default-scope".to_string();
 
-    let instance = ProxyInstance::new(default_label(), scope.clone(), listener, remote.clone());
+    let instance = ProxyInstance::new(default_label(), &scope, listener, &remote);
+
+    let state_clone = state.clone();
+    let instance_data = (&instance).into();
+
+    tokio::spawn(async move {
+        let client = reqwest::Client::new();
+        update_instance_latency(state_clone, instance_data, &client).await;
+    });
 
     let label = instance.label.clone();
     state.instances.write().await.push(instance);

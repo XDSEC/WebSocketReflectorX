@@ -2,23 +2,24 @@ use std::{fmt::Display, sync::Arc};
 
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
-use tokio::sync::RwLock;
+use tokio::{net::TcpListener, sync::RwLock};
+use wsrx::tunnel::Tunnel;
 
-use super::{default_label, proxy_instance::ProxyInstance};
-use crate::ui::MainWindow;
+use super::default_label;
+use crate::ui::{Instance, MainWindow};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InstanceData {
     #[serde(default = "default_label")]
-    pub label: Arc<String>,
+    pub label: String,
     #[serde(alias = "to")]
-    pub remote: Arc<String>,
+    pub remote: String,
     #[serde(alias = "from")]
-    pub local: Arc<String>,
+    pub local: String,
     #[serde(default)]
     pub latency: i32,
     #[serde(default)]
-    pub scope_host: Arc<String>,
+    pub scope_host: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -100,5 +101,62 @@ where
             }
         }
         feature_flags
+    }
+}
+
+pub struct ProxyInstance {
+    pub data: InstanceData,
+    _tunnel: Tunnel,
+}
+
+impl ProxyInstance {
+    pub fn new(
+        label: impl AsRef<str>, scope_host: impl AsRef<str>, listener: TcpListener,
+        remote: impl AsRef<str>,
+    ) -> Self {
+        let tunnel = Tunnel::new(remote.as_ref(), listener);
+
+        Self {
+            data: InstanceData {
+                label: label.as_ref().to_string(),
+                remote: remote.as_ref().to_string(),
+                local: tunnel.local.clone(),
+                latency: -1,
+                scope_host: scope_host.as_ref().to_string(),
+            },
+            _tunnel: tunnel,
+        }
+    }
+}
+
+impl From<&ProxyInstance> for InstanceData {
+    fn from(value: &ProxyInstance) -> Self {
+        value.data.clone()
+    }
+}
+
+impl From<&ProxyInstance> for Instance {
+    fn from(value: &ProxyInstance) -> Self {
+        Instance {
+            label: value.label.as_str().into(),
+            remote: value.remote.as_str().into(),
+            local: value.local.as_str().into(),
+            latency: value.latency,
+            scope_host: value.scope_host.as_str().into(),
+        }
+    }
+}
+
+impl std::ops::Deref for ProxyInstance {
+    type Target = InstanceData;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl std::ops::DerefMut for ProxyInstance {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
     }
 }

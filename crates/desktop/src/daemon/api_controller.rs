@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 use axum::{
     Json,
@@ -18,19 +18,18 @@ use tower_http::{
 use tracing::{Span, debug};
 use wsrx::utils::create_tcp_listener;
 
-use super::{
-    model::{FeatureFlags, InstanceData, ScopeData, ServerState},
-    proxy_instance::ProxyInstance,
-};
 use crate::{
     bridges::ui_state::sync_scoped_instance,
+    daemon::model::{FeatureFlags, InstanceData, ProxyInstance, ScopeData, ServerState},
     ui::{Instance, InstanceBridge, Scope, ScopeBridge},
 };
+
+use super::latency_worker::update_instance_latency;
 
 pub fn router(state: ServerState) -> axum::Router {
     let cors_state = state.clone();
     let cors_layer = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
         .allow_headers(Any)
         .allow_origin(AllowOrigin::async_predicate(
             |origin, _request_parts| async move {
@@ -70,7 +69,7 @@ pub fn router(state: ServerState) -> axum::Router {
                     "/connect",
                     get(get_control_status)
                         .post(request_control)
-                        .put(update_website_info),
+                        .patch(update_website_info),
                 )
                 .route(
                     "/version",
@@ -103,13 +102,13 @@ pub fn router(state: ServerState) -> axum::Router {
 
 #[derive(Serialize)]
 struct InstanceResponse {
-    label: Arc<String>,
-    remote: Arc<String>,
-    local: Arc<String>,
+    label: String,
+    remote: String,
+    local: String,
     #[deprecated]
-    from: Arc<String>,
+    from: String,
     #[deprecated]
-    to: Arc<String>,
+    to: String,
     latency: i32,
 }
 
@@ -156,8 +155,7 @@ async fn launch_instance(
         .get("Origin")
         .and_then(|h| h.to_str().ok())
         .unwrap_or_default()
-        .to_owned()
-        .into();
+        .to_owned();
 
     let listener = create_tcp_listener(&instance_data.local).await?;
 
@@ -170,15 +168,23 @@ async fn launch_instance(
     if instances.iter().any(|i| i.local.as_str() == local) {
         return Err((
             StatusCode::BAD_REQUEST,
-            format!("Instance {} already exists", local),
+            format!(
+                "The local address {} is already taken by another instance",
+                local
+            ),
         ));
     }
 
     if let Some(instance) = instances
-        .iter()
+        .iter_mut()
         .find(|i| i.remote == instance_data.remote && i.scope_host == scope)
     {
-        return Ok(Json(instance.into()));
+        // test instance config changes
+        if instance.label != instance_data.label {
+            instance.label = instance_data.label.clone();
+        }
+
+        return Ok(Json(instance.data.clone()));
     }
 
     let instance = ProxyInstance::new(
@@ -191,6 +197,14 @@ async fn launch_instance(
     let instance_resp: InstanceData = (&instance).into();
     instances.push(instance);
     drop(instances);
+
+    let state_clone = state.clone();
+    let instance = instance_resp.clone();
+
+    tokio::spawn(async move {
+        let client = reqwest::Client::new();
+        update_instance_latency(state_clone, instance, &client).await;
+    });
 
     match slint::invoke_from_event_loop(move || {
         let ui_handle = state.ui.upgrade().unwrap();
