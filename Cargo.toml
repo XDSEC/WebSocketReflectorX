@@ -8,8 +8,8 @@ edition      = "2024"
 homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
-rust-version = "1.85.0"
-version      = "0.4.9"
+rust-version = "1.86.0"
+version      = "0.5.0"
 
 [profile.release]
 codegen-units = 1
@@ -38,7 +38,7 @@ chrono             = { version = "0.4", features = ["serde"] }
 clap               = { version = "4.5", features = ["derive"] }
 once_cell          = { version = "1.21" }
 rand               = { version = "0.9" }
-serde              = { version = "1.0", features = ["derive"] }
+serde              = { version = "1.0", features = ["derive", "rc"] }
 serde_json         = { version = "1.0" }
 subprocess         = { version = "0.2" }
 tower-http         = { version = "0.6", features = ["cors", "trace"] }

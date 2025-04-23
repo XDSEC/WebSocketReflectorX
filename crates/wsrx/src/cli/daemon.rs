@@ -1,6 +1,6 @@
 use std::{
     collections::HashMap,
-    net::ToSocketAddrs,
+    ops::Deref,
     sync::{Arc, RwLock as SyncRwLock},
     time::Duration,
 };
@@ -17,13 +17,16 @@ use axum::{
 use chrono::{DateTime, Utc};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use tokio::{net::TcpListener, sync::RwLock, task::JoinHandle};
+use tokio::{net::TcpListener, sync::RwLock};
 use tower_http::{
     cors::{AllowOrigin, Any, CorsLayer},
     trace::TraceLayer,
 };
 use tracing::{Span, debug, error, info};
-use wsrx::proxy;
+use wsrx::{
+    tunnel::{Tunnel, TunnelConfig},
+    utils::create_tcp_listener,
+};
 
 use crate::cli::logger::init_logger;
 
@@ -57,18 +60,12 @@ pub async fn launch(
         .expect("failed to launch server");
 }
 
+type ConnectionMap = Arc<RwLock<HashMap<String, Tunnel>>>;
+
 #[derive(Clone, FromRef)]
 pub struct GlobalState {
     pub secret: Option<String>,
-    pub connections: Arc<RwLock<HashMap<String, Tunnel>>>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Tunnel {
-    pub from: String,
-    pub to: String,
-    #[serde(skip)]
-    pub handle: Option<JoinHandle<()>>,
+    pub connections: ConnectionMap,
 }
 
 static ALLOWED_ORIGINS: Lazy<Arc<SyncRwLock<Vec<String>>>> =
@@ -104,7 +101,7 @@ async fn heartbeat_watchdog(interval: u64) {
 fn build_router(secret: Option<String>) -> axum::Router {
     let state = GlobalState {
         secret,
-        connections: Arc::new(RwLock::new(HashMap::new())),
+        connections: Default::default(),
     };
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::DELETE])
@@ -183,74 +180,15 @@ fn build_router(secret: Option<String>) -> axum::Router {
         .with_state::<()>(state)
 }
 
-#[derive(Deserialize)]
-struct TunnelRequest {
-    pub from: String,
-    pub to: String,
-}
-
 async fn launch_tunnel(
-    State(connections): State<Arc<RwLock<HashMap<String, Tunnel>>>>,
-    axum::Json(req): axum::Json<TunnelRequest>,
+    State(connections): State<ConnectionMap>, axum::Json(req): axum::Json<TunnelConfig>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let mut pool = connections.write().await;
-    // pool.insert(req.from, req.to);
-    let mut tcp_addr_obj = req.from.to_socket_addrs().map_err(|err| {
-        error!("Failed to parse from address: {err}");
-        (
-            StatusCode::BAD_REQUEST,
-            "failed to parse from address".to_owned(),
-        )
-    })?;
-    let tcp_addr_obj = tcp_addr_obj.next().ok_or((
-        StatusCode::BAD_REQUEST,
-        "failed to get socket addr".to_owned(),
-    ))?;
-    let listener = TcpListener::bind(tcp_addr_obj).await.map_err(|err| {
-        error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("failed to bind tcp address {tcp_addr_obj:?}: {err}"),
-        )
-    })?;
-    info!(
-        "CREATE tcp server: {} <--wsrx--> {}",
-        listener.local_addr().expect("failed to bind port"),
-        req.to
-    );
-    let tunnel = Tunnel {
-        from: listener
-            .local_addr()
-            .expect("failed to bind port")
-            .to_string(),
-        to: req.to.clone(),
-        handle: Some(tokio::task::spawn(async move {
-            loop {
-                let Ok((tcp, _)) = listener.accept().await else {
-                    error!("Failed to accept tcp connection, exiting.");
-                    return;
-                };
-                let url = req.to.clone();
-                let peer_addr = tcp.peer_addr().unwrap();
-                info!("LINK {url} <-wsrx-> {peer_addr}");
-                tokio::spawn(async move {
-                    let (ws, _) = match tokio_tungstenite::connect_async(&url).await {
-                        Ok(ws) => ws,
-                        Err(e) => {
-                            error!("Failed to connect to {url}: {e}");
-                            return;
-                        }
-                    };
-                    match proxy(ws.into(), tcp).await {
-                        Ok(_) => {}
-                        Err(e) => {
-                            info!("REMOVE {url} <-wsrx-> {peer_addr}: {e}");
-                        }
-                    }
-                });
-            }
-        })),
-    };
+
+    let listener = create_tcp_listener(req.local.as_str()).await?;
+
+    let tunnel = Tunnel::new(req.remote, listener);
+
     let resp = serde_json::to_string(&tunnel).map_err(|e| {
         error!("Failed to serialize tunnel: {e:?}");
         (
@@ -258,15 +196,15 @@ async fn launch_tunnel(
             format!("Failed to serialize tunnel: {e:?}"),
         )
     });
-    pool.insert(tunnel.from.clone(), tunnel);
+
+    pool.insert(tunnel.local.clone(), tunnel);
+
     resp
 }
 
-async fn get_tunnels(
-    State(connections): State<Arc<RwLock<HashMap<String, Tunnel>>>>,
-) -> impl IntoResponse {
+async fn get_tunnels(State(connections): State<ConnectionMap>) -> impl IntoResponse {
     let pool = connections.read().await;
-    let resp = serde_json::to_string::<HashMap<String, Tunnel>>(&pool).map_err(|e| {
+    let resp = serde_json::to_string(pool.deref()).map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             format!("failed to serialize pool: {e}"),
@@ -285,17 +223,9 @@ struct CloseTunnelRequest {
 }
 
 async fn close_tunnel(
-    State(connections): State<Arc<RwLock<HashMap<String, Tunnel>>>>,
-    axum::Json(req): axum::Json<CloseTunnelRequest>,
+    State(connections): State<ConnectionMap>, axum::Json(req): axum::Json<CloseTunnelRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
-    let mut pool = connections.write().await;
-    let tunnel = pool.get(&req.key);
-    if let Some(tunnel) = tunnel {
-        if let Some(handle) = tunnel.handle.as_ref() {
-            handle.abort();
-        }
-        info!("REMOVE {} <-wsrx-> {}", tunnel.from, tunnel.to);
-        pool.remove(&req.key);
+    if connections.write().await.remove(&req.key).is_some() {
         Ok(StatusCode::OK)
     } else {
         error!("Tunnel does not exist: {}", req.key);

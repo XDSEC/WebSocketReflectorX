@@ -10,8 +10,8 @@ Unicode True
 !define COMPANYNAME                  "XDSEC"
 !define DESCRIPTION                  "Controlled TCP-over-WebSocket forwarding tunnel."
 !define VERSIONMAJOR                 0
-!define VERSIONMINOR                 4
-!define VERSIONBUILD                 9
+!define VERSIONMINOR                 5
+!define VERSIONBUILD                 0
 !define INSTALL_DIR_DEFAULT          "$PROGRAMFILES64\${APPNAME}"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN
@@ -57,10 +57,10 @@ Section "${APPNAME} (required)" SecDummy
   SectionIn RO
   SetOutPath "$INSTDIR"
   File /r "${APPNAME}\*"
-  
+
   ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
   IntFmt $0 "0x%08X" $0
-  
+
   DeleteRegKey HKCU "Software\${COMPANYNAME}\${APPNAME}"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}"
 

@@ -265,3 +265,7 @@ pub fn save_scopes(ui: &slint::Weak<MainWindow>) {
     }
     debug!("Saved scopes to: {:?}", config_file);
 }
+
+fn default_label() -> String {
+    format!("inst-{:06x}", rand::random::<u32>())
+}

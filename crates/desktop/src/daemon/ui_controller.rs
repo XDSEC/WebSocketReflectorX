@@ -1,88 +1,57 @@
-use std::net::ToSocketAddrs;
-
-use slint::{ComponentHandle, Model, ToSharedString, VecModel};
-use tokio::net::TcpListener;
-use tracing::{debug, error, info, warn};
-
-use super::model::ServerState;
 use crate::{
     bridges::ui_state::sync_scoped_instance,
-    daemon::model::InstanceData,
+    daemon::{
+        default_label,
+        model::{ProxyInstance, ServerState},
+    },
     ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge},
 };
+use slint::{ComponentHandle, Model, ToSharedString, VecModel};
+use tracing::{debug, info, warn};
+use wsrx::utils::create_tcp_listener;
+
+use super::latency_worker::update_instance_latency;
 
 pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
-    let mut tcp_addr_obj = match local.to_string().to_socket_addrs() {
-        Ok(tcp_addr_obj) => tcp_addr_obj,
-        Err(err) => {
-            error!("Failed to parse from address: {err}");
-            return;
-        }
-    };
-    let tcp_addr_obj = match tcp_addr_obj.next() {
-        Some(tcp_addr_obj) => tcp_addr_obj,
-        None => {
-            error!("Failed to parse from address");
-            return;
-        }
-    };
-    let listener = match TcpListener::bind(tcp_addr_obj).await {
+    let listener = match create_tcp_listener(local).await {
         Ok(listener) => listener,
-        Err(err) => {
-            error!("Failed to bind to address: {err}");
-            return;
-        }
+        Err(_) => return,
     };
+
     let local = listener
         .local_addr()
         .expect("failed to bind port")
         .to_string();
-    info!("CREATE tcp server: {local} <- wsrx -> {remote}",);
 
-    let mut instances = state.instances.write().await;
-    if instances.iter().any(|i| i.local == local) {
+    if state
+        .instances
+        .read()
+        .await
+        .iter()
+        .any(|i| i.local.as_str() == local)
+    {
         warn!("Instance already exists: {local}");
         return;
     }
-    let remote = remote.to_string();
-    let remote_clone = remote.clone();
 
-    let instance = InstanceData {
-        label: format!("inst-{:06x}", rand::random::<u32>()),
-        remote: remote.clone(),
-        local: local.clone(),
-        latency: -1,
-        scope_host: "default-scope".to_string(),
-        handle: Some(tokio::task::spawn(async move {
-            loop {
-                let remote = remote.clone();
-                let Ok((tcp, _)) = listener.accept().await else {
-                    error!("Failed to accept tcp connection, exiting.");
-                    return;
-                };
-                let peer_addr = tcp.peer_addr().unwrap();
-                tokio::spawn(async move {
-                    info!("LINK {remote} <- wsrx -> {peer_addr}");
-                    let (ws, _) = match tokio_tungstenite::connect_async(&remote).await {
-                        Ok(ws) => ws,
-                        Err(e) => {
-                            error!("Failed to connect to {remote}: {e}");
-                            return;
-                        }
-                    };
-                    match wsrx::proxy(ws.into(), tcp).await {
-                        Ok(_) => {}
-                        Err(e) => {
-                            info!("REMOVE {remote} <- wsrx -> {peer_addr}: {e}");
-                        }
-                    }
-                });
-            }
-        })),
-    };
+    let remote = remote.to_string();
+    let scope = "default-scope".to_string();
+
+    let instance = ProxyInstance::new(default_label(), &scope, listener, &remote);
+
+    let state_clone = state.clone();
+    let instance_data = (&instance).into();
+
+    tokio::spawn(async move {
+        let client = reqwest::Client::new();
+        update_instance_latency(state_clone, instance_data, &client).await;
+    });
+
     let label = instance.label.clone();
-    instances.push(instance);
+    state.instances.write().await.push(instance);
+
     let state = state.clone();
+
     match slint::invoke_from_event_loop(move || {
         let ui_handle = state.ui.upgrade().unwrap();
         let instance_bridge = ui_handle.global::<InstanceBridge>();
@@ -92,11 +61,11 @@ pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
             .downcast_ref::<VecModel<Instance>>()
             .unwrap();
         let instance = Instance {
-            label: label.into(),
-            remote: remote_clone.into(),
-            local: local.into(),
+            label: label.as_str().into(),
+            remote: remote.as_str().into(),
+            local: local.as_str().into(),
             latency: -1,
-            scope_host: "default-scope".into(),
+            scope_host: scope.as_str().into(),
         };
         instances.push(instance);
         sync_scoped_instance(ui_handle.as_weak());
@@ -111,42 +80,38 @@ pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
 }
 
 pub async fn on_instance_del(state: &ServerState, local: &str) {
-    let mut instances = state.instances.write().await;
+    state
+        .instances
+        .write()
+        .await
+        .retain(|instance| instance.local.as_str() != local);
 
-    if let Some(tunnel) = instances.iter().find(|v| v.local == local) {
-        info!("CLOSE tcp server: {} <- wsrx -> {}", local, tunnel.remote);
-        if let Some(handle) = tunnel.handle.as_ref() {
-            handle.abort();
+    let state = state.clone();
+    let local = local.to_string();
+
+    match slint::invoke_from_event_loop(move || {
+        let ui_handle = state.ui.upgrade().unwrap();
+        let instance_bridge = ui_handle.global::<InstanceBridge>();
+        let instances = instance_bridge.get_instances();
+        let instances = instances
+            .as_any()
+            .downcast_ref::<VecModel<Instance>>()
+            .unwrap();
+        let mut index = 0;
+        for i in instances.iter() {
+            if i.local == local {
+                break;
+            }
+            index += 1;
         }
-
-        instances.retain(|i| i.local != local);
-        let state = state.clone();
-        let local = local.to_string();
-
-        match slint::invoke_from_event_loop(move || {
-            let ui_handle = state.ui.upgrade().unwrap();
-            let instance_bridge = ui_handle.global::<InstanceBridge>();
-            let instances = instance_bridge.get_instances();
-            let instances = instances
-                .as_any()
-                .downcast_ref::<VecModel<Instance>>()
-                .unwrap();
-            let mut index = 0;
-            for i in instances.iter() {
-                if i.local == local {
-                    break;
-                }
-                index += 1;
-            }
-            instances.remove(index);
-            sync_scoped_instance(ui_handle.as_weak());
-        }) {
-            Ok(_) => {
-                debug!("Removed instance from UI");
-            }
-            Err(e) => {
-                debug!("Failed to sync state: {e}");
-            }
+        instances.remove(index);
+        sync_scoped_instance(ui_handle.as_weak());
+    }) {
+        Ok(_) => {
+            debug!("Removed instance from UI");
+        }
+        Err(e) => {
+            debug!("Failed to sync state: {e}");
         }
     }
 }
@@ -200,40 +165,37 @@ pub async fn on_scope_allow(state: &ServerState, ui: slint::Weak<MainWindow>, sc
 }
 
 pub async fn on_scope_del(state: &ServerState, ui: slint::Weak<MainWindow>, scope_host: &str) {
-    let mut scopes = state.scopes.write().await;
-    let removed_scope = scopes
-        .iter()
-        .position(|s| s.host == scope_host)
-        .map(|index| scopes.remove(index));
+    let removed_scope = {
+        let mut scopes = state.scopes.write().await;
+        scopes
+            .iter()
+            .position(|s| s.host == scope_host)
+            .map(|index| scopes.remove(index))
+    };
+
+    match removed_scope {
+        Some(scope) => {
+            state
+                .instances
+                .write()
+                .await
+                .retain(|i| i.scope_host.as_str() != scope.host);
+
+            info!("Scope {} removed", scope.host);
+        }
+        None => return,
+    };
 
     let scope_host = scope_host.to_string();
-
-    if let Some(scope) = removed_scope {
-        info!("Scope {} removed", scope.host);
-
-        let mut instances = state.instances.write().await;
-        instances.retain(|i| {
-            if let Some(handle) = i.handle.as_ref() {
-                handle.abort();
-            }
-            i.scope_host != scope.host
-        });
-    } else {
-        return;
-    }
-
     let state = state.clone();
-    let instances = state.instances.read().await;
-    let instances = instances
+
+    let instances: Vec<Instance> = state
+        .instances
+        .read()
+        .await
         .iter()
-        .filter(|i| i.scope_host == scope_host)
-        .map(|i| Instance {
-            label: i.label.clone().into(),
-            remote: i.remote.clone().into(),
-            local: i.local.clone().into(),
-            latency: i.latency,
-            scope_host: i.scope_host.clone().into(),
-        })
+        .filter(|i| i.scope_host.as_str() == scope_host)
+        .map(Into::into)
         .collect::<Vec<_>>();
 
     match slint::invoke_from_event_loop(move || {

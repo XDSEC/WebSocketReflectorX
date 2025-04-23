@@ -1,4 +1,4 @@
-use std::{net::ToSocketAddrs, time::Duration};
+use std::time::Duration;
 
 use axum::{
     Json,
@@ -11,24 +11,25 @@ use axum::{
 use i_slint_backend_winit::WinitWindowAccessor;
 use serde::{Deserialize, Serialize};
 use slint::{ComponentHandle, Model, ToSharedString, VecModel};
-use tokio::net::TcpListener;
 use tower_http::{
     cors::{AllowOrigin, Any, CorsLayer},
     trace::TraceLayer,
 };
-use tracing::{Span, debug, error, info};
+use tracing::{Span, debug};
+use wsrx::utils::create_tcp_listener;
 
-use super::model::{FeatureFlags, InstanceData, ScopeData, ServerState};
 use crate::{
     bridges::ui_state::sync_scoped_instance,
-    daemon::model::InstanceDataPure,
+    daemon::model::{FeatureFlags, InstanceData, ProxyInstance, ScopeData, ServerState},
     ui::{Instance, InstanceBridge, Scope, ScopeBridge},
 };
+
+use super::latency_worker::update_instance_latency;
 
 pub fn router(state: ServerState) -> axum::Router {
     let cors_state = state.clone();
     let cors_layer = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
         .allow_headers(Any)
         .allow_origin(AllowOrigin::async_predicate(
             |origin, _request_parts| async move {
@@ -68,7 +69,7 @@ pub fn router(state: ServerState) -> axum::Router {
                     "/connect",
                     get(get_control_status)
                         .post(request_control)
-                        .put(update_website_info),
+                        .patch(update_website_info),
                 )
                 .route(
                     "/version",
@@ -104,11 +105,25 @@ struct InstanceResponse {
     label: String,
     remote: String,
     local: String,
-    /// deprecated
+    #[deprecated]
     from: String,
-    /// deprecated
+    #[deprecated]
     to: String,
     latency: i32,
+}
+
+impl From<&ProxyInstance> for InstanceResponse {
+    #[allow(deprecated)]
+    fn from(instance: &ProxyInstance) -> Self {
+        InstanceResponse {
+            label: instance.label.clone(),
+            remote: instance.remote.clone(),
+            local: instance.local.clone(),
+            from: instance.local.clone(),
+            to: instance.remote.clone(),
+            latency: instance.latency,
+        }
+    }
 }
 
 async fn get_instances(
@@ -119,18 +134,11 @@ async fn get_instances(
         .and_then(|h| h.to_str().ok())
         .unwrap_or_default();
     let instances = state.instances.read().await;
-    let instances = instances
+    let instances: Vec<InstanceResponse> = instances
         .iter()
         .filter_map(|instance| {
-            if instance.scope_host == scope {
-                Some(InstanceResponse {
-                    label: instance.label.clone(),
-                    remote: instance.remote.clone(),
-                    local: instance.local.clone(),
-                    from: instance.local.clone(),
-                    to: instance.remote.clone(),
-                    latency: instance.latency,
-                })
+            if instance.scope_host.as_str() == scope {
+                Some(instance.into())
             } else {
                 None
             }
@@ -149,81 +157,54 @@ async fn launch_instance(
         .unwrap_or_default()
         .to_owned();
 
-    let mut tcp_addr_obj = instance_data.local.to_socket_addrs().map_err(|err| {
-        error!("Failed to parse from address: {err}");
-        (
-            StatusCode::BAD_REQUEST,
-            "failed to parse from address".to_owned(),
-        )
-    })?;
-    let tcp_addr_obj = tcp_addr_obj.next().ok_or((
-        StatusCode::BAD_REQUEST,
-        "failed to get socket addr".to_owned(),
-    ))?;
-    let listener = TcpListener::bind(tcp_addr_obj).await.map_err(|err| {
-        error!("Failed to bind tcp address {tcp_addr_obj:?}: {err}");
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("failed to bind tcp address {tcp_addr_obj:?}: {err}"),
-        )
-    })?;
+    let listener = create_tcp_listener(&instance_data.local).await?;
+
     let local = listener
         .local_addr()
         .expect("failed to bind port")
         .to_string();
-    let remote = instance_data.remote.clone();
-    info!("CREATE tcp server: {local} <- wsrx -> {remote}",);
 
     let mut instances = state.instances.write().await;
-    if instances.iter().any(|i| i.local == local) {
+    if instances.iter().any(|i| i.local.as_str() == local) {
         return Err((
             StatusCode::BAD_REQUEST,
-            format!("Instance {} already exists", local),
+            format!(
+                "The local address {} is already taken by another instance",
+                local
+            ),
         ));
     }
 
     if let Some(instance) = instances
-        .iter()
-        .find(|i| i.remote == remote && i.scope_host == scope)
+        .iter_mut()
+        .find(|i| i.remote == instance_data.remote && i.scope_host == scope)
     {
-        return Ok(Json(instance.into()));
+        // test instance config changes
+        if instance.label != instance_data.label {
+            instance.label = instance_data.label.clone();
+        }
+
+        return Ok(Json(instance.data.clone()));
     }
 
-    let instance = InstanceData {
-        label: instance_data.label.clone(),
-        remote: instance_data.remote.clone(),
-        local: local.clone(),
-        latency: -1,
-        scope_host: scope.clone(),
-        handle: Some(tokio::task::spawn(async move {
-            loop {
-                let remote = remote.clone();
-                let Ok((tcp, _)) = listener.accept().await else {
-                    error!("Failed to accept tcp connection, exiting.");
-                    return;
-                };
-                let peer_addr = tcp.peer_addr().unwrap();
-                tokio::spawn(async move {
-                    info!("LINK {remote} <- wsrx -> {peer_addr}");
-                    let (ws, _) = match tokio_tungstenite::connect_async(&remote).await {
-                        Ok(ws) => ws,
-                        Err(e) => {
-                            error!("Failed to connect to {remote}: {e}");
-                            return;
-                        }
-                    };
-                    match wsrx::proxy(ws.into(), tcp).await {
-                        Ok(_) => {}
-                        Err(e) => {
-                            info!("REMOVE {remote} <- wsrx -> {peer_addr}: {e}");
-                        }
-                    }
-                });
-            }
-        })),
-    };
-    let instance_resp: InstanceDataPure = (&instance).into();
+    let instance = ProxyInstance::new(
+        instance_data.label.clone(),
+        scope.clone(),
+        listener,
+        instance_data.remote.clone(),
+    );
+
+    let instance_resp: InstanceData = (&instance).into();
     instances.push(instance);
+    drop(instances);
+
+    let state_clone = state.clone();
+    let instance = instance_resp.clone();
+
+    tokio::spawn(async move {
+        let client = reqwest::Client::new();
+        update_instance_latency(state_clone, instance, &client).await;
+    });
 
     match slint::invoke_from_event_loop(move || {
         let ui_handle = state.ui.upgrade().unwrap();
@@ -234,11 +215,11 @@ async fn launch_instance(
             .downcast_ref::<VecModel<Instance>>()
             .unwrap();
         let instance = Instance {
-            label: instance_data.label.into(),
-            remote: instance_data.remote.into(),
-            local: local.into(),
+            label: instance_data.label.as_str().into(),
+            remote: instance_data.remote.as_str().into(),
+            local: local.as_str().into(),
             latency: -1,
-            scope_host: scope.into(),
+            scope_host: scope.as_str().into(),
         };
         instances.push(instance);
         sync_scoped_instance(ui_handle.as_weak());
@@ -272,61 +253,55 @@ async fn close_instance(
         .and_then(|h| h.to_str().ok())
         .unwrap_or_default()
         .to_owned();
+
     let mut instances = state.instances.write().await;
 
-    if let Some(tunnel) = instances.iter().find(|v| v.local == req.local) {
-        if tunnel.scope_host != scope {
-            return Err((
-                StatusCode::BAD_REQUEST,
-                format!("Tunnel {} not found in scope {}", req.local, scope),
-            ));
-        }
-        info!(
-            "CLOSE tcp server: {} <- wsrx -> {}",
-            req.local, tunnel.remote
-        );
-        if let Some(handle) = tunnel.handle.as_ref() {
-            handle.abort();
-        }
-
-        instances.retain(|i| i.local != req.local);
-
-        match slint::invoke_from_event_loop(move || {
-            let ui_handle = state.ui.upgrade().unwrap();
-            let instance_bridge = ui_handle.global::<InstanceBridge>();
-            let instances = instance_bridge.get_instances();
-            let instances = instances
-                .as_any()
-                .downcast_ref::<VecModel<Instance>>()
-                .unwrap();
-            let mut index = 0;
-            for i in instances.iter() {
-                if i.local == req.local {
-                    break;
-                }
-                index += 1;
-            }
-            instances.remove(index);
-            sync_scoped_instance(ui_handle.as_weak());
-        }) {
-            Ok(_) => {
-                debug!("Removed instance from UI");
-            }
-            Err(e) => {
-                debug!("Failed to sync state: {e}");
-                return Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "failed to update UI".to_owned(),
-                ));
-            }
-        }
-        Ok(StatusCode::OK)
-    } else {
-        Err((
+    let Some(tunnel) = instances.iter().find(|i| i.local.as_str() == req.local) else {
+        return Err((
             StatusCode::BAD_REQUEST,
             format!("Tunnel {} not found", req.local),
-        ))
+        ));
+    };
+
+    if tunnel.scope_host.as_str() != scope {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            format!("Tunnel {} not found in scope {}", req.local, scope),
+        ));
     }
+
+    instances.retain(|i| i.local.as_str() != req.local);
+
+    match slint::invoke_from_event_loop(move || {
+        let ui_handle = state.ui.upgrade().unwrap();
+        let instance_bridge = ui_handle.global::<InstanceBridge>();
+        let instances = instance_bridge.get_instances();
+        let instances = instances
+            .as_any()
+            .downcast_ref::<VecModel<Instance>>()
+            .unwrap();
+        let mut index = 0;
+        for i in instances.iter() {
+            if i.local == req.local {
+                break;
+            }
+            index += 1;
+        }
+        instances.remove(index);
+        sync_scoped_instance(ui_handle.as_weak());
+    }) {
+        Ok(_) => {
+            debug!("Removed instance from UI");
+        }
+        Err(e) => {
+            debug!("Failed to sync state: {e}");
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "failed to update UI".to_owned(),
+            ));
+        }
+    }
+    Ok(StatusCode::OK)
 }
 
 async fn get_control_status(

@@ -34,7 +34,7 @@ export component TitleBar inherits Rectangle {
         spacing: Styles.sizes.s-md;
         padding: Styles.sizes.p-md;
 
-        Button {
+        if SystemInfoBridge.os != "macos": Button {
             flat: true;
             icon: @image-url("../assets/navigation.svg");
             clicked => {

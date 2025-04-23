@@ -13,6 +13,7 @@ use tokio::{
     net::{TcpListener, TcpStream},
     sync::RwLock,
 };
+use tokio_util::sync::CancellationToken;
 use tower_http::trace::TraceLayer;
 use tracing::{Span, error, info};
 use wsrx::proxy;
@@ -46,18 +47,20 @@ pub async fn launch(
         .expect("failed to launch server");
 }
 
+type ConnectionMap = Arc<RwLock<HashMap<String, String>>>;
+
 /// The global state of the server.
 #[derive(Clone, FromRef)]
 pub struct GlobalState {
     pub secret: Option<String>,
-    pub connections: Arc<RwLock<HashMap<String, String>>>,
+    pub connections: ConnectionMap,
 }
 
 /// Build the router with the given secret.
 fn build_router(secret: Option<String>) -> axum::Router {
     let state = GlobalState {
         secret,
-        connections: Arc::new(RwLock::new(HashMap::new())),
+        connections: Default::default(),
     };
     axum::Router::new()
         .route(
@@ -105,8 +108,7 @@ struct TunnelRequest {
 
 /// Launch a tunnel from the given address to the given address.
 async fn launch_tunnel(
-    State(connections): State<Arc<RwLock<HashMap<String, String>>>>,
-    axum::Json(req): axum::Json<TunnelRequest>,
+    State(connections): State<ConnectionMap>, axum::Json(req): axum::Json<TunnelRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
     let mut pool = connections.write().await;
     pool.insert(req.from, req.to);
@@ -114,9 +116,7 @@ async fn launch_tunnel(
 }
 
 /// Get the list of tunnels.
-async fn get_tunnels(
-    State(connections): State<Arc<RwLock<HashMap<String, String>>>>,
-) -> impl IntoResponse {
+async fn get_tunnels(State(connections): State<ConnectionMap>) -> impl IntoResponse {
     let pool = connections.read().await;
     let resp = serde_json::to_string::<HashMap<String, String>>(&pool).map_err(|e| {
         (
@@ -139,8 +139,7 @@ struct CloseTunnelRequest {
 
 /// Close a tunnel with the given key.
 async fn close_tunnel(
-    State(connections): State<Arc<RwLock<HashMap<String, String>>>>,
-    axum::Json(req): axum::Json<CloseTunnelRequest>,
+    State(connections): State<ConnectionMap>, axum::Json(req): axum::Json<CloseTunnelRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
     let mut pool = connections.write().await;
     if pool.remove(&req.key).is_some() {
@@ -152,12 +151,11 @@ async fn close_tunnel(
 
 /// Process the traffic between the WebSocket and TCP connection.
 async fn process_traffic(
-    State(connections): State<Arc<RwLock<HashMap<String, String>>>>, Path(key): Path<String>,
-    ws: WebSocketUpgrade,
+    State(connections): State<ConnectionMap>, Path(key): Path<String>, ws: WebSocketUpgrade,
 ) -> Result<impl IntoResponse, (StatusCode, &'static str)> {
     let pool = connections.read().await;
     if let Some(conn) = pool.get(&key) {
-        let tcp_addr = conn.clone();
+        let tcp_addr = conn.to_owned();
         Ok(ws.on_upgrade(move |socket| async move {
             let tcp = TcpStream::connect(&tcp_addr).await;
             if tcp.is_err() {
@@ -165,7 +163,9 @@ async fn process_traffic(
                 return;
             }
             let tcp = tcp.unwrap();
-            proxy(socket.into(), tcp).await.ok();
+            proxy(socket.into(), tcp, CancellationToken::new())
+                .await
+                .ok();
         }))
     } else {
         Err((StatusCode::NOT_FOUND, "not found"))
@@ -174,7 +174,7 @@ async fn process_traffic(
 
 /// Ping the server to check if the connection is alive.
 async fn ping(
-    State(connections): State<Arc<RwLock<HashMap<String, String>>>>, Path(key): Path<String>,
+    State(connections): State<ConnectionMap>, Path(key): Path<String>,
 ) -> impl IntoResponse {
     let pool = connections.read().await;
     if pool.get(&key).is_some() {
