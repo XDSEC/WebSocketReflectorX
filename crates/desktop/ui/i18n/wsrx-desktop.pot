@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-10 17:29+0000\n"
+"POT-Creation-Date: 2025-04-25 11:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,37 +12,37 @@ msgstr ""
 "Language: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: crates/desktop/ui/blocks/side-bar.slint:82
+#: crates/desktop/ui/blocks/side-bar.slint:49
 msgctxt "SideBar"
 msgid "Get Started"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:95
+#: crates/desktop/ui/blocks/side-bar.slint:62
 msgctxt "SideBar"
 msgid "Network logs"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:124
+#: crates/desktop/ui/blocks/side-bar.slint:91
 msgctxt "SideBar"
 msgid "Default Scope"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:159
+#: crates/desktop/ui/blocks/side-bar.slint:126
 msgctxt "SideBar"
 msgid "Settings"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:171
+#: crates/desktop/ui/blocks/side-bar.slint:138
 msgctxt "SideBar"
 msgid "Click to copy"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:171
+#: crates/desktop/ui/blocks/side-bar.slint:138
 msgctxt "SideBar"
 msgid "Click to see log"
 msgstr ""
 
-#: crates/desktop/ui/blocks/side-bar.slint:171
+#: crates/desktop/ui/blocks/side-bar.slint:138
 msgctxt "SideBar"
 msgid "Controller port"
 msgstr ""
@@ -102,12 +102,12 @@ msgctxt "ConnectionsPage"
 msgid "Remove"
 msgstr ""
 
-#: crates/desktop/ui/pages/connections.slint:199
+#: crates/desktop/ui/pages/connections.slint:201
 msgctxt "ConnectionsPage"
 msgid "Click to copy: "
 msgstr ""
 
-#: crates/desktop/ui/pages/connections.slint:224
+#: crates/desktop/ui/pages/connections.slint:227
 msgctxt "ConnectionsPage"
 msgid "Click to close"
 msgstr ""
@@ -122,79 +122,89 @@ msgctxt "GetStartedPage"
 msgid "Port..."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:69
+#: crates/desktop/ui/pages/settings.slint:67
 msgctxt "SettingsPage"
 msgid "Version and Updates"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:78
+#: crates/desktop/ui/pages/settings.slint:76
 msgctxt "SettingsPage"
 msgid "Update available"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:100
+#: crates/desktop/ui/pages/settings.slint:95
 msgctxt "SettingsPage"
 msgid "Running in system tray when closed"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:110
+#: crates/desktop/ui/pages/settings.slint:95
+msgctxt "SettingsPage"
+msgid " (not implemented yet) "
+msgstr ""
+
+#: crates/desktop/ui/pages/settings.slint:106
 msgctxt "SettingsPage"
 msgid "Enabled"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:110
+#: crates/desktop/ui/pages/settings.slint:106
 msgctxt "SettingsPage"
 msgid "Disabled"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:131
+#: crates/desktop/ui/pages/settings.slint:125
+msgctxt "SettingsPage"
+msgid "Language / Locale"
+msgstr ""
+
+#: crates/desktop/ui/pages/settings.slint:215
 msgctxt "SettingsPage"
 msgid "Export network logs"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:140
+#: crates/desktop/ui/pages/settings.slint:224
 msgctxt "SettingsPage"
 msgid "Export"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:161
+#: crates/desktop/ui/pages/settings.slint:242
 msgctxt "SettingsPage"
 msgid "Have problems? Find support here."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:170
+#: crates/desktop/ui/pages/settings.slint:251
 msgctxt "SettingsPage"
 msgid "Support"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:192
+#: crates/desktop/ui/pages/settings.slint:271
 msgctxt "SettingsPage"
 msgid "System information for bug reporting and debugging"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:202 crates/desktop/ui/pages/settings.slint:210
+#: crates/desktop/ui/pages/settings.slint:281 crates/desktop/ui/pages/settings.slint:289
 msgctxt "SettingsPage"
 msgid "Copy"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:220
+#: crates/desktop/ui/pages/settings.slint:299
 msgctxt "SettingsPage"
 msgid "Copied"
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:237
+#: crates/desktop/ui/pages/settings.slint:313
 msgctxt "SettingsPage"
 msgid ""
 "Please include the following information when reporting bugs or asking for "
 "help."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:275
+#: crates/desktop/ui/pages/settings.slint:355
 msgctxt "SettingsPage"
 msgid "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love."
 msgstr ""
 
-#: crates/desktop/ui/pages/settings.slint:289
+#: crates/desktop/ui/pages/settings.slint:369
 msgctxt "SettingsPage"
 msgid "(c) 2022 - 2025 XDSEC, distributed with MIT license."
 msgstr ""

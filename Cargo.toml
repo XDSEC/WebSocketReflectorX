@@ -48,8 +48,9 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url                = { version = "2.5" }
 
 # GUI
-async-compat = { version = "0.2" }
+async-compat          = { version = "0.2" }
 i-slint-backend-winit = "1.10"
+# notify-rust = "4.11"
 open = "5.3"
 reqwest = { version = "0.12", default-features = false, features = [
   "blocking",
@@ -70,6 +71,7 @@ slint = { version = "1.10", default-features = false, features = [
 ] }
 sys-locale = "0.3"
 toml = "0.8"
+# tray-icon = "0.20"
 winit = "0.30"
 
 build-target  = "0.4"

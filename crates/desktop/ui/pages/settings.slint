@@ -92,18 +92,20 @@ export component SettingsPage inherits ScrollView {
             padding-left: Styles.sizes.p-lg;
 
             Text {
-                text: @tr("Running in system tray when closed");
+                text: @tr("Running in system tray when closed") + @tr(" (not implemented yet) ");
                 color: Styles.palette.window-fg;
                 vertical-alignment: center;
                 horizontal-stretch: 1;
             }
 
             Button {
-                property <bool> toggled: SettingsBridge.running-in-tray;
+                // property <bool> toggled: SettingsBridge.running-in-tray;
+                property <bool> toggled: false;
                 icon: toggled ? @image-url("../assets/toggle-right.svg") : @image-url("../assets/toggle-left.svg");
                 icon-color: toggled ? Styles.palette.info-bg : Styles.palette.window-fg;
                 text: toggled ? @tr("Enabled") : @tr("Disabled");
                 flat: true;
+                disabled: true;
 
                 clicked => {
                     SettingsBridge.running-in-tray = !toggled;
