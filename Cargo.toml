@@ -9,7 +9,7 @@ homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
 rust-version = "1.86.0"
-version      = "0.5.2"
+version      = "0.5.3"
 
 [profile.release]
 codegen-units = 1
@@ -23,9 +23,8 @@ directories      = "6.0"
 futures-util     = { version = "0.3", features = ["sink"] }
 local-ip-address = "0.6"
 rustls           = { version = "0.23", features = ["ring"] }
-sysinfo          = "0.34"
 thiserror        = "2.0"
-tokio            = { version = "1.44", features = ["full"] }
+tokio            = { version = "1.45", features = ["full"] }
 tokio-util       = { version = "0.7", features = ["codec"] }
 
 axum = { version = "0.8", features = ["macros", "ws"] }
@@ -59,7 +58,7 @@ reqwest = { version = "0.12", default-features = false, features = [
   "json",
   "rustls-tls",
 ] }
-slint = { version = "1.10", default-features = false, features = [
+slint = { version = "1.11", default-features = false, features = [
   "accessibility",
   "backend-winit",
   "compat-1-2",
@@ -70,6 +69,7 @@ slint = { version = "1.10", default-features = false, features = [
   "std",
 ] }
 sys-locale = "0.3"
+sysinfo = "0.35"
 toml = "0.8"
 # tray-icon = "0.20"
 winit = "0.30"
@@ -77,5 +77,5 @@ winit = "0.30"
 build-target  = "0.4"
 git-version   = "0.3"
 rustc_version = "0.4"
-slint-build   = "1.10"
+slint-build   = "1.11"
 winres        = "0.1"
