@@ -81,7 +81,7 @@ fn build_router(secret: Option<String>) -> axum::Router {
                 Ok(next.run(req).await)
             },
         ))
-        .route("/traffic/*key", get(process_traffic).options(ping))
+        .route("/traffic/{*key}", get(process_traffic).options(ping))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<Body>| {
