@@ -74,7 +74,7 @@ toml = "0.8"
 # tray-icon = "0.20"
 winit = "0.30"
 
-build-target  = "0.4"
+build-target  = "0.7"
 git-version   = "0.3"
 rustc_version = "0.4"
 slint-build   = "1.11"
