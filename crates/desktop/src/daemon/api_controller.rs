@@ -169,8 +169,7 @@ async fn launch_instance(
         return Err((
             StatusCode::BAD_REQUEST,
             format!(
-                "The local address {} is already taken by another instance",
-                local
+                "The local address {local} is already taken by another instance"
             ),
         ));
     }
@@ -323,7 +322,7 @@ async fn get_control_status(
     } else {
         Err((
             StatusCode::FORBIDDEN,
-            format!("Scope {} not found", req_scope),
+            format!("Scope {req_scope} not found"),
         ))
     }
 }
@@ -443,7 +442,7 @@ async fn update_website_info(
     } else {
         Err((
             StatusCode::FORBIDDEN,
-            format!("Scope {} not found", req_scope),
+            format!("Scope {req_scope} not found"),
         ))
     }
 }

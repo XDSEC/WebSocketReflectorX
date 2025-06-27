@@ -8,7 +8,7 @@ edition      = "2024"
 homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
-rust-version = "1.86.0"
+rust-version = "1.88.0"
 version      = "0.5.3"
 
 [profile.release]
@@ -19,6 +19,7 @@ panic         = "abort"
 strip         = true
 
 [workspace.dependencies]
+axum             = { version = "0.8", features = ["macros", "ws"] }
 directories      = "6.0"
 futures-util     = { version = "0.3", features = ["sink"] }
 local-ip-address = "0.6"
@@ -27,9 +28,8 @@ thiserror        = "2.0"
 tokio            = { version = "1.45", features = ["full"] }
 tokio-util       = { version = "0.7", features = ["codec"] }
 
-axum = { version = "0.8", features = ["macros", "ws"] }
 # optional
-tokio-tungstenite = { version = "0.26", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.27", features = ["rustls-tls-native-roots"] }
 
 # binary cli only
 bitflags           = { version = "2.9" }
@@ -49,8 +49,8 @@ url                = { version = "2.5" }
 # GUI
 async-compat          = { version = "0.2" }
 i-slint-backend-winit = "1.10"
-# notify-rust = "4.11"
-open = "5.3"
+open                  = "5.3"
+
 reqwest = { version = "0.12", default-features = false, features = [
   "blocking",
   "charset",
@@ -58,6 +58,7 @@ reqwest = { version = "0.12", default-features = false, features = [
   "json",
   "rustls-tls",
 ] }
+
 slint = { version = "1.11", default-features = false, features = [
   "accessibility",
   "backend-winit",
@@ -68,12 +69,13 @@ slint = { version = "1.11", default-features = false, features = [
   "serde",
   "std",
 ] }
-sys-locale = "0.3"
-sysinfo = "0.35"
-toml = "0.8"
-# tray-icon = "0.20"
-winit = "0.30"
 
+sys-locale = "0.3"
+sysinfo    = "0.35"
+toml       = "0.8"
+winit      = "0.30"
+
+# build dependencies
 build-target  = "0.7"
 git-version   = "0.3"
 rustc_version = "0.4"

@@ -121,7 +121,7 @@ async fn get_tunnels(State(connections): State<ConnectionMap>) -> impl IntoRespo
     let resp = serde_json::to_string::<HashMap<String, String>>(&pool).map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("failed to serialize pool: {}", e),
+            format!("failed to serialize pool: {e}"),
         )
     });
     axum::response::Response::builder()
