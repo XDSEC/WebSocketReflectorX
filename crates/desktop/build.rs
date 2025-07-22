@@ -26,8 +26,8 @@ fn main() {
     );
     let full_version = format!(
         "{version}-{}-{}-{}",
-        build_target::target_arch().unwrap(),
-        build_target::target_os().unwrap(),
+        build_target::target_arch(),
+        build_target::target_os(),
         build_target::target_env().unwrap(),
     );
     fs::write(
