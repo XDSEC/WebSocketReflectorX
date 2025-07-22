@@ -76,7 +76,7 @@ toml       = "0.9"
 winit      = "0.30"
 
 # build dependencies
-build-target  = "0.7"
+build-target  = "0.8"
 git-version   = "0.3"
 rustc_version = "0.4"
 slint-build   = "1.12"
