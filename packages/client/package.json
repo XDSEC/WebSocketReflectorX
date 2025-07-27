@@ -28,11 +28,11 @@
     "LICENSE"
   ],
   "dependencies": {
-    "ky": "^1.8.1",
+    "ky": "^1.8.2",
     "nanoid": "^5.1.5"
   },
   "devDependencies": {
-    "@types/node": "^22.15.14",
+    "@types/node": "^24.1.0",
     "typescript": "^5.8.3"
   }
 }

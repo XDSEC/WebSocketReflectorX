@@ -28,7 +28,9 @@ fn main() {
         "{version}-{}-{}-{}",
         build_target::target_arch(),
         build_target::target_os(),
-        build_target::target_env().unwrap(),
+        build_target::target_env()
+            .map(|v| v.as_str().to_string())
+            .unwrap_or("general".to_string()),
     );
     fs::write(
         dest_path,
