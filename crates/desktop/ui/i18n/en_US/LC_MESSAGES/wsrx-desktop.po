@@ -140,7 +140,7 @@ msgstr "Running in system tray when closed"
 #: crates/desktop/ui/pages/settings.slint:95
 msgctxt "SettingsPage"
 msgid " (not implemented yet) "
-msgstr ""
+msgstr " (not implemented yet) "
 
 #: crates/desktop/ui/pages/settings.slint:106
 msgctxt "SettingsPage"
@@ -155,7 +155,7 @@ msgstr "Disabled"
 #: crates/desktop/ui/pages/settings.slint:125
 msgctxt "SettingsPage"
 msgid "Language / Locale"
-msgstr ""
+msgstr "Language / Locale"
 
 #: crates/desktop/ui/pages/settings.slint:215
 #, fuzzy
