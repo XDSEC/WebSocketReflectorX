@@ -1,11 +1,17 @@
 #!/bin/bash
 
+set -ex
+
 APP="target/release/bundle/osx/WebSocketReflectorX.app"
 APP_NAME="WebSocketReflectorX"
 BIN="$APP/Contents/MacOS/wsrx-desktop"
 ZIP="./WebSocketReflectorX.app.zip"
 
-cargo bundle --release
+cd crates/desktop && cargo bundle --release
+
+cd ../..
+
+ls -alh $APP
 # codesign --timestamp --verify -vvv --deep --options=runtime --sign $IDENT $APP
 zip -r $ZIP $APP
 # xcrun notarytool submit --apple-id $USERNAME --team-id $IDENT --password $PASSWORD --wait $ZIP
