@@ -71,11 +71,10 @@ fn build_router(secret: Option<String>) -> axum::Router {
             state.clone(),
             |State(secret): State<Option<String>>, req: ExtractRequest, next: Next| async move {
                 if let Some(secret) = secret {
-                    if let Some(auth) = req.headers().get("authorization") {
-                        if auth.to_str().map_err(|_| StatusCode::UNAUTHORIZED)? == secret {
+                    if let Some(auth) = req.headers().get("authorization")
+                        && auth.to_str().map_err(|_| StatusCode::UNAUTHORIZED)? == secret {
                             return Ok(next.run(req).await);
                         }
-                    }
                     return Err(StatusCode::UNAUTHORIZED);
                 }
                 Ok(next.run(req).await)
