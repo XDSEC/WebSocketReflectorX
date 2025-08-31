@@ -18,13 +18,12 @@ use tower_http::{
 use tracing::{Span, debug};
 use wsrx::utils::create_tcp_listener;
 
+use super::latency_worker::update_instance_latency;
 use crate::{
     bridges::ui_state::sync_scoped_instance,
     daemon::model::{FeatureFlags, InstanceData, ProxyInstance, ScopeData, ServerState},
     ui::{Instance, InstanceBridge, Scope, ScopeBridge},
 };
-
-use super::latency_worker::update_instance_latency;
 
 pub fn router(state: ServerState) -> axum::Router {
     let cors_state = state.clone();
@@ -168,9 +167,7 @@ async fn launch_instance(
     if instances.iter().any(|i| i.local.as_str() == local) {
         return Err((
             StatusCode::BAD_REQUEST,
-            format!(
-                "The local address {local} is already taken by another instance"
-            ),
+            format!("The local address {local} is already taken by another instance"),
         ));
     }
 

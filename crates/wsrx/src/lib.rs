@@ -11,4 +11,4 @@ pub mod utils;
 #[cfg(feature = "client")]
 pub mod tunnel;
 
-pub use proxy::{proxy, Error, Message, WrappedWsStream};
+pub use proxy::{Error, Message, WrappedWsStream, proxy};

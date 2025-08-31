@@ -109,7 +109,8 @@ async fn pingfall(state: ServerState, instance: InstanceData) {
         .find(|scope| scope.host == instance.scope_host.as_str());
 
     if let Some(scope) = scope
-        && scope.features.contains(FeatureFlags::PingFall) {
-            on_instance_del(&state, &instance.local).await;
-        }
+        && scope.features.contains(FeatureFlags::PingFall)
+    {
+        on_instance_del(&state, &instance.local).await;
+    }
 }
