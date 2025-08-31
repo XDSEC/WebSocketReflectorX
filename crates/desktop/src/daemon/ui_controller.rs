@@ -1,3 +1,8 @@
+use slint::{ComponentHandle, Model, ToSharedString, VecModel};
+use tracing::{debug, info, warn};
+use wsrx::utils::create_tcp_listener;
+
+use super::latency_worker::update_instance_latency;
 use crate::{
     bridges::ui_state::sync_scoped_instance,
     daemon::{
@@ -6,11 +11,6 @@ use crate::{
     },
     ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge},
 };
-use slint::{ComponentHandle, Model, ToSharedString, VecModel};
-use tracing::{debug, info, warn};
-use wsrx::utils::create_tcp_listener;
-
-use super::latency_worker::update_instance_latency;
 
 pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
     let listener = match create_tcp_listener(local).await {

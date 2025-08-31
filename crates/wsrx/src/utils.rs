@@ -2,16 +2,15 @@ use std::net::ToSocketAddrs;
 
 use axum::http::StatusCode;
 use tokio::net::TcpListener;
-
 #[cfg(feature = "log")]
 use tracing::error;
-
 
 /// Creates a TCP listener on the specified local address.
 ///
 /// @param local The local address to bind the TCP listener to.
 ///
-/// @returns A `Result` containing the `TcpListener` if successful, or an error tuple
+/// @returns A `Result` containing the `TcpListener` if successful,
+/// or an error tuple
 pub async fn create_tcp_listener(local: &str) -> Result<TcpListener, (StatusCode, String)> {
     let mut tcp_addr_obj = local.to_socket_addrs().map_err(|err| {
         #[cfg(feature = "log")]

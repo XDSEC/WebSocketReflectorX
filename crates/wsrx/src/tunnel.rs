@@ -18,10 +18,10 @@ pub struct TunnelConfig {
 
 /// A tunnel that proxies TCP connections to a remote WebSocket server.
 ///
-/// This struct is responsible for creating a TCP listener and accepting incoming
-/// connections. It will then establish a WebSocket connection to the remote
-/// server and proxy the data between the TCP connection and the WebSocket
-/// connection.
+/// This struct is responsible for creating a TCP listener and accepting
+/// incoming connections. It will then establish a WebSocket connection to the
+/// remote server and proxy the data between the TCP connection and the
+/// WebSocket connection.
 #[derive(Debug)]
 pub struct Tunnel {
     config: TunnelConfig,
