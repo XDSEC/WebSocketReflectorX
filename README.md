@@ -1,5 +1,10 @@
 # WebSocket Reflector X
 
+> [!TIP]
+> This library is indeed under maintenance, though the development frequency seems relatively low. The low frequency stems from the fact that as a simple tool, it really has little room for further development. If you encounter any issues during use, feel free to raise them in the issues section, and we will respond as soon as possible.
+>
+> 这个库确实处于维护状态，看起来开发频率并不高是因为作为一个简单的工具，它确实没有太多可以继续开发的地方，如果在使用过程中遇到问题，请随时在 issue 中提出，我们会尽快响应。
+
 Controlled TCP-over-WebSocket forwarding tunnel.
 
 [Crate Homepage](https://crates.io/crates/wsrx) | [Crate Docs](https://docs.rs/crate/wsrx/latest)
