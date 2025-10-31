@@ -71,17 +71,17 @@ msgstr "外部控制"
 #: crates/desktop/ui/pages/connections.slint:90
 msgctxt "ConnectionsPage"
 msgid "This scope is controlled by you manually."
-msgstr "此连接池由你手动控制。"
+msgstr "这个连接池由你手动控制。"
 
 #: crates/desktop/ui/pages/connections.slint:90
 msgctxt "ConnectionsPage"
 msgid "This domain can control wsrx on your local network."
-msgstr "此域名可以控制你本地网络上的 wsrx。"
+msgstr "这个域名可以控制你本地网络上的 wsrx。"
 
 #: crates/desktop/ui/pages/connections.slint:90
 msgctxt "ConnectionsPage"
 msgid "This domain requested controlling wsrx."
-msgstr "此域名请求控制 wsrx。"
+msgstr "这个域名请求控制 wsrx。"
 
 #: crates/desktop/ui/pages/connections.slint:99
 msgctxt "ConnectionsPage"

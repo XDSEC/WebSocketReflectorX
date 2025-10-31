@@ -21,7 +21,10 @@ use wsrx::utils::create_tcp_listener;
 use super::latency_worker::update_instance_latency;
 use crate::{
     bridges::ui_state::sync_scoped_instance,
-    daemon::model::{FeatureFlags, InstanceData, ProxyInstance, ScopeData, ServerState},
+    daemon::{
+        latency_worker::update_instance_state,
+        model::{FeatureFlags, InstanceData, ProxyInstance, ScopeData, ServerState},
+    },
     ui::{Instance, InstanceBridge, Scope, ScopeBridge},
 };
 
@@ -199,9 +202,10 @@ async fn launch_instance(
 
     tokio::spawn(async move {
         let client = reqwest::Client::new();
-        update_instance_latency(state_clone, instance, &client)
-            .await
-            .ok();
+        match update_instance_latency(&instance, &client).await {
+            Ok(elapsed) => update_instance_state(state_clone, &instance, elapsed).await,
+            Err(_) => update_instance_state(state_clone, &instance, -1).await,
+        };
     });
 
     match slint::invoke_from_event_loop(move || {

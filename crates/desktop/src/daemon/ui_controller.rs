@@ -7,6 +7,7 @@ use crate::{
     bridges::ui_state::sync_scoped_instance,
     daemon::{
         default_label,
+        latency_worker::update_instance_state,
         model::{ProxyInstance, ServerState},
     },
     ui::{Instance, InstanceBridge, MainWindow, Scope, ScopeBridge},
@@ -44,9 +45,10 @@ pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
 
     tokio::spawn(async move {
         let client = reqwest::Client::new();
-        update_instance_latency(state_clone, instance_data, &client)
-            .await
-            .ok();
+        match update_instance_latency(&instance_data, &client).await {
+            Ok(elapsed) => update_instance_state(state_clone, &instance_data, elapsed).await,
+            Err(_) => update_instance_state(state_clone, &instance_data, -1).await,
+        };
     });
 
     let label = instance.label.clone();

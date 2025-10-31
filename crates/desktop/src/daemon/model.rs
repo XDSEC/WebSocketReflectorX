@@ -30,7 +30,7 @@ pub struct ScopeData {
     pub state: String,
     pub features: FeatureFlags,
     #[serde(default)]
-    pub settings: HashMap<FeatureFlags, Value>,
+    pub settings: HashMap<String, Value>,
 }
 
 #[derive(Clone)]
