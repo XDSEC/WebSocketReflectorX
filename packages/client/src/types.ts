@@ -17,7 +17,7 @@ type FeatureSettings = {
     /**
      * The status code that should drop the connection when pingfall is detected
      */
-    status: [number];
+    status: number[];
     /**
      * Whether to drop connection when unknown network error is detected
      */
