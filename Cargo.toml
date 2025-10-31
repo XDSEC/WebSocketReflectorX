@@ -9,7 +9,7 @@ homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
 rust-version = "1.89.0"
-version      = "0.5.12"
+version      = "0.5.13"
 
 [profile.release]
 codegen-units = 1
