@@ -9,6 +9,23 @@ export enum WsrxFeature {
   Pingfall = "pingfall",
 }
 
+type FeatureSettings = {
+  [K in WsrxFeature]: K extends WsrxFeature.Basic
+  ? {}
+  : K extends WsrxFeature.Pingfall
+  ? {
+    /**
+     * The status code that should drop the connection when pingfall is detected
+     */
+    status: [number];
+    /**
+     * Whether to drop connection when unknown network error is detected
+     */
+    drop_unknown: boolean;
+  }
+  : never;
+};
+
 export interface WsrxOptions {
   /**
    * Website name for local scope
@@ -22,6 +39,10 @@ export interface WsrxOptions {
    * Enabled features
    */
   features: WsrxFeature[];
+  /**
+   * Feature settings
+   */
+  settings?: Partial<FeatureSettings>;
 }
 
 export interface WsrxInstance {

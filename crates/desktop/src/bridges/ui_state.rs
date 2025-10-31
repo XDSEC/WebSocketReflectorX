@@ -15,6 +15,7 @@ pub fn setup(window: &MainWindow) {
             name: "localhost".into(),
             state: "pending".into(),
             features: "".into(),
+            settings: "{}".into(),
         });
 
         let window_weak = window_weak.clone();

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use i_slint_backend_winit::{WinitWindowAccessor, WinitWindowEventResult};
+use i_slint_backend_winit::{EventResult, WinitWindowAccessor};
 use slint::ComponentHandle;
 use winit::window::ResizeDirection;
 
@@ -33,13 +33,13 @@ pub fn setup(window: &MainWindow) {
                 if window.get_main_window_minimized() != w.is_minimized() {
                     window.set_main_window_minimized(w.is_minimized());
                 }
-                WinitWindowEventResult::Propagate
+                EventResult::Propagate
             }
             winit::event::WindowEvent::CloseRequested => {
                 launcher::shutdown(&window_weak);
-                WinitWindowEventResult::PreventDefault
+                EventResult::PreventDefault
             }
-            _ => WinitWindowEventResult::Propagate,
+            _ => EventResult::Propagate,
         }
     });
 

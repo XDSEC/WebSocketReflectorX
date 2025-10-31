@@ -44,7 +44,9 @@ pub async fn on_instance_add(state: &ServerState, remote: &str, local: &str) {
 
     tokio::spawn(async move {
         let client = reqwest::Client::new();
-        update_instance_latency(state_clone, instance_data, &client).await;
+        update_instance_latency(state_clone, instance_data, &client)
+            .await
+            .ok();
     });
 
     let label = instance.label.clone();
@@ -120,11 +122,13 @@ pub async fn on_scope_allow(state: &ServerState, ui: slint::Weak<MainWindow>, sc
     let mut scopes = state.scopes.write().await;
     let scope_name;
     let scope_features;
+    let scope_settings;
 
     if let Some(scope) = scopes.iter_mut().find(|s| s.host == scope_host) {
         scope.state = "allowed".to_string();
         scope_name = scope.name.clone();
         scope_features = scope.features;
+        scope_settings = scope.settings.clone();
     } else {
         return;
     }
@@ -151,6 +155,9 @@ pub async fn on_scope_allow(state: &ServerState, ui: slint::Weak<MainWindow>, sc
                     name: scope_name.into(),
                     state: "allowed".into(),
                     features: scope_features.to_shared_string(),
+                    settings: serde_json::to_string(&scope_settings)
+                        .unwrap_or("{}".to_string())
+                        .into(),
                 },
             );
         }

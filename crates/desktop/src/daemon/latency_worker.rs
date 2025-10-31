@@ -1,6 +1,7 @@
 use reqwest::Method;
 use slint::{ComponentHandle, Model, VecModel};
-use tracing::debug;
+use thiserror::Error;
+use tracing::{debug, warn};
 
 use super::{
     model::{FeatureFlags, InstanceData, ServerState},
@@ -25,11 +26,10 @@ pub async fn start(state: ServerState) {
             let client = client.clone();
             let state = state.clone();
             tokio::spawn(async move {
-                if update_instance_latency(state.clone(), instance.clone(), &client)
-                    .await
-                    .is_none()
-                {
-                    pingfall(state, instance).await;
+                let result =
+                    update_instance_latency(state.clone(), instance.clone(), &client).await;
+                if let Err(e) = result {
+                    pingfall(state.clone(), instance.clone(), e).await;
                 }
             });
         }
@@ -40,25 +40,32 @@ pub async fn start(state: ServerState) {
     }
 }
 
+#[derive(Debug, Error)]
+pub enum LatencyError {
+    #[error("Request error: {0}")]
+    Rewqest(#[from] reqwest::Error),
+    #[error("Non-success status code")]
+    NonSuccessStatus(u16),
+}
+
 pub async fn update_instance_latency(
     state: ServerState, instance: InstanceData, client: &reqwest::Client,
-) -> Option<i32> {
+) -> Result<i32, LatencyError> {
     let req = client
         .request(Method::OPTIONS, instance.remote.replace("ws", "http"))
         .header("User-Agent", format!("wsrx/{}", env!("CARGO_PKG_VERSION")))
-        .build()
-        .ok()?;
+        .build()?;
 
     let start_time = std::time::Instant::now();
 
-    let resp = client.execute(req).await.ok()?;
+    let resp = client.execute(req).await?;
 
     let elapsed = if resp.status().is_success() {
         // always > 0
         start_time.elapsed().as_millis() as i32 / 2
     } else {
         debug!("Failed to ping instance: {}", resp.status());
-        return None;
+        return Err(LatencyError::NonSuccessStatus(resp.status().as_u16()));
     };
 
     for proxy_instance in state.instances.write().await.iter_mut() {
@@ -98,10 +105,10 @@ pub async fn update_instance_latency(
         break;
     }
 
-    Some(elapsed)
+    Ok(elapsed)
 }
 
-async fn pingfall(state: ServerState, instance: InstanceData) {
+async fn pingfall(state: ServerState, instance: InstanceData, err: LatencyError) {
     let scopes = state.scopes.read().await;
 
     let scope = scopes
@@ -111,6 +118,33 @@ async fn pingfall(state: ServerState, instance: InstanceData) {
     if let Some(scope) = scope
         && scope.features.contains(FeatureFlags::PingFall)
     {
-        on_instance_del(&state, &instance.local).await;
+        let settings = scope.settings.get(&FeatureFlags::PingFall);
+        if let Some(settings) = settings {
+            let pingfall_settings: super::model::PingFallSettings =
+                serde_json::from_value(settings.to_owned()).unwrap_or_default();
+
+            match err {
+                LatencyError::NonSuccessStatus(code) => {
+                    if pingfall_settings.fail_status.contains(&code)
+                        || pingfall_settings.fail_status.is_empty()
+                    {
+                        warn!(
+                            "PingFall triggered for instance {} due to status code {}",
+                            instance.local, code
+                        );
+                        on_instance_del(&state, &instance.local).await;
+                    }
+                }
+                LatencyError::Rewqest(_) => {
+                    if pingfall_settings.drop_unknown {
+                        warn!(
+                            "PingFall triggered for instance {} due to request error",
+                            instance.local
+                        );
+                        on_instance_del(&state, &instance.local).await;
+                    }
+                }
+            }
+        }
     }
 }

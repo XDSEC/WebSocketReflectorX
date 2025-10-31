@@ -199,7 +199,9 @@ async fn launch_instance(
 
     tokio::spawn(async move {
         let client = reqwest::Client::new();
-        update_instance_latency(state_clone, instance, &client).await;
+        update_instance_latency(state_clone, instance, &client)
+            .await
+            .ok();
     });
 
     match slint::invoke_from_event_loop(move || {
@@ -335,10 +337,16 @@ async fn request_control(
     let json_body = axum::Json::<ScopeData>::from_request(req, &state)
         .await
         .ok();
-    let (scope_name, scope_features) = if let Some(json_body) = json_body {
-        (json_body.name.clone(), json_body.features)
+    let (scope_name, scope_features, scope_settings) = if let Some(Json(ScopeData {
+        name,
+        features,
+        settings,
+        ..
+    })) = json_body
+    {
+        (name, features, settings)
     } else {
-        (req_scope.clone(), FeatureFlags::Basic)
+        (req_scope.clone(), FeatureFlags::Basic, Default::default())
     };
 
     let mut scopes = state.scopes.write().await;
@@ -355,6 +363,7 @@ async fn request_control(
         host: req_scope.clone(),
         state: "pending".to_string(),
         features: scope_features,
+        settings: scope_settings.clone(),
     };
     scopes.push(scope);
 
@@ -371,6 +380,9 @@ async fn request_control(
             name: scope_name.into(),
             state: "pending".into(),
             features: scope_features.to_shared_string(),
+            settings: serde_json::to_string(&scope_settings)
+                .unwrap_or("{}".to_string())
+                .into(),
         };
         scopes.push(scope);
     }) {
@@ -420,6 +432,9 @@ async fn update_website_info(
                 name: scope_data.name.clone().into(),
                 state: state_d.into(),
                 features: scope_data.features.to_shared_string(),
+                settings: serde_json::to_string(&scope_data.settings)
+                    .unwrap_or("{}".to_string())
+                    .into(),
             };
             scopes.set_row_data(index, scope);
         }) {

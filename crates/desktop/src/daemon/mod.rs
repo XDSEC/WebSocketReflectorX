@@ -78,6 +78,9 @@ pub fn setup(ui: &MainWindow) {
             name: scope.name.clone().into(),
             state: scope.state.clone().into(),
             features: scope.features.to_shared_string(),
+            settings: serde_json::to_string(&scope.settings)
+                .unwrap_or("{}".to_string())
+                .into(),
         });
     }
     let scoped_instances: Rc<VecModel<Instance>> = Rc::new(VecModel::default());
@@ -241,6 +244,7 @@ pub fn save_scopes(ui: &slint::Weak<MainWindow>) {
                 .split(",")
                 .map(|s| s.trim().to_string())
                 .into(),
+            settings: serde_json::from_str(scope.settings.to_string().as_str()).unwrap_or_default(),
         });
     }
     let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {

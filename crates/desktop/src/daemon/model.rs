@@ -1,7 +1,8 @@
-use std::{fmt::Display, sync::Arc};
+use std::{collections::HashMap, fmt::Display, sync::Arc};
 
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use tokio::{net::TcpListener, sync::RwLock};
 use wsrx::tunnel::Tunnel;
 
@@ -28,6 +29,8 @@ pub struct ScopeData {
     pub name: String,
     pub state: String,
     pub features: FeatureFlags,
+    #[serde(default)]
+    pub settings: HashMap<FeatureFlags, Value>,
 }
 
 #[derive(Clone)]
@@ -44,6 +47,16 @@ bitflags! {
         const Basic    = 0b00000001;
         const PingFall = 0b00000010;
     }
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BasicSettings {}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PingFallSettings {
+    pub fail_status: Vec<u16>,
+    pub drop_unknown: bool,
 }
 
 const FEATURE_MAP: &[(&str, FeatureFlags)] = &[

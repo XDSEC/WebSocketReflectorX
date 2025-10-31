@@ -56,8 +56,8 @@ export component Button inherits Rectangle {
             source: root.icon;
             colorize: root.colored ? Colors.transparent : root.icon-color;
             vertical-alignment: center;
-            rotation-angle: root.icon-rotate-angle;
-            animate rotation-angle {
+            transform-rotation: root.icon-rotate-angle;
+            animate transform-rotation {
                 duration: Styles.durations.mid;
                 easing: ease-out;
             }

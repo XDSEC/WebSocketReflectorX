@@ -14,7 +14,7 @@ msgstr ""
 #: crates/desktop/ui/blocks/side-bar.slint:82
 msgctxt "SideBar"
 msgid "Get Started"
-msgstr "由此开始"
+msgstr "开始"
 
 #: crates/desktop/ui/blocks/side-bar.slint:95
 msgctxt "SideBar"

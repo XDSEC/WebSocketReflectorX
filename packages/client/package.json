@@ -1,6 +1,6 @@
 {
   "name": "@xdsec/wsrx",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "Client for WebSocket Reflector X",
   "license": "MIT",
   "repository": "XDSEC/WebSocketReflectorX",
