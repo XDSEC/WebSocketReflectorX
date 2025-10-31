@@ -152,6 +152,7 @@ class Wsrx {
           json: {
             name: this.options.name,
             features: this.options.features,
+            settings: this.options.settings,
             host: "IN_HEADER",
             state: "pending",
           },
