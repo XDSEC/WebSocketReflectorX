@@ -55,7 +55,7 @@ pub struct BasicSettings {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PingFallSettings {
-    pub fail_status: Vec<u16>,
+    pub status: Vec<u16>,
     pub drop_unknown: bool,
 }
 

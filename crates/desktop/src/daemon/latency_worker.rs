@@ -136,8 +136,8 @@ async fn pingfall(state: ServerState, instance: InstanceData, err: LatencyError)
 
             match err {
                 LatencyError::NonSuccessStatus(code) => {
-                    if pingfall_settings.fail_status.contains(&code)
-                        || pingfall_settings.fail_status.is_empty()
+                    if pingfall_settings.status.contains(&code)
+                        || pingfall_settings.status.is_empty()
                     {
                         on_instance_del(&state, &instance.local).await;
                     }
