@@ -1,5 +1,5 @@
 // Root view - Main application window
-use gpui::{Context, Render, Window, div, prelude::*, Entity};
+use gpui::{Context, Render, Window, div, prelude::*, Entity, SharedString, WeakEntity};
 use crate::models::Page;
 use crate::styles::colors;
 use super::{SidebarView, GetStartedView, ConnectionsView, NetworkLogsView, SettingsView};
@@ -22,18 +22,38 @@ impl RootView {
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         let current_page = Page::GetStarted;
         
-        Self {
+        let mut root = Self {
             current_page,
             sidebar: cx.new(|cx| SidebarView::new(window, cx, current_page)),
             get_started: cx.new(|cx| GetStartedView::new(window, cx)),
             connections: cx.new(|cx| ConnectionsView::new(window, cx)),
             network_logs: cx.new(|cx| NetworkLogsView::new(window, cx)),
             settings: cx.new(|cx| SettingsView::new(window, cx)),
-        }
+        };
+        
+        // Set up the navigation callback for sidebar
+        let weak_self = cx.weak_entity();
+        root.sidebar.update(cx, |sidebar, _| {
+            sidebar.set_on_page_change(Box::new(move |page, cx| {
+                if let Some(root) = weak_self.upgrade() {
+                    root.update(cx, |root, cx| {
+                        root.set_page(page, cx);
+                    });
+                }
+            }));
+        });
+        
+        root
     }
     
-    pub fn set_page(&mut self, page: Page, _cx: &mut Context<Self>) {
+    pub fn set_page(&mut self, page: Page, cx: &mut Context<Self>) {
         self.current_page = page;
+        // Update sidebar to reflect the new active page
+        self.sidebar.update(cx, |sidebar, cx| {
+            sidebar.set_active_page(page);
+            cx.notify();
+        });
+        cx.notify(); // Trigger re-render
     }
     
     fn render_sidebar(&self) -> impl IntoElement {
