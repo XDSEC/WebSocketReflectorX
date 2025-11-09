@@ -1,7 +1,7 @@
 // Connections view - Manage tunnels and connections
 use gpui::{Context, Render, Window, div, prelude::*, SharedString, AnyElement};
 use crate::styles::colors;
-use crate::models::{Tunnel, ConnectionStatus};
+use crate::models::Tunnel;
 
 pub struct ConnectionsView {
     tunnels: Vec<Tunnel>,

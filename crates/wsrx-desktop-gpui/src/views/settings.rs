@@ -1,5 +1,5 @@
 // Settings view - Application configuration
-use gpui::{Context, Render, Window, div, prelude::*, SharedString};
+use gpui::{Context, Render, Window, div, prelude::*};
 use crate::styles::colors;
 use crate::models::{Settings, Theme};
 

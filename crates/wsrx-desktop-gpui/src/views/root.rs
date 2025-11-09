@@ -1,5 +1,5 @@
 // Root view - Main application window
-use gpui::{Context, Render, Window, div, prelude::*, Entity, SharedString, WeakEntity};
+use gpui::{Context, Render, Window, div, prelude::*, Entity, WeakEntity};
 use crate::models::Page;
 use crate::styles::colors;
 use super::{SidebarView, GetStartedView, ConnectionsView, NetworkLogsView, SettingsView};
