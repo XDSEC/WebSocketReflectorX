@@ -48,11 +48,6 @@ impl RootView {
     
     pub fn set_page(&mut self, page: Page, cx: &mut Context<Self>) {
         self.current_page = page;
-        // Update sidebar to reflect the new active page
-        self.sidebar.update(cx, |sidebar, cx| {
-            sidebar.set_active_page(page);
-            cx.notify();
-        });
         cx.notify(); // Trigger re-render
     }
     

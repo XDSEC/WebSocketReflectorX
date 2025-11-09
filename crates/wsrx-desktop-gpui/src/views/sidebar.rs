@@ -45,6 +45,9 @@ impl SidebarView {
                 div.hover(|div| div.bg(gpui::rgba(0x00000030)))
             })
             .on_click(cx.listener(move |this, _event, _window, cx| {
+                // Update our own state first
+                this.active_page = page;
+                // Then notify parent
                 if let Some(ref callback) = this.on_page_change {
                     callback(page, cx);
                 }
