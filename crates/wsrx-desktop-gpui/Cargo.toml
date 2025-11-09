@@ -1,0 +1,85 @@
+[package]
+authors.workspace      = true
+description            = "WebSocket Reflector X - GPUI-based Desktop Application"
+documentation          = "https://docs.rs/wsrx-desktop-gpui"
+edition.workspace      = true
+homepage.workspace     = true
+license.workspace      = true
+name                   = "wsrx-desktop-gpui"
+readme                 = "../../README.md"
+repository.workspace   = true
+rust-version.workspace = true
+version.workspace      = true
+
+[dependencies]
+# Core GPUI framework
+gpui = "0.2"
+
+# Internal dependencies
+wsrx = { path = "../wsrx", features = ["server", "client", "log"] }
+
+# Platform and system utilities
+directories      = { workspace = true }
+local-ip-address = { workspace = true }
+open             = "5.3"
+sys-locale       = { workspace = true }
+sysinfo          = { workspace = true }
+
+# Async and concurrency
+async-compat = { workspace = true }
+bitflags     = { workspace = true }
+futures-util = { workspace = true }
+once_cell    = { workspace = true }
+rand         = { workspace = true }
+tokio        = { workspace = true }
+tokio-util   = { workspace = true }
+
+# Logging and tracing
+tracing            = { workspace = true }
+tracing-appender   = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Serialization
+serde      = { workspace = true }
+serde_json = { workspace = true }
+toml       = { workspace = true }
+
+# Error handling and utilities
+anyhow    = "1.0"
+chrono    = { workspace = true }
+thiserror = { workspace = true }
+url       = { workspace = true }
+
+# Network
+axum              = { workspace = true }
+reqwest           = { workspace = true }
+rustls            = { workspace = true }
+tokio-tungstenite = { workspace = true }
+tower-http        = { workspace = true }
+
+[dev-dependencies]
+# No special dev dependencies needed yet
+
+[build-dependencies]
+build-target  = { workspace = true }
+git-version   = { workspace = true }
+rustc_version = { workspace = true }
+winres        = { workspace = true }
+
+[[bin]]
+name = "wsrx-desktop-gpui"
+path = "src/main.rs"
+
+[package.metadata.bundle]
+name = "WebSocketReflectorX"
+
+category          = "Utilities"
+copyright         = "Copyright (c) XDSEC"
+identifier        = "org.xdsec.wsrx-desktop-gpui"
+short_description = "Controlled TCP-over-WebSocket forwarding tunnel (GPUI Edition)"
+
+icon = [
+  "../../arts/logo.png",
+  "../../macos/WebSocketReflectorX.icns",
+  "../../windows/WebSocketReflectorX.ico",
+]
