@@ -32,54 +32,54 @@ pub mod colors {
 
 /// Typography settings
 pub mod typography {
-    use gpui::Pixels;
+    use gpui::{Pixels, px};
 
     pub fn font_size_xs() -> Pixels {
-        Pixels(11.0)
+        px(11.0)
     }
 
     pub fn font_size_sm() -> Pixels {
-        Pixels(12.0)
+        px(12.0)
     }
 
     pub fn font_size_base() -> Pixels {
-        Pixels(14.0)
+        px(14.0)
     }
 
     pub fn font_size_lg() -> Pixels {
-        Pixels(16.0)
+        px(16.0)
     }
 
     pub fn font_size_xl() -> Pixels {
-        Pixels(20.0)
+        px(20.0)
     }
 }
 
 /// Spacing constants
 pub mod spacing {
-    use gpui::Pixels;
+    use gpui::{Pixels, px};
 
     pub fn xs() -> Pixels {
-        Pixels(2.0)
+        px(2.0)
     }
 
     pub fn sm() -> Pixels {
-        Pixels(4.0)
+        px(4.0)
     }
 
     pub fn base() -> Pixels {
-        Pixels(8.0)
+        px(8.0)
     }
 
     pub fn md() -> Pixels {
-        Pixels(12.0)
+        px(12.0)
     }
 
     pub fn lg() -> Pixels {
-        Pixels(16.0)
+        px(16.0)
     }
 
     pub fn xl() -> Pixels {
-        Pixels(24.0)
+        px(24.0)
     }
 }
