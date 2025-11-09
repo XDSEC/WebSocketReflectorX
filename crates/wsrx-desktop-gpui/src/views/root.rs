@@ -22,7 +22,7 @@ impl RootView {
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         let current_page = Page::GetStarted;
         
-        let mut root = Self {
+        let root = Self {
             current_page,
             sidebar: cx.new(|cx| SidebarView::new(window, cx, current_page)),
             get_started: cx.new(|cx| GetStartedView::new(window, cx)),

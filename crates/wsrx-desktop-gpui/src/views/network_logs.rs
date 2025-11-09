@@ -1,36 +1,166 @@
 // Network Logs view - Display real-time logs
-use gpui::{Context, Render, Window, div, prelude::*};
+use gpui::{Context, Render, Window, div, prelude::*, SharedString};
 use crate::styles::colors;
+use crate::models::{LogEntry, LogLevel};
+use std::collections::VecDeque;
 
 pub struct NetworkLogsView {
+    logs: VecDeque<LogEntry>,
 }
 
 impl NetworkLogsView {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
-        Self {}
+        Self {
+            logs: VecDeque::new(),
+        }
+    }
+    
+    fn log_level_color(&self, level: LogLevel) -> gpui::Rgba {
+        match level {
+            LogLevel::Debug => gpui::rgba(0x888888ff),
+            LogLevel::Info => colors::foreground(),
+            LogLevel::Warn => colors::warning(),
+            LogLevel::Error => colors::error(),
+        }
+    }
+    
+    fn log_level_text(&self, level: LogLevel) -> &'static str {
+        match level {
+            LogLevel::Debug => "DEBUG",
+            LogLevel::Info => "INFO",
+            LogLevel::Warn => "WARN",
+            LogLevel::Error => "ERROR",
+        }
+    }
+    
+    fn render_log_entry(&self, entry: &LogEntry, index: usize) -> impl IntoElement {
+        let id = SharedString::from(format!("log-entry-{}", index));
+        let level_color = self.log_level_color(entry.level);
+        let level_text = self.log_level_text(entry.level);
+        
+        div()
+            .id(id)
+            .flex()
+            .items_start()
+            .gap_3()
+            .px_4()
+            .py_2()
+            .border_b_1()
+            .border_color(gpui::rgba(0x2a2a2aff))
+            .hover(|div| div.bg(gpui::rgba(0x00000020)))
+            .child(
+                div()
+                    .flex()
+                    .items_center()
+                    .gap_2()
+                    .min_w_32()
+                    .child(
+                        div()
+                            .text_sm()
+                            .text_color(gpui::rgba(0xaaaaaaff))
+                            .child(entry.timestamp.clone())
+                    )
+            )
+            .child(
+                div()
+                    .text_sm()
+                    .text_color(level_color)
+                    .min_w_16()
+                    .child(level_text)
+            )
+            .child(
+                div()
+                    .text_sm()
+                    .text_color(gpui::rgba(0x888888ff))
+                    .min_w_32()
+                    .child(entry.target.clone())
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .text_sm()
+                    .text_color(colors::foreground())
+                    .child(entry.message.clone())
+            )
+    }
+    
+    fn render_empty_state(&self) -> impl IntoElement {
+        div()
+            .flex()
+            .flex_col()
+            .items_center()
+            .justify_center()
+            .flex_1()
+            .gap_4()
+            .child(
+                div()
+                    .text_xl()
+                    .text_color(gpui::rgba(0xaaaaaaff))
+                    .child("No logs yet")
+            )
+            .child(
+                div()
+                    .text_color(gpui::rgba(0x888888ff))
+                    .child("Logs will appear here when connections are active")
+            )
     }
 }
 
 impl Render for NetworkLogsView {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
             .flex_col()
             .w_full()
             .h_full()
-            .p_4()
             .child(
                 div()
-                    .text_xl()
-                    .text_color(colors::foreground())
-                    .mb_4()
-                    .child("Network Logs")
+                    .flex()
+                    .items_center()
+                    .justify_between()
+                    .px_4()
+                    .py_3()
+                    .border_b_1()
+                    .border_color(gpui::rgba(0x2a2a2aff))
+                    .child(
+                        div()
+                            .text_xl()
+                            .text_color(colors::foreground())
+                            .child("Network Logs")
+                    )
+                    .child(
+                        div()
+                            .flex()
+                            .gap_2()
+                            .child(
+                                div()
+                                    .id("clear-logs-button")
+                                    .px_3()
+                                    .py_1()
+                                    .text_sm()
+                                    .bg(gpui::rgba(0x444444ff))
+                                    .rounded_md()
+                                    .cursor_pointer()
+                                    .hover(|div| div.bg(gpui::rgba(0x555555ff)))
+                                    .on_click(cx.listener(|this, _event, _window, cx| {
+                                        this.logs.clear();
+                                        cx.notify();
+                                    }))
+                                    .child("Clear")
+                            )
+                    )
             )
-            .child(
+            .child(if self.logs.is_empty() {
+                self.render_empty_state().into_any_element()
+            } else {
+                let elements: Vec<_> = self.logs.iter().enumerate()
+                    .map(|(i, log)| self.render_log_entry(log, i))
+                    .collect();
                 div()
-                    .text_color(colors::foreground())
-                    .child("No logs yet")
-            )
+                    .flex()
+                    .flex_col()
+                    .children(elements).into_any_element()
+            })
     }
 }
 
