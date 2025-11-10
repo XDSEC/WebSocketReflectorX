@@ -2,7 +2,8 @@
 
 use anyhow::Result;
 use gpui::{
-    App, AppContext, Application, Bounds, TitlebarOptions, WindowBounds, WindowOptions, px, size,
+    App, AppContext, Application, Bounds, TitlebarOptions, WindowBounds, WindowDecorations,
+    WindowKind, WindowOptions, point, px, size,
 };
 
 mod bridges;
@@ -38,23 +39,27 @@ fn main() -> Result<()> {
         // Create main window with centered bounds
         let bounds = Bounds::centered(None, size(px(1200.0), px(800.0)), cx);
 
-        // Platform-specific titlebar configuration
-        #[cfg(target_os = "macos")]
+        // Platform-specific window configuration (following Zed's pattern)
         let titlebar_config = Some(TitlebarOptions {
-            title: Some("WebSocket Reflector X".into()),
+            title: None, // Custom titlebar will show title
             appears_transparent: true,
-            traffic_light_position: Some(gpui::point(px(16.0), px(18.0))),
+            traffic_light_position: Some(point(px(9.0), px(9.0))),
             ..Default::default()
         });
-
-        #[cfg(not(target_os = "macos"))]
-        let titlebar_config = None;
 
         cx.open_window(
             WindowOptions {
                 window_bounds: Some(WindowBounds::Windowed(bounds)),
                 titlebar: titlebar_config,
+                window_decorations: Some(WindowDecorations::Client), // Client-side decorations
+                kind: WindowKind::Normal,
+                is_movable: true,
                 focus: true,
+                show: true,
+                window_min_size: Some(gpui::Size {
+                    width: px(800.0),
+                    height: px(600.0),
+                }),
                 ..Default::default()
             },
             |window, cx| cx.new(|cx| RootView::new(window, cx)),
