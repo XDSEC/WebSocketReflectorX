@@ -1,5 +1,7 @@
 // Events - Application event definitions for inter-component communication
 
+#![allow(dead_code)] // Events defined for future use
+
 use super::{Connection, LogEntry, Tunnel};
 
 /// Events that can occur in the application

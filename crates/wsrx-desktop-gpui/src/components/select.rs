@@ -99,7 +99,6 @@ where
             .unwrap_or_else(|| self.placeholder.clone());
 
         let disabled = self.disabled;
-        let options = self.options.clone();
 
         div()
             .id(self.id.clone())

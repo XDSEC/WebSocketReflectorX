@@ -1,6 +1,8 @@
 // Component traits - Common interfaces for UI components
 // Following Zed's pattern for reusable component behavior
 
+#![allow(dead_code)] // Traits defined for future use
+
 use gpui::{Context, Window};
 
 /// Trait for components that can be clicked

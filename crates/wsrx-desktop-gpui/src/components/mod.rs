@@ -1,6 +1,8 @@
 // Components - Reusable UI elements built with GPUI
 // These are lower-level components used across different views
 
+#![allow(dead_code)] // Components defined for future use
+
 pub mod button;
 pub mod checkbox;
 pub mod icon_button;

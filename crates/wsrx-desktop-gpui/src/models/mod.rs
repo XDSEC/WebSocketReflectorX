@@ -1,6 +1,8 @@
 // Models - Data structures for the application
 // This module contains all the data models used throughout the application
 
+#![allow(dead_code)] // Models defined for future use
+
 use std::net::SocketAddr;
 
 use serde::{Deserialize, Serialize};

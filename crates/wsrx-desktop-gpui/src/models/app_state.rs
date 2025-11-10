@@ -1,4 +1,7 @@
 // Application State - Global application state management
+
+#![allow(dead_code)] // State methods defined for future use
+
 use std::collections::VecDeque;
 
 use super::{Connection, LogEntry, Settings, Tunnel};

@@ -25,6 +25,7 @@ impl SidebarView {
         self.on_page_change = Some(callback);
     }
 
+    #[allow(dead_code)] // Intended for future use
     pub fn set_active_page(&mut self, page: Page) {
         self.active_page = page;
     }

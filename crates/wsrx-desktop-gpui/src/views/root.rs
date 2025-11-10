@@ -1,13 +1,10 @@
 // Root view - Main application window
-use gpui::{AnyWindowHandle, Context, Entity, Render, Window, div, prelude::*};
+use gpui::{Context, Entity, Render, Window, div, prelude::*};
 
 use super::{ConnectionsView, GetStartedView, NetworkLogsView, SettingsView, SidebarView};
 use crate::{components::title_bar::TitleBar, models::app_state::Page, styles::colors};
 
 pub struct RootView {
-    /// Window handle
-    window: AnyWindowHandle,
-
     /// Current active page
     current_page: Page,
 
@@ -33,7 +30,6 @@ impl RootView {
         let window_handle = window.window_handle();
 
         let root = Self {
-            window: window_handle.clone(),
             current_page,
             show_sidebar: true,
             title_bar: cx.new(|_cx| TitleBar::new(window_handle.clone())),
