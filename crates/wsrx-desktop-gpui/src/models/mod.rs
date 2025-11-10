@@ -1,8 +1,12 @@
 // Models - Data structures for the application
 // This module contains all the data models used throughout the application
 
-use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
+
+use serde::{Deserialize, Serialize};
+
+pub mod app_state;
+pub mod events;
 
 /// Represents a WebSocket tunnel configuration
 #[derive(Clone, Debug, Serialize, Deserialize)]

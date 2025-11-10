@@ -1,0 +1,133 @@
+---
+#-------------------------------------------------------------------------------
+# Workflow configuration for GPUI desktop app
+#-------------------------------------------------------------------------------
+
+name: "GPUI Desktop Build"
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/build-gpui.yaml"
+      - "Cargo.toml"
+      - "crates/wsrx-desktop-gpui/**"
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+#-------------------------------------------------------------------------------
+# Workflow jobs
+#-------------------------------------------------------------------------------
+
+jobs:
+  build-linux:
+    name: "Build GPUI Desktop on Linux"
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      
+      # Get version
+      - name: Get git version
+        id: git_tag_version
+        run: |
+          export BUILD_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0-dev")
+          echo "Build at version $BUILD_VERSION"
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
+      
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb1-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev
+      
+      # Build application
+      - name: Build GPUI desktop application
+        run: |
+          rustup update stable && rustup default stable
+          cargo build --release -p wsrx-desktop-gpui
+      
+      # Upload package
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-x64
+          path: target/release/wsrx-desktop-gpui
+          compression-level: 6
+
+  build-windows:
+    name: "Build GPUI Desktop on Windows"
+    runs-on: windows-2022
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      
+      # Get version
+      - name: Get git version
+        id: git_tag_version
+        run: |
+          echo BUILD_VERSION=$(git describe --tags --abbrev=0 2>$null) | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          if ($LASTEXITCODE -ne 0) {
+            echo "BUILD_VERSION=v0.0.0-dev" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          }
+      
+      - name: Install NASM for aws-lc-rs
+        uses: ilammy/setup-nasm@v1
+      
+      - name: Install ninja-build
+        uses: seanmiddleditch/gha-setup-ninja@v5
+      
+      # Build application
+      - name: Build GPUI desktop application
+        run: |
+          rustup update stable && rustup default stable
+          cargo build --release -p wsrx-desktop-gpui
+      
+      # Upload package
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-x64
+          path: target/release/wsrx-desktop-gpui.exe
+          compression-level: 6
+
+  build-mac:
+    name: "Build GPUI Desktop on MacOS"
+    runs-on: macos-latest
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      
+      # Get version
+      - name: Get git version
+        id: git_tag_version
+        run: |
+          export BUILD_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0-dev")
+          echo "Build at version $BUILD_VERSION"
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
+      
+      # Build for ARM64
+      - name: Build GPUI desktop for ARM64
+        run: |
+          rustup update stable && rustup default stable
+          cargo build --release -p wsrx-desktop-gpui
+      
+      # Upload ARM64 package
+      - name: Upload ARM64 package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-arm64
+          path: target/release/wsrx-desktop-gpui
+          compression-level: 6
