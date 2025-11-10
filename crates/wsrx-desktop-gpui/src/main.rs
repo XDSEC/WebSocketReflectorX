@@ -11,6 +11,17 @@ mod models;
 mod styles;
 mod views;
 
+// Initialize i18n at crate root with TOML locale files
+// The path is relative to CARGO_MANIFEST_DIR (crate root)
+
+#[macro_use]
+extern crate rust_i18n;
+
+i18n!("locales", fallback = "en");
+
+// Include generated constants from build.rs
+include!(concat!(env!("OUT_DIR"), "/constants.rs"));
+
 use views::RootView;
 
 fn main() -> Result<()> {

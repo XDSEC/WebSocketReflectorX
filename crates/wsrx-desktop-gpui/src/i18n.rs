@@ -12,7 +12,7 @@ pub fn set_language(locale_str: &str) {
 }
 
 /// Get current language
-pub fn current_language() -> impl Deref<Target = str> {
+pub fn current_language() -> impl std::ops::Deref<Target = str> {
     locale()
 }
 

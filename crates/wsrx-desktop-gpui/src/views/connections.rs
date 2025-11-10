@@ -1,5 +1,5 @@
 // Connections view - Manage tunnels and connections
-use gpui::{AnyElement, Context, Render, SharedString, Window, div, prelude::*};
+use gpui::{Context, Render, SharedString, Window, div, prelude::*};
 
 use crate::{models::Tunnel, styles::colors};
 

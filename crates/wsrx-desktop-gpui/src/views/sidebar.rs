@@ -84,7 +84,7 @@ impl SidebarView {
                     } else {
                         gpui::FontWeight::NORMAL
                     })
-                    .child(*label_text),
+                    .child(label_text.to_string()),
             )
     }
 }
