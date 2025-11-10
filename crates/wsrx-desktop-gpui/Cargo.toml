@@ -50,6 +50,9 @@ chrono    = { workspace = true }
 thiserror = { workspace = true }
 url       = { workspace = true }
 
+# Internationalization
+rust-i18n = "3"
+
 # Network
 axum              = { workspace = true }
 reqwest           = { workspace = true }
@@ -65,6 +68,7 @@ build-target  = { workspace = true }
 git-version   = { workspace = true }
 rustc_version = { workspace = true }
 winres        = { workspace = true }
+rust-i18n     = "3"
 
 [[bin]]
 name = "wsrx-desktop-gpui"

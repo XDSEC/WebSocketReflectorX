@@ -1,0 +1,24 @@
+# Chinese Simplified translations
+get_started = "开始"
+network_logs = "网络日志"
+connections = "连接"
+settings = "设置"
+
+# Buttons and actions
+add_tunnel = "添加隧道"
+clear_logs = "清除日志"
+
+# Status messages
+no_tunnels = "未配置隧道"
+no_logs = "无可用日志"
+
+# Settings sections
+application = "应用程序"
+appearance = "外观"
+logging = "日志"
+about = "关于"
+
+# About info
+app_name = "WebSocket Reflector X"
+app_description = "TCP-over-WebSocket 隧道工具"
+version = "版本"

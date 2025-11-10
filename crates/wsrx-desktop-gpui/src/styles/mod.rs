@@ -48,17 +48,33 @@ pub mod colors {
     pub fn error() -> Rgba {
         gpui::rgba(0xef303fff)  // #ef303f
     }
+    
+    pub fn error_bg() -> Rgba {
+        error()
+    }
 
     pub fn warning() -> Rgba {
         gpui::rgba(0xe85d03ff)  // #e85d03
+    }
+    
+    pub fn warning_bg() -> Rgba {
+        warning()
     }
 
     pub fn success() -> Rgba {
         gpui::rgba(0x03a44eff)  // #03a44e
     }
+    
+    pub fn success_bg() -> Rgba {
+        success()
+    }
 
     pub fn info() -> Rgba {
         gpui::rgba(0x0078D6ff)  // #0078D6
+    }
+    
+    pub fn info_bg() -> Rgba {
+        info()
     }
 
     pub fn debug() -> Rgba {
@@ -237,3 +253,33 @@ pub mod heights {
         px(40.0)
     }
 }
+
+/// Icon and misc sizes
+pub mod sizes {
+    use gpui::{Pixels, px};
+    
+    pub fn icon_xs() -> Pixels {
+        px(12.0)
+    }
+    
+    pub fn icon_sm() -> Pixels {
+        px(16.0)
+    }
+    
+    pub fn icon_md() -> Pixels {
+        px(20.0)
+    }
+    
+    pub fn icon_lg() -> Pixels {
+        px(24.0)
+    }
+    
+    pub fn icon_xl() -> Pixels {
+        px(32.0)
+    }
+}
+
+// Module aliases for convenience
+pub use radius as border_radius;
+pub use spacing as padding;
+

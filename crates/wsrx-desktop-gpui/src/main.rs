@@ -9,12 +9,16 @@ mod styles;
 mod views;
 mod components;
 mod bridges;
+mod i18n;
 
 use views::RootView;
 
 fn main() -> Result<()> {
     // Initialize logging
     let (_console_guard, _file_guard) = logging::setup()?;
+    
+    // Initialize i18n with system locale
+    i18n::init_locale();
 
     // Create and run the GPUI application
     Application::new().run(|cx: &mut App| {
@@ -25,6 +29,7 @@ fn main() -> Result<()> {
             WindowOptions {
                 window_bounds: Some(WindowBounds::Windowed(bounds)),
                 titlebar: None,
+                focus: true,
                 ..Default::default()
             },
             |window, cx| cx.new(|cx| RootView::new(window, cx)),

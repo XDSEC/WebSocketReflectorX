@@ -1,0 +1,24 @@
+# English translations
+get_started = "Get Started"
+network_logs = "Network Logs"
+connections = "Connections"
+settings = "Settings"
+
+# Buttons and actions
+add_tunnel = "Add Tunnel"
+clear_logs = "Clear Logs"
+
+# Status messages
+no_tunnels = "No tunnels configured"
+no_logs = "No logs available"
+
+# Settings sections
+application = "Application"
+appearance = "Appearance"
+logging = "Logging"
+about = "About"
+
+# About info
+app_name = "WebSocket Reflector X"
+app_description = "TCP-over-WebSocket tunneling tool"
+version = "Version"
