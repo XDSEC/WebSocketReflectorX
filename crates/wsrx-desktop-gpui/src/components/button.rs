@@ -1,6 +1,7 @@
 // Button component - Reusable button with consistent styling
 use gpui::{Context, Render, SharedString, Window, div, prelude::*};
 
+use super::traits::{Clickable, Disableable, Styleable};
 use crate::styles::colors;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -37,14 +38,6 @@ impl Button {
         self
     }
 
-    pub fn on_click<F>(mut self, callback: F) -> Self
-    where
-        F: Fn(&mut Window, &mut Context<Self>) + Send + Sync + 'static,
-    {
-        self.on_click = Some(Box::new(callback));
-        self
-    }
-
     fn bg_color(&self) -> gpui::Rgba {
         match self.variant {
             ButtonVariant::Primary => colors::accent(),
@@ -58,6 +51,34 @@ impl Button {
             ButtonVariant::Primary => gpui::rgba(0x0088DDFF),
             ButtonVariant::Secondary => gpui::rgba(0x555555FF),
             ButtonVariant::Danger => gpui::rgba(0xFF6655FF),
+        }
+    }
+}
+
+impl Clickable for Button {
+    fn on_click<F>(mut self, handler: F) -> Self
+    where
+        F: Fn(&mut Window, &mut Context<Self>) + Send + Sync + 'static,
+    {
+        self.on_click = Some(Box::new(handler));
+        self
+    }
+}
+
+impl Disableable for Button {
+    fn disabled(mut self, disabled: bool) -> Self {
+        self.disabled = disabled;
+        self
+    }
+}
+
+impl Styleable for Button {
+    type Style = ButtonVariant;
+
+    fn style(self, style: Self::Style) -> Self {
+        Self {
+            variant: style,
+            ..self
         }
     }
 }

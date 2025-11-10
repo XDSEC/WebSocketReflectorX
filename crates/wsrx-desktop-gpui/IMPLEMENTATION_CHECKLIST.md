@@ -107,17 +107,17 @@ This document compares the GPUI implementation with the original Slint implement
 - [ ] **ButtonIndicator** - Button with active state indicator
 - [ ] **LineEdit** - Functional text input with editing
 - [ ] **ScrollView** - Scrollable container
-- [ ] **ComboBox/Select** - Dropdown selection
+- [x] **ComboBox/Select** - Dropdown selection
 - [ ] **Tab control** - Tabbed interface
 - [ ] **Progress bar** - Loading indicator
 - [ ] **Tooltip** - Hover info display
 
-**Total**: 7 of 14 components implemented (50%)
+**Total**: 8 of 14 components implemented (57%)
 
 ### Component Improvements Needed
 - [x] **Add prelude module** - Export common types and traits - *DONE*
-- [ ] **Refactor Button** - Follow Zed's pattern with traits (Clickable, Disableable, etc.)
-- [ ] **Add component traits** - Clickable, Disableable, Fixed, StyledExt, Toggleable
+- [x] **Refactor Button** - Follow Zed's pattern with traits (Clickable, Disableable, etc.) - *DONE*
+- [x] **Add component traits** - Clickable, Disableable, Fixed, StyledExt, Toggleable - *DONE*
 - [ ] **Improve styling** - Use consistent spacing/color helpers
 
 ## Bridge Layer / Integration
@@ -187,11 +187,11 @@ This document compares the GPUI implementation with the original Slint implement
 
 ## Summary Statistics
 
-**Overall Progress**: ~48% complete (up from 32%)
+**Overall Progress**: ~50% complete (up from 48%)
 
 ### By Category:
 - **Design System**: 60% (colors good, animations missing)
-- **Layout**: 65% (structure done, window controls working)  
+- **Layout**: 65% (structure done, window controls working)
 - **Pages**: 40% (structure exists, functionality missing)
 - **Components**: 50% (7/14 components, prelude added)
 - **Bridges**: 40% (structure exists, not functional)

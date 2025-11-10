@@ -5,3 +5,6 @@ pub use gpui::{
     App, AppContext, InteractiveElement, IntoElement, ParentElement, SharedString,
     StatefulInteractiveElement, Styled, Window, div, prelude::*, svg,
 };
+
+// Component traits
+pub use super::traits::{Clickable, Disableable, Selectable, Styleable};
