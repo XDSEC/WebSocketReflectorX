@@ -2,13 +2,14 @@
 
 use anyhow::Result;
 use gpui::{
-    App, AppContext, Application, Bounds, TitlebarOptions, WindowBounds, WindowDecorations,
-    WindowKind, WindowOptions, point, px, size,
+    App, AppContext, Application, AssetSource, Bounds, SharedString, TitlebarOptions,
+    WindowBounds, WindowDecorations, WindowKind, WindowOptions, point, px, size,
 };
 
 mod bridges;
 mod components;
 mod i18n;
+mod icons;
 mod logging;
 mod models;
 mod styles;
@@ -27,6 +28,26 @@ include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
 use views::RootView;
 
+/// Asset source that loads embedded SVG icons from binary
+struct EmbeddedAssets;
+
+impl AssetSource for EmbeddedAssets {
+    fn load(&self, path: &str) -> Result<Option<std::borrow::Cow<'static, [u8]>>> {
+        // Handle icon paths like "icons/home.svg"
+        if let Some(icon_name) = path.strip_prefix("icons/").and_then(|p| p.strip_suffix(".svg")) {
+            if let Some(svg_content) = icons::get_icon(icon_name) {
+                return Ok(Some(std::borrow::Cow::Borrowed(svg_content.as_bytes())));
+            }
+        }
+        Ok(None)
+    }
+
+    fn list(&self, _path: &str) -> Result<Vec<SharedString>> {
+        // Return empty list - we don't need directory listing for embedded assets
+        Ok(Vec::new())
+    }
+}
+
 fn main() -> Result<()> {
     // Initialize logging
     let (_console_guard, _file_guard) = logging::setup()?;
@@ -34,8 +55,10 @@ fn main() -> Result<()> {
     // Initialize i18n with system locale
     i18n::init_locale();
 
-    // Create and run the GPUI application
-    Application::new().run(|cx: &mut App| {
+    // Create and run the GPUI application with embedded assets
+    Application::new()
+        .with_assets(EmbeddedAssets)
+        .run(|cx: &mut App| {
         // Create main window with centered bounds
         let bounds = Bounds::centered(None, size(px(1200.0), px(800.0)), cx);
 

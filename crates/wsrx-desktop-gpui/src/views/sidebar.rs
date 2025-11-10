@@ -47,8 +47,8 @@ impl SidebarView {
             .flex()
             .flex_row()
             .items_center()
-            .gap(spacing::s_lg())
-            .px(padding::p_xl())
+            .gap(spacing::s_md())
+            .px(padding::p_lg()) // Consistent padding for all tabs
             .py(padding::p_lg())
             .rounded(border_radius::r_sm())
             .cursor_pointer()
@@ -56,8 +56,12 @@ impl SidebarView {
                 div.bg(colors::layer_3())
                     .border_l_4()
                     .border_color(colors::primary_bg())
+                    .pl(padding::p_md()) // Adjust left padding to account for border
             })
-            .when(!is_active, |div| div.hover(|div| div.bg(colors::layer_2())))
+            .when(!is_active, |div| {
+                div.hover(|div| div.bg(colors::layer_2()))
+                    .pl(padding::p_lg()) // Same left padding as active tab without border
+            })
             .on_click(cx.listener(move |this, _event, _window, cx| {
                 // Update our own state first
                 this.active_page = page;
@@ -70,6 +74,7 @@ impl SidebarView {
                 svg()
                     .path(icon_path)
                     .size(sizes::icon_md())
+                    .flex_none() // Prevent icon from shrinking
                     .text_color(if is_active {
                         colors::primary_bg()
                     } else {
@@ -96,6 +101,7 @@ impl Render for SidebarView {
         div()
             .flex()
             .flex_col()
+            .h_full() // Full height
             .gap(spacing::s_sm())
             .px(padding::p_md())
             .pt(if is_macos {

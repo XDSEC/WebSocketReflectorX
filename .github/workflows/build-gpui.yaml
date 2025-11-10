@@ -51,21 +51,13 @@ jobs:
           rustup update stable && rustup default stable
           cargo build --release -p wsrx-desktop-gpui
       
-      # Compress binaries
-      - name: Compress Binaries
-        run: tar --transform='s!.*/!!' -czvf wsrx-desktop-gpui-linux-x64.tar.gz target/release/wsrx-desktop-gpui
-      
-      # Move files
-      - name: Move files
-        run: |
-          mv wsrx-desktop-gpui-linux-x64.tar.gz wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-x64.tar.gz
-      
       # Upload package
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-x64
-          path: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-x64.tar.gz
+          path: target/release/wsrx-desktop-gpui
+          compression-level: 6
 
   build-windows:
     name: "Build GPUI Desktop on Windows"
@@ -99,21 +91,13 @@ jobs:
           rustup update stable && rustup default stable
           cargo build --release -p wsrx-desktop-gpui
       
-      # Compress binaries
-      - name: Compress Binaries
-        run: 7z a wsrx-desktop-gpui-windows-x64.zip target/release/wsrx-desktop-gpui.exe
-      
-      # Move files
-      - name: Move files
-        run: |
-          mv wsrx-desktop-gpui-windows-x64.zip wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-x64.zip
-      
       # Upload package
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-x64
-          path: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-x64.zip
+          path: target/release/wsrx-desktop-gpui.exe
+          compression-level: 6
 
   build-mac:
     name: "Build GPUI Desktop on MacOS"
@@ -140,18 +124,10 @@ jobs:
           rustup update stable && rustup default stable
           cargo build --release -p wsrx-desktop-gpui
       
-      # Compress ARM64 binaries
-      - name: Compress ARM64 binaries
-        run: zip -r -y -X wsrx-desktop-gpui-macos-arm64.zip target/release/wsrx-desktop-gpui
-      
-      # Move files
-      - name: Move files
-        run: |
-          mv wsrx-desktop-gpui-macos-arm64.zip wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-arm64.zip
-      
       # Upload ARM64 package
       - name: Upload ARM64 package
         uses: actions/upload-artifact@v4
         with:
           name: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-arm64
-          path: wsrx-desktop-gpui-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-arm64.zip
+          path: target/release/wsrx-desktop-gpui
+          compression-level: 6

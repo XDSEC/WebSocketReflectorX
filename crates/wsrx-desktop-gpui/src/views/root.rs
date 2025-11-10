@@ -87,7 +87,7 @@ impl RootView {
             .flex_col()
             .when(self.show_sidebar, |div| div.w_64())
             .when(!self.show_sidebar, |div| div.w_0())
-            .h_full()
+            .h_full() // Full height of window
             .overflow_hidden()
             .child(self.sidebar.clone())
     }
@@ -97,7 +97,7 @@ impl RootView {
             .flex()
             .flex_col()
             .flex_1()
-            .h_full()
+            .h_full() // Full height of window
             .bg(colors::window_alter_bg())
             .child(self.title_bar.clone())
             .child(self.render_page_content())
@@ -106,12 +106,12 @@ impl RootView {
     fn render_page_content(&self) -> impl IntoElement {
         div()
             .flex_1()
-            .overflow_hidden()
+            .overflow_hidden() // Use basic overflow hidden
             .child(match self.current_page {
-                Page::GetStarted => div().child(self.get_started.clone()),
-                Page::Connections => div().child(self.connections.clone()),
-                Page::NetworkLogs => div().child(self.network_logs.clone()),
-                Page::Settings => div().child(self.settings.clone()),
+                Page::GetStarted => div().h_full().child(self.get_started.clone()),
+                Page::Connections => div().h_full().child(self.connections.clone()),
+                Page::NetworkLogs => div().h_full().child(self.network_logs.clone()),
+                Page::Settings => div().h_full().child(self.settings.clone()),
             })
     }
 }
