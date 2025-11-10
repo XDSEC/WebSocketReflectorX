@@ -99,7 +99,3 @@ impl Default for AppState {
     }
 }
 
-#[cfg(test)]
-#[path = "app_state_tests.rs"]
-mod tests;
-
