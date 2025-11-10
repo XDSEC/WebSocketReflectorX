@@ -97,6 +97,8 @@ This document compares the GPUI implementation with the original Slint implement
 
 ### Implemented Components
 - [x] **Button** - With variants (Primary, Secondary, Danger) - *needs Zed-style refactor*
+- [x] **IconButton** - Icon-only button with styles (Subtle, Filled, Danger) - *NEW*
+- [x] **Checkbox** - Interactive checkbox with label - *NEW*
 - [x] **Modal** - Dialog overlay with backdrop
 - [x] **Input** - Text input with placeholder (not fully functional)
 - [x] **StatusIndicator** - Color-coded status dots
@@ -105,15 +107,16 @@ This document compares the GPUI implementation with the original Slint implement
 - [ ] **ButtonIndicator** - Button with active state indicator
 - [ ] **LineEdit** - Functional text input with editing
 - [ ] **ScrollView** - Scrollable container
-- [ ] **Checkbox** - Toggle control
 - [ ] **ComboBox/Select** - Dropdown selection
 - [ ] **Tab control** - Tabbed interface
 - [ ] **Progress bar** - Loading indicator
 - [ ] **Tooltip** - Hover info display
 
+**Total**: 7 of 14 components implemented (50%)
+
 ### Component Improvements Needed
+- [x] **Add prelude module** - Export common types and traits - *DONE*
 - [ ] **Refactor Button** - Follow Zed's pattern with traits (Clickable, Disableable, etc.)
-- [ ] **Add prelude module** - Export common types and traits
 - [ ] **Add component traits** - Clickable, Disableable, Fixed, StyledExt, Toggleable
 - [ ] **Improve styling** - Use consistent spacing/color helpers
 
@@ -169,7 +172,7 @@ This document compares the GPUI implementation with the original Slint implement
 ## Code Quality & Patterns
 
 ### Following Zed Patterns
-- [ ] **Component prelude** - Not implemented (Zed has comprehensive prelude)
+- [x] **Component prelude** - Implemented with common imports - *DONE*
 - [ ] **Component traits** - Not implemented (Clickable, Disableable, etc.)
 - [ ] **Styled extensions** - Partial (could be more comprehensive)
 - [ ] **Builder patterns** - Basic (needs enhancement)
@@ -184,18 +187,18 @@ This document compares the GPUI implementation with the original Slint implement
 
 ## Summary Statistics
 
-**Overall Progress**: ~32% complete (up from 30%)
+**Overall Progress**: ~48% complete (up from 32%)
 
 ### By Category:
 - **Design System**: 60% (colors good, animations missing)
-- **Layout**: 50% (structure done, chrome missing)  
+- **Layout**: 65% (structure done, window controls working)  
 - **Pages**: 40% (structure exists, functionality missing)
-- **Components**: 35% (4/11 components, need refactoring)
+- **Components**: 50% (7/14 components, prelude added)
 - **Bridges**: 40% (structure exists, not functional)
-- **i18n**: 0% (not started)
-- **Platform Features**: 25% (build fixes applied)
+- **i18n**: 30% (framework setup, macro issues)
+- **Platform Features**: 30% (build fixes, window config aligned)
 - **Build System**: 85% (macOS fixed, workflow ready)
-- **Code Patterns**: 20% (basic patterns, need Zed alignment)
+- **Code Patterns**: 30% (prelude added, need traits)
 
 ### Priority Items for Next Phase:
 1. **✅ Fix macOS build** - DONE (removed unsupported linker flag)
