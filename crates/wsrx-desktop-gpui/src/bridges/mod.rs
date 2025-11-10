@@ -5,7 +5,3 @@
 pub mod daemon;
 pub mod settings;
 pub mod system_info;
-
-pub use daemon::DaemonBridge;
-pub use settings::SettingsBridge;
-pub use system_info::SystemInfoBridge;

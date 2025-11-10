@@ -34,8 +34,7 @@ impl Checkbox {
     }
 
     pub fn on_change(
-        mut self,
-        handler: impl Fn(bool, &mut Window, &mut App) + Send + Sync + 'static,
+        mut self, handler: impl Fn(bool, &mut Window, &mut App) + Send + Sync + 'static,
     ) -> Self {
         self.on_change = Some(Box::new(handler));
         self
@@ -43,61 +42,75 @@ impl Checkbox {
 }
 
 impl IntoElement for Checkbox {
-    type Element = gpui::Div;
+    type Element = gpui::AnyElement;
 
     fn into_element(self) -> Self::Element {
         let checked = self.checked;
         let disabled = self.disabled;
+        let id = self.id.clone();
+        let label = self.label.to_string();
 
-        div()
-            .id(self.id.clone())
+        let mut root_div = div()
+            .id(id)
             .flex()
             .flex_row()
             .items_center()
-            .gap(sizes::icon_sm())
-            .when(!disabled, |this| this.cursor_pointer())
-            .when(disabled, |this| this.cursor_not_allowed().opacity(0.5))
-            .when_some(self.on_change, |this, on_change| {
-                this.on_click(move |_event, window, cx| {
-                    if !disabled {
-                        on_change(!checked, window, cx);
-                    }
+            .gap(sizes::icon_sm());
+
+        if !disabled {
+            root_div = root_div.cursor_pointer();
+        }
+
+        if disabled {
+            root_div = root_div.cursor_not_allowed().opacity(0.5);
+        }
+
+        if let Some(on_change) = self.on_change {
+            root_div = root_div.on_click(move |_event, window, cx| {
+                if !disabled {
+                    on_change(!checked, window, cx);
+                }
+            });
+        }
+
+        let checkbox_box = {
+            let mut box_div = div()
+                .flex()
+                .items_center()
+                .justify_center()
+                .size(sizes::icon_md())
+                .rounded(border_radius::r_xs())
+                .border_1()
+                .border_color(if checked {
+                    colors::primary_bg()
+                } else {
+                    colors::element_border()
                 })
-            })
-            .child(
-                // Checkbox box
-                div()
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .size(sizes::icon_md())
-                    .rounded(border_radius::r_xs())
-                    .border_1()
-                    .border_color(if checked {
-                        colors::primary_bg()
-                    } else {
-                        colors::element_border()
-                    })
-                    .bg(if checked {
-                        colors::primary_bg()
-                    } else {
-                        gpui::transparent_black()
-                    })
-                    .when(checked, |this| {
-                        this.child(
-                            // Checkmark icon
-                            svg()
-                                .path("icons/checkmark.svg")
-                                .size(sizes::icon_xs())
-                                .text_color(colors::window_bg()),
-                        )
-                    }),
-            )
+                .bg(if checked {
+                    colors::primary_bg()
+                } else {
+                    gpui::rgba(0x00000000)
+                });
+
+            if checked {
+                box_div = box_div.child(
+                    // Checkmark icon
+                    svg()
+                        .path("icons/checkmark.svg")
+                        .size(sizes::icon_xs())
+                        .text_color(colors::window_bg()),
+                );
+            }
+
+            box_div
+        };
+
+        root_div
+            .child(checkbox_box)
             .child(
                 // Label
-                div()
-                    .text_color(colors::window_fg())
-                    .child(self.label.to_string()),
+                div().text_color(colors::window_fg()).child(label),
             )
+            .into_any_element()
     }
 }

@@ -216,23 +216,25 @@ crates/wsrx-desktop-gpui/
 ├── Cargo.toml                    # GPUI dependency configuration
 ├── build.rs                      # Build script
 ├── src/
-│   ├── main.rs                   # Application entry point
-│   ├── lib.rs                    # Library root
+│   ├── main.rs                   # Application entry point with i18n macro
 │   ├── logging.rs                # Logging initialization
+│   ├── i18n.rs                   # Internationalization setup
 │   ├── models/mod.rs             # Data model definitions
 │   ├── styles/mod.rs             # Themes and styles
 │   ├── views/
 │   │   ├── mod.rs
-│   │   ├── root.rs              # Placeholder
-│   │   ├── get_started.rs       # Placeholder
-│   │   ├── connections.rs       # Placeholder
-│   │   ├── network_logs.rs      # Placeholder
-│   │   ├── settings.rs          # Placeholder
-│   │   └── sidebar.rs           # Placeholder
+│   │   ├── root.rs              # Main window root view
+│   │   ├── get_started.rs       # Onboarding page
+│   │   ├── connections.rs       # Tunnel management
+│   │   ├── network_logs.rs      # Log display
+│   │   ├── settings.rs          # Settings page
+│   │   └── sidebar.rs           # Navigation sidebar
 │   ├── components/
 │   │   ├── mod.rs
-│   │   ├── title_bar.rs         # Placeholder
-│   │   ├── window_controls.rs   # Placeholder
+│   │   ├── prelude.rs           # Common component imports
+│   │   ├── title_bar.rs         # Window title bar with drag support
+│   │   ├── window_controls.rs   # Platform-aware window controls
+
 │   │   └── tab_navigation.rs    # Placeholder
 │   └── bridges/
 │       ├── mod.rs

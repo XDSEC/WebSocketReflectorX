@@ -8,9 +8,6 @@ use serde::{Deserialize, Serialize};
 pub mod app_state;
 pub mod events;
 
-pub use app_state::{AppState, DaemonStatus, Page};
-pub use events::AppEvent;
-
 /// Represents a WebSocket tunnel configuration
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tunnel {

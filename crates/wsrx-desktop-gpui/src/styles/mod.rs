@@ -53,6 +53,10 @@ pub mod colors {
         error()
     }
 
+    pub fn error_fg() -> Rgba {
+        error()
+    }
+
     pub fn warning() -> Rgba {
         gpui::rgba(0xE85D03FF) // #e85d03
     }

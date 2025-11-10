@@ -1,5 +1,5 @@
 // Button component - Reusable button with consistent styling
-use gpui::{Context, MouseButton, Render, SharedString, Window, div, prelude::*};
+use gpui::{Context, Render, SharedString, Window, div, prelude::*};
 
 use crate::styles::colors;
 

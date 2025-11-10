@@ -2,7 +2,7 @@
 use gpui::{App, Context, Render, SharedString, Window, div, prelude::*, svg};
 
 use crate::{
-    models::Page,
+    models::app_state::Page,
     styles::{border_radius, colors, heights, padding, sizes, spacing},
 };
 

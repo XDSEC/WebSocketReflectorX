@@ -2,7 +2,7 @@
 use gpui::{AnyWindowHandle, Context, Entity, Render, Window, div, prelude::*};
 
 use super::{ConnectionsView, GetStartedView, NetworkLogsView, SettingsView, SidebarView};
-use crate::{components::TitleBar, models::Page, styles::colors};
+use crate::{components::title_bar::TitleBar, models::app_state::Page, styles::colors};
 
 pub struct RootView {
     /// Window handle

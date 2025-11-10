@@ -91,12 +91,9 @@ impl Render for WindowControls {
                             .bg(styles::colors::layer_1())
                             .hover(|this| this.bg(styles::colors::error_bg()))
                             .cursor_pointer()
-                            .on_click({
-                                let window = window.clone();
-                                cx.listener(move |_this, _event, _window, cx| {
-                                    cx.quit();
-                                })
-                            })
+                            .on_click(cx.listener(move |_this, _event, _window, cx| {
+                                cx.quit();
+                            }))
                             .child(
                                 svg()
                                     .path("icons/dismiss.svg")
