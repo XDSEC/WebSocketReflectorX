@@ -2,63 +2,167 @@
 // This module contains all the styling, colors, and theming configuration
 
 /// Color palette for the application
+/// Aligned with Slint design system for consistency
 pub mod colors {
     use gpui::Rgba;
 
+    // Dark mode palette (matching Slint dark-palette)
+    pub fn window_fg() -> Rgba {
+        gpui::rgba(0xcdd6f4ff)  // #cdd6f4
+    }
+
+    pub fn window_bg() -> Rgba {
+        gpui::rgba(0x151515ff)  // #151515
+    }
+
+    pub fn window_alter_bg() -> Rgba {
+        gpui::rgba(0x1e1e1eff)  // #1e1e1e
+    }
+
+    pub fn primary_bg() -> Rgba {
+        gpui::rgba(0x0078D6ff)  // #0078D6
+    }
+
+    pub fn window_border() -> Rgba {
+        gpui::rgba(0x323232ff)  // #323232
+    }
+
+    pub fn element_border() -> Rgba {
+        gpui::rgba(0x2d2d2dff)  // #2d2d2d
+    }
+
+    // Legacy aliases for backward compatibility
     pub fn background() -> Rgba {
-        gpui::rgba(0x1e1e1eff)
+        window_bg()
     }
 
     pub fn foreground() -> Rgba {
-        gpui::rgba(0xe5e5e5ff)
+        window_fg()
     }
 
     pub fn accent() -> Rgba {
-        gpui::rgba(0x007accff)
+        primary_bg()
     }
 
+    // Semantic colors (matching Slint)
     pub fn error() -> Rgba {
-        gpui::rgba(0xf48771ff)
+        gpui::rgba(0xef303fff)  // #ef303f
     }
 
     pub fn warning() -> Rgba {
-        gpui::rgba(0xddb76fff)
+        gpui::rgba(0xe85d03ff)  // #e85d03
     }
 
     pub fn success() -> Rgba {
-        gpui::rgba(0x7ec699ff)
+        gpui::rgba(0x03a44eff)  // #03a44e
+    }
+
+    pub fn info() -> Rgba {
+        gpui::rgba(0x0078D6ff)  // #0078D6
+    }
+
+    pub fn debug() -> Rgba {
+        gpui::rgba(0x808080ff)  // #808080
+    }
+
+    // Layer colors (for depth/elevation)
+    pub fn layer_1() -> Rgba {
+        gpui::rgba(0xffffff10)  // #ffffff10
+    }
+
+    pub fn layer_2() -> Rgba {
+        gpui::rgba(0xffffff18)  // #ffffff18
+    }
+
+    pub fn layer_3() -> Rgba {
+        gpui::rgba(0xffffff20)  // #ffffff20
+    }
+
+    pub fn layer_4() -> Rgba {
+        gpui::rgba(0xffffff28)  // #ffffff28
+    }
+
+    pub fn layer_5() -> Rgba {
+        gpui::rgba(0xffffff30)  // #ffffff30
     }
 }
 
-/// Typography settings
+/// Typography settings (matching Slint font sizes)
 pub mod typography {
     use gpui::{Pixels, px};
 
     pub fn font_size_xs() -> Pixels {
-        px(11.0)
-    }
-
-    pub fn font_size_sm() -> Pixels {
         px(12.0)
     }
 
-    pub fn font_size_base() -> Pixels {
+    pub fn font_size_sm() -> Pixels {
         px(14.0)
     }
 
+    pub fn font_size_base() -> Pixels {
+        px(16.0)  // matches Slint font: 16px
+    }
+
     pub fn font_size_lg() -> Pixels {
-        px(16.0)
+        px(18.0)
     }
 
     pub fn font_size_xl() -> Pixels {
         px(20.0)
     }
+
+    pub fn font_size_2xl() -> Pixels {
+        px(24.0)
+    }
 }
 
-/// Spacing constants
+/// Spacing constants (matching Slint sizes)
 pub mod spacing {
     use gpui::{Pixels, px};
 
+    // Padding sizes (p-*)
+    pub fn p_xs() -> Pixels {
+        px(1.0)
+    }
+
+    pub fn p_sm() -> Pixels {
+        px(2.0)
+    }
+
+    pub fn p_md() -> Pixels {
+        px(4.0)
+    }
+
+    pub fn p_lg() -> Pixels {
+        px(8.0)
+    }
+
+    pub fn p_xl() -> Pixels {
+        px(12.0)
+    }
+
+    // Spacing sizes (s-*)
+    pub fn s_xs() -> Pixels {
+        px(1.0)
+    }
+
+    pub fn s_sm() -> Pixels {
+        px(2.0)
+    }
+
+    pub fn s_md() -> Pixels {
+        px(4.0)
+    }
+
+    pub fn s_lg() -> Pixels {
+        px(8.0)
+    }
+
+    pub fn s_xl() -> Pixels {
+        px(12.0)
+    }
+
+    // Legacy aliases
     pub fn xs() -> Pixels {
         px(2.0)
     }
@@ -81,5 +185,55 @@ pub mod spacing {
 
     pub fn xl() -> Pixels {
         px(24.0)
+    }
+}
+
+/// Border radius constants (matching Slint r-*)
+pub mod radius {
+    use gpui::{Pixels, px};
+
+    pub fn r_xs() -> Pixels {
+        px(2.0)
+    }
+
+    pub fn r_sm() -> Pixels {
+        px(4.0)
+    }
+
+    pub fn r_md() -> Pixels {
+        px(6.0)
+    }
+
+    pub fn r_lg() -> Pixels {
+        px(8.0)
+    }
+
+    pub fn r_xl() -> Pixels {
+        px(10.0)
+    }
+}
+
+/// Height constants (matching Slint h-*)
+pub mod heights {
+    use gpui::{Pixels, px};
+
+    pub fn h_xs() -> Pixels {
+        px(16.0)
+    }
+
+    pub fn h_sm() -> Pixels {
+        px(24.0)
+    }
+
+    pub fn h_md() -> Pixels {
+        px(32.0)
+    }
+
+    pub fn h_lg() -> Pixels {
+        px(36.0)
+    }
+
+    pub fn h_xl() -> Pixels {
+        px(40.0)
     }
 }

@@ -1,7 +1,7 @@
 // Sidebar view - Navigation sidebar
 use gpui::{Context, Render, Window, div, prelude::*, App, SharedString};
 use crate::models::Page;
-use crate::styles::colors;
+use crate::styles::{colors, spacing};
 
 type PageChangeCallback = Box<dyn Fn(Page, &mut App) + Send + Sync>;
 
@@ -35,14 +35,16 @@ impl SidebarView {
             .id(id)
             .flex()
             .items_center()
-            .px_4()
-            .py_3()
+            .px(spacing::p_md())
+            .py(spacing::p_lg())
             .cursor_pointer()
             .when(is_active, |div| {
-                div.bg(colors::accent())
+                div.bg(colors::layer_3())
+                    .border_l_2()
+                    .border_color(colors::primary_bg())
             })
             .when(!is_active, |div| {
-                div.hover(|div| div.bg(gpui::rgba(0x00000030)))
+                div.hover(|div| div.bg(colors::layer_2()))
             })
             .on_click(cx.listener(move |this, _event, _window, cx| {
                 // Update our own state first
@@ -52,7 +54,11 @@ impl SidebarView {
                     callback(page, cx);
                 }
             }))
-            .child(label_text)
+            .child(
+                div()
+                    .text_color(colors::window_fg())
+                    .child(label_text)
+            )
     }
 }
 
@@ -61,8 +67,8 @@ impl Render for SidebarView {
         div()
             .flex()
             .flex_col()
-            .gap_1()
-            .p_2()
+            .gap(spacing::s_md())
+            .pt(spacing::p_md())
             .child(self.render_tab(Page::GetStarted, "Get Started", cx))
             .child(self.render_tab(Page::Connections, "Connections", cx))
             .child(self.render_tab(Page::NetworkLogs, "Network Logs", cx))

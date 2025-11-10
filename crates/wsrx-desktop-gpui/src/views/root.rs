@@ -57,9 +57,9 @@ impl RootView {
             .flex_col()
             .w_64()
             .h_full()
-            .bg(gpui::rgba(0x00000020))
+            .bg(colors::layer_1())
             .border_r_1()
-            .border_color(gpui::rgba(0x00000050))
+            .border_color(colors::element_border())
             .child(self.sidebar.clone())
     }
     
@@ -69,7 +69,7 @@ impl RootView {
             .flex_col()
             .flex_1()
             .h_full()
-            .bg(colors::background())
+            .bg(colors::window_alter_bg())
             .child(self.render_page_content())
     }
     
@@ -89,8 +89,8 @@ impl Render for RootView {
             .flex()
             .w_full()
             .h_full()
-            .bg(colors::background())
-            .text_color(colors::foreground())
+            .bg(colors::window_bg())
+            .text_color(colors::window_fg())
             .child(self.render_sidebar())
             .child(self.render_main_content())
     }
