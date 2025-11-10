@@ -40,8 +40,5 @@ pub const TARGET_ARCH: &str = "{arch}";
         }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        println!("cargo:rustc-link-arg=-fapple-link-runtime");
-    }
+    // No special macOS linker flags needed - GPUI handles this internally
 }
