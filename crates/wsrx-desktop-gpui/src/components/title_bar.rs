@@ -1,8 +1,7 @@
 // Title bar component
-use gpui::*;
-use gpui::prelude::FluentBuilder;
-use crate::styles;
-use crate::components::WindowControls;
+use gpui::{prelude::FluentBuilder, *};
+
+use crate::{components::WindowControls, styles};
 
 pub struct TitleBar {
     window: AnyWindowHandle,
@@ -16,7 +15,7 @@ impl TitleBar {
             show_sidebar_callback: None,
         }
     }
-    
+
     pub fn set_show_sidebar_callback(&mut self, callback: Box<dyn Fn(&mut App) + Send + Sync>) {
         self.show_sidebar_callback = Some(callback);
     }
@@ -26,7 +25,7 @@ impl Render for TitleBar {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let window = self.window.clone();
         let is_macos = cfg!(target_os = "macos");
-        
+
         div()
             .id("title-bar")
             .flex()
@@ -42,9 +41,11 @@ impl Render for TitleBar {
             .on_mouse_down(MouseButton::Left, {
                 let window = window.clone();
                 cx.listener(move |_this, _event: &MouseDownEvent, _window, cx| {
-                    window.update(cx, |_view, window, _cx| {
-                        window.start_window_move();
-                    }).ok();
+                    window
+                        .update(cx, |_view, window, _cx| {
+                            window.start_window_move();
+                        })
+                        .ok();
                 })
             })
             .child(
@@ -73,18 +74,15 @@ impl Render for TitleBar {
                                     svg()
                                         .path("icons/navigation.svg")
                                         .size(styles::sizes::icon_sm())
-                                        .text_color(styles::colors::window_fg())
-                                )
+                                        .text_color(styles::colors::window_fg()),
+                                ),
                         )
-                    })
+                    }),
             )
             .child(
                 // Center spacer
-                div().flex_1()
+                div().flex_1(),
             )
-            .child(
-                cx.new(|_cx| WindowControls::new(window))
-            )
+            .child(cx.new(|_cx| WindowControls::new(window)))
     }
 }
-

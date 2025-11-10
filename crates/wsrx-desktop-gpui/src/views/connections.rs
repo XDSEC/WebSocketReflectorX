@@ -1,7 +1,7 @@
 // Connections view - Manage tunnels and connections
-use gpui::{Context, Render, Window, div, prelude::*, SharedString, AnyElement};
-use crate::styles::colors;
-use crate::models::Tunnel;
+use gpui::{AnyElement, Context, Render, SharedString, Window, div, prelude::*};
+
+use crate::{models::Tunnel, styles::colors};
 
 pub struct ConnectionsView {
     tunnels: Vec<Tunnel>,
@@ -13,15 +13,15 @@ impl ConnectionsView {
             tunnels: Vec::new(),
         }
     }
-    
+
     fn render_tunnel_item(&self, tunnel: &Tunnel, index: usize) -> impl IntoElement {
         let id = SharedString::from(format!("tunnel-{}", index));
         let status_color = if tunnel.enabled {
             colors::success()
         } else {
-            gpui::rgba(0x888888ff)
+            gpui::rgba(0x888888FF)
         };
-        
+
         div()
             .id(id)
             .flex()
@@ -30,21 +30,15 @@ impl ConnectionsView {
             .px_4()
             .py_3()
             .mb_2()
-            .bg(gpui::rgba(0x2a2a2aff))
+            .bg(gpui::rgba(0x2A2A2AFF))
             .rounded_md()
-            .hover(|div| div.bg(gpui::rgba(0x333333ff)))
+            .hover(|div| div.bg(gpui::rgba(0x333333FF)))
             .child(
                 div()
                     .flex()
                     .items_center()
                     .gap_3()
-                    .child(
-                        div()
-                            .w_3()
-                            .h_3()
-                            .rounded_full()
-                            .bg(status_color)
-                    )
+                    .child(div().w_3().h_3().rounded_full().bg(status_color))
                     .child(
                         div()
                             .flex()
@@ -53,24 +47,31 @@ impl ConnectionsView {
                             .child(
                                 div()
                                     .text_color(colors::foreground())
-                                    .child(tunnel.name.clone())
+                                    .child(tunnel.name.clone()),
                             )
                             .child(
                                 div()
                                     .text_sm()
-                                    .text_color(gpui::rgba(0xaaaaaaff))
-                                    .child(format!("{} → {}", tunnel.local_addr, tunnel.remote_addr))
-                            )
-                    )
+                                    .text_color(gpui::rgba(0xAAAAAAFF))
+                                    .child(format!(
+                                        "{} → {}",
+                                        tunnel.local_addr, tunnel.remote_addr
+                                    )),
+                            ),
+                    ),
             )
             .child(
                 div()
                     .text_sm()
-                    .text_color(gpui::rgba(0xaaaaaaff))
-                    .child(if tunnel.enabled { "Enabled" } else { "Disabled" })
+                    .text_color(gpui::rgba(0xAAAAAAFF))
+                    .child(if tunnel.enabled {
+                        "Enabled"
+                    } else {
+                        "Disabled"
+                    }),
             )
     }
-    
+
     fn render_empty_state(&self) -> impl IntoElement {
         div()
             .flex()
@@ -82,13 +83,13 @@ impl ConnectionsView {
             .child(
                 div()
                     .text_xl()
-                    .text_color(gpui::rgba(0xaaaaaaff))
-                    .child("No tunnels configured")
+                    .text_color(gpui::rgba(0xAAAAAAFF))
+                    .child("No tunnels configured"),
             )
             .child(
                 div()
-                    .text_color(gpui::rgba(0x888888ff))
-                    .child("Click the + button to create your first tunnel")
+                    .text_color(gpui::rgba(0x888888FF))
+                    .child("Click the + button to create your first tunnel"),
             )
     }
 }
@@ -111,7 +112,7 @@ impl Render for ConnectionsView {
                         div()
                             .text_xl()
                             .text_color(colors::foreground())
-                            .child("Connections")
+                            .child("Connections"),
                     )
                     .child(
                         div()
@@ -121,22 +122,25 @@ impl Render for ConnectionsView {
                             .bg(colors::accent())
                             .rounded_md()
                             .cursor_pointer()
-                            .hover(|div| div.bg(gpui::rgba(0x0088ddff)))
-                            .child("+ Add Tunnel")
-                    )
+                            .hover(|div| div.bg(gpui::rgba(0x0088DDFF)))
+                            .child("+ Add Tunnel"),
+                    ),
             )
             .child(if self.tunnels.is_empty() {
                 self.render_empty_state().into_any_element()
             } else {
-                let elements: Vec<_> = self.tunnels.iter().enumerate()
+                let elements: Vec<_> = self
+                    .tunnels
+                    .iter()
+                    .enumerate()
                     .map(|(i, tunnel)| self.render_tunnel_item(tunnel, i))
                     .collect();
                 div()
                     .flex()
                     .flex_col()
                     .gap_2()
-                    .children(elements).into_any_element()
+                    .children(elements)
+                    .into_any_element()
             })
     }
 }
-

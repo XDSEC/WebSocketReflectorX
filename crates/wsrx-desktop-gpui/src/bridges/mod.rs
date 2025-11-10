@@ -1,5 +1,6 @@
 // Bridges - Integration layer between UI and core functionality
-// This module contains the bridges that connect the UI to the wsrx daemon and other services
+// This module contains the bridges that connect the UI to the wsrx daemon and
+// other services
 
 pub mod daemon;
 pub mod settings;

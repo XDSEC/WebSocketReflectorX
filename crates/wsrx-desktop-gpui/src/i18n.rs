@@ -1,9 +1,10 @@
 // i18n - Internationalization support using rust-i18n
+
 // Provides multi-language support with YAML locale files
 // NOTE: The i18n! macro is initialized in lib.rs at crate root
 
 // Re-export functions for convenience
-pub use rust_i18n::{t, set_locale, locale};
+pub use rust_i18n::{locale, set_locale};
 
 /// Set application language
 pub fn set_language(locale_str: &str) {
@@ -11,8 +12,8 @@ pub fn set_language(locale_str: &str) {
 }
 
 /// Get current language
-pub fn current_language() -> String {
-    locale().to_string()
+pub fn current_language() -> impl Deref<Target = str> {
+    locale()
 }
 
 /// Detect system locale and set it
@@ -26,4 +27,3 @@ pub fn init_locale() {
         set_language(locale);
     }
 }
-

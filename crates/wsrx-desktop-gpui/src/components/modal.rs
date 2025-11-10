@@ -1,5 +1,6 @@
 // Modal component - Modal dialog overlay
-use gpui::{Context, Render, Window, div, prelude::*, AnyElement};
+use gpui::{AnyElement, Context, Render, Window, div, prelude::*};
+
 use crate::styles::colors;
 
 pub struct Modal {
@@ -18,17 +19,17 @@ impl Modal {
             on_close: None,
         }
     }
-    
+
     pub fn content(mut self, content: impl IntoElement) -> Self {
         self.content = Some(content.into_any_element());
         self
     }
-    
+
     pub fn show_close(mut self, show: bool) -> Self {
         self.show_close = show;
         self
     }
-    
+
     pub fn on_close<F>(mut self, callback: F) -> Self
     where
         F: Fn(&mut Window, &mut Context<Self>) + Send + Sync + 'static,
@@ -42,7 +43,7 @@ impl Render for Modal {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let title = self.title.clone();
         let show_close = self.show_close;
-        
+
         div()
             .flex()
             .absolute()
@@ -59,7 +60,7 @@ impl Render for Modal {
                     .flex_col()
                     .w(gpui::relative(0.8))
                     .max_w(gpui::px(600.0))
-                    .bg(gpui::rgba(0x2a2a2aff))
+                    .bg(gpui::rgba(0x2A2A2AFF))
                     .rounded_lg()
                     .shadow_lg()
                     .child(
@@ -71,12 +72,12 @@ impl Render for Modal {
                             .px_6()
                             .py_4()
                             .border_b_1()
-                            .border_color(gpui::rgba(0x444444ff))
+                            .border_color(gpui::rgba(0x444444FF))
                             .child(
                                 div()
                                     .text_xl()
                                     .text_color(colors::foreground())
-                                    .child(title)
+                                    .child(title),
                             )
                             .when(show_close, |container| {
                                 container.child(
@@ -85,24 +86,21 @@ impl Render for Modal {
                                         .px_2()
                                         .py_1()
                                         .cursor_pointer()
-                                        .hover(|div| div.bg(gpui::rgba(0x444444ff)))
+                                        .hover(|div| div.bg(gpui::rgba(0x444444FF)))
                                         .rounded_md()
                                         .on_click(cx.listener(|this, _event, window, cx| {
                                             if let Some(ref callback) = this.on_close {
                                                 callback(window, cx);
                                             }
                                         }))
-                                        .child("✕")
+                                        .child("✕"),
                                 )
-                            })
+                            }),
                     )
                     .child(
                         // Content
-                        div()
-                            .px_6()
-                            .py_4()
-                            .children(self.content.take())
-                    )
+                        div().px_6().py_4().children(self.content.take()),
+                    ),
             )
     }
 }

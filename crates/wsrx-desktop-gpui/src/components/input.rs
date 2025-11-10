@@ -1,5 +1,6 @@
 // Input component - Text input field with consistent styling
-use gpui::{Context, Render, Window, div, prelude::*, SharedString};
+use gpui::{Context, Render, SharedString, Window, div, prelude::*};
+
 use crate::styles::colors;
 
 pub struct Input {
@@ -20,22 +21,22 @@ impl Input {
             on_change: None,
         }
     }
-    
+
     pub fn placeholder(mut self, placeholder: impl Into<String>) -> Self {
         self.placeholder = placeholder.into();
         self
     }
-    
+
     pub fn value(mut self, value: impl Into<String>) -> Self {
         self.value = value.into();
         self
     }
-    
+
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
-    
+
     pub fn on_change<F>(mut self, callback: F) -> Self
     where
         F: Fn(String, &mut Window, &mut Context<Self>) + Send + Sync + 'static,
@@ -55,7 +56,7 @@ impl Render for Input {
         };
         let value = self.value.clone();
         let disabled = self.disabled;
-        
+
         div()
             .id(id)
             .flex()
@@ -65,20 +66,18 @@ impl Render for Input {
             .rounded_md()
             .border_1()
             .when(!disabled, |div| {
-                div.bg(gpui::rgba(0x2a2a2aff))
-                    .border_color(gpui::rgba(0x444444ff))
+                div.bg(gpui::rgba(0x2A2A2AFF))
+                    .border_color(gpui::rgba(0x444444FF))
                     .hover(|div| div.border_color(colors::accent()))
             })
             .when(disabled, |div| {
-                div.bg(gpui::rgba(0x1a1a1aff))
-                    .border_color(gpui::rgba(0x333333ff))
-                    .text_color(gpui::rgba(0x666666ff))
+                div.bg(gpui::rgba(0x1A1A1AFF))
+                    .border_color(gpui::rgba(0x333333FF))
+                    .text_color(gpui::rgba(0x666666FF))
             })
             .text_color(colors::foreground())
             .child(if value.is_empty() && !placeholder.is_empty() {
-                div()
-                    .text_color(gpui::rgba(0x888888ff))
-                    .child(placeholder)
+                div().text_color(gpui::rgba(0x888888FF)).child(placeholder)
             } else {
                 div().child(value)
             })

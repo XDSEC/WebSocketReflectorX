@@ -1,29 +1,28 @@
 // Root view - Main application window
-use gpui::{Context, Render, Window, div, prelude::*, Entity, AnyWindowHandle};
-use crate::models::Page;
-use crate::styles::colors;
-use crate::components::TitleBar;
-use super::{SidebarView, GetStartedView, ConnectionsView, NetworkLogsView, SettingsView};
+use gpui::{AnyWindowHandle, Context, Entity, Render, Window, div, prelude::*};
+
+use super::{ConnectionsView, GetStartedView, NetworkLogsView, SettingsView, SidebarView};
+use crate::{components::TitleBar, models::Page, styles::colors};
 
 pub struct RootView {
     /// Window handle
     window: AnyWindowHandle,
-    
+
     /// Current active page
     current_page: Page,
-    
+
     /// Title bar
     title_bar: Entity<TitleBar>,
-    
+
     /// Sidebar entity
     sidebar: Entity<SidebarView>,
-    
+
     /// Page views
     get_started: Entity<GetStartedView>,
     connections: Entity<ConnectionsView>,
     network_logs: Entity<NetworkLogsView>,
     settings: Entity<SettingsView>,
-    
+
     /// Sidebar visibility
     show_sidebar: bool,
 }
@@ -32,7 +31,7 @@ impl RootView {
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         let current_page = Page::GetStarted;
         let window_handle = window.window_handle();
-        
+
         let root = Self {
             window: window_handle.clone(),
             current_page,
@@ -44,7 +43,7 @@ impl RootView {
             network_logs: cx.new(|cx| NetworkLogsView::new(window, cx)),
             settings: cx.new(|cx| SettingsView::new(window, cx)),
         };
-        
+
         // Set up the navigation callback for sidebar
         let weak_self = cx.weak_entity();
         root.sidebar.update(cx, |sidebar, _| {
@@ -56,7 +55,7 @@ impl RootView {
                 }
             }));
         });
-        
+
         // Set up title bar sidebar toggle callback
         let weak_self = cx.weak_entity();
         root.title_bar.update(cx, |title_bar, _| {
@@ -68,20 +67,20 @@ impl RootView {
                 }
             }));
         });
-        
+
         root
     }
-    
+
     pub fn set_page(&mut self, page: Page, cx: &mut Context<Self>) {
         self.current_page = page;
         cx.notify(); // Trigger re-render
     }
-    
+
     pub fn toggle_sidebar(&mut self, cx: &mut Context<Self>) {
         self.show_sidebar = !self.show_sidebar;
         cx.notify();
     }
-    
+
     fn render_sidebar(&self) -> impl IntoElement {
         div()
             .flex()
@@ -92,7 +91,7 @@ impl RootView {
             .overflow_hidden()
             .child(self.sidebar.clone())
     }
-    
+
     fn render_main_content(&self) -> impl IntoElement {
         div()
             .flex()
@@ -103,19 +102,17 @@ impl RootView {
             .child(self.title_bar.clone())
             .child(self.render_page_content())
     }
-    
+
     fn render_page_content(&self) -> impl IntoElement {
         div()
             .flex_1()
             .overflow_hidden()
-            .child(
-                match self.current_page {
-                    Page::GetStarted => div().child(self.get_started.clone()),
-                    Page::Connections => div().child(self.connections.clone()),
-                    Page::NetworkLogs => div().child(self.network_logs.clone()),
-                    Page::Settings => div().child(self.settings.clone()),
-                }
-            )
+            .child(match self.current_page {
+                Page::GetStarted => div().child(self.get_started.clone()),
+                Page::Connections => div().child(self.connections.clone()),
+                Page::NetworkLogs => div().child(self.network_logs.clone()),
+                Page::Settings => div().child(self.settings.clone()),
+            })
     }
 }
 

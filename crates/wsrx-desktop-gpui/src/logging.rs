@@ -1,9 +1,10 @@
 // Logging setup for wsrx-desktop-gpui
+use std::fs;
+
 use anyhow::Result;
 use directories::ProjectDirs;
-use std::fs;
 use tracing_appender::non_blocking;
-use tracing_subscriber::{fmt, prelude::*, EnvFilter};
+use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
 pub fn setup() -> Result<(
     tracing_appender::non_blocking::WorkerGuard,

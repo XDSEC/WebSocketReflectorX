@@ -1,7 +1,10 @@
 // Settings view - Application configuration
 use gpui::{Context, Render, Window, div, prelude::*};
-use crate::styles::colors;
-use crate::models::{Settings, Theme};
+
+use crate::{
+    models::{Settings, Theme},
+    styles::colors,
+};
 
 pub struct SettingsView {
     settings: Settings,
@@ -13,7 +16,7 @@ impl SettingsView {
             settings: Settings::default(),
         }
     }
-    
+
     fn render_section_title(&self, title: &str) -> impl IntoElement {
         let title = title.to_string();
         div()
@@ -22,7 +25,7 @@ impl SettingsView {
             .mb_3()
             .child(title)
     }
-    
+
     fn render_setting_row(&self, label: &str, value: &str) -> impl IntoElement {
         let label = label.to_string();
         let value = value.to_string();
@@ -33,18 +36,10 @@ impl SettingsView {
             .px_4()
             .py_3()
             .mb_2()
-            .bg(gpui::rgba(0x2a2a2aff))
+            .bg(gpui::rgba(0x2A2A2AFF))
             .rounded_md()
-            .child(
-                div()
-                    .text_color(colors::foreground())
-                    .child(label)
-            )
-            .child(
-                div()
-                    .text_color(gpui::rgba(0xaaaaaaff))
-                    .child(value)
-            )
+            .child(div().text_color(colors::foreground()).child(label))
+            .child(div().text_color(gpui::rgba(0xAAAAAAFF)).child(value))
     }
 }
 
@@ -61,7 +56,7 @@ impl Render for SettingsView {
                     .text_xl()
                     .text_color(colors::foreground())
                     .mb_6()
-                    .child("Settings")
+                    .child("Settings"),
             )
             .child(
                 div()
@@ -75,12 +70,20 @@ impl Render for SettingsView {
                             .child(self.render_section_title("Application"))
                             .child(self.render_setting_row(
                                 "Auto-start Daemon",
-                                if self.settings.daemon_auto_start { "Enabled" } else { "Disabled" }
+                                if self.settings.daemon_auto_start {
+                                    "Enabled"
+                                } else {
+                                    "Disabled"
+                                },
                             ))
                             .child(self.render_setting_row(
                                 "Show Network Logs",
-                                if self.settings.show_network_logs { "Enabled" } else { "Disabled" }
-                            ))
+                                if self.settings.show_network_logs {
+                                    "Enabled"
+                                } else {
+                                    "Disabled"
+                                },
+                            )),
                     )
                     .child(
                         div()
@@ -93,18 +96,17 @@ impl Render for SettingsView {
                                     Theme::Light => "Light",
                                     Theme::Dark => "Dark",
                                     Theme::Auto => "Auto",
-                                }
-                            ))
+                                },
+                            )),
                     )
                     .child(
                         div()
                             .flex()
                             .flex_col()
                             .child(self.render_section_title("Logging"))
-                            .child(self.render_setting_row(
-                                "Log Level",
-                                &self.settings.logging_level
-                            ))
+                            .child(
+                                self.render_setting_row("Log Level", &self.settings.logging_level),
+                            ),
                     )
                     .child(
                         div()
@@ -115,34 +117,35 @@ impl Render for SettingsView {
                                 div()
                                     .px_4()
                                     .py_3()
-                                    .bg(gpui::rgba(0x2a2a2aff))
+                                    .bg(gpui::rgba(0x2A2A2AFF))
                                     .rounded_md()
                                     .child(
-                                        div()
-                                            .flex()
-                                            .flex_col()
-                                            .gap_2()
-                                            .child(
-                                                div()
-                                                    .text_color(colors::foreground())
-                                                    .child("WebSocket Reflector X")
-                                            )
-                                            .child(
-                                                div()
-                                                    .text_sm()
-                                                    .text_color(gpui::rgba(0xaaaaaaff))
-                                                    .child("Version 0.5.14")
-                                            )
-                                            .child(
-                                                div()
-                                                    .text_sm()
-                                                    .text_color(gpui::rgba(0x888888ff))
-                                                    .child("Controlled TCP-over-WebSocket tunneling tool")
-                                            )
-                                    )
-                            )
-                    )
+                                    div()
+                                        .flex()
+                                        .flex_col()
+                                        .gap_2()
+                                        .child(
+                                            div()
+                                                .text_color(colors::foreground())
+                                                .child("WebSocket Reflector X"),
+                                        )
+                                        .child(
+                                            div()
+                                                .text_sm()
+                                                .text_color(gpui::rgba(0xAAAAAAFF))
+                                                .child("Version 0.5.14"),
+                                        )
+                                        .child(
+                                            div()
+                                                .text_sm()
+                                                .text_color(gpui::rgba(0x888888FF))
+                                                .child(
+                                                    "Controlled TCP-over-WebSocket tunneling tool",
+                                                ),
+                                        ),
+                                ),
+                            ),
+                    ),
             )
     }
 }
-
