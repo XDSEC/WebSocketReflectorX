@@ -96,7 +96,7 @@ This document compares the GPUI implementation with the original Slint implement
 ## Components Library
 
 ### Implemented Components
-- [x] **Button** - With variants (Primary, Secondary, Danger)
+- [x] **Button** - With variants (Primary, Secondary, Danger) - *needs Zed-style refactor*
 - [x] **Modal** - Dialog overlay with backdrop
 - [x] **Input** - Text input with placeholder (not fully functional)
 - [x] **StatusIndicator** - Color-coded status dots
@@ -110,6 +110,12 @@ This document compares the GPUI implementation with the original Slint implement
 - [ ] **Tab control** - Tabbed interface
 - [ ] **Progress bar** - Loading indicator
 - [ ] **Tooltip** - Hover info display
+
+### Component Improvements Needed
+- [ ] **Refactor Button** - Follow Zed's pattern with traits (Clickable, Disableable, etc.)
+- [ ] **Add prelude module** - Export common types and traits
+- [ ] **Add component traits** - Clickable, Disableable, Fixed, StyledExt, Toggleable
+- [ ] **Improve styling** - Use consistent spacing/color helpers
 
 ## Bridge Layer / Integration
 
@@ -135,47 +141,68 @@ This document compares the GPUI implementation with the original Slint implement
 ## Platform-Specific Features
 
 ### macOS
+- [x] **Build configuration** - Fixed linker flag issue
 - [ ] **Custom window chrome** - Not implemented
 - [ ] **Title bar handling** - Not implemented
 - [ ] **DMG packaging** - Not set up for GPUI app
 
 ### Windows
+- [x] **Build configuration** - Working with NASM/Ninja
 - [ ] **NSIS installer** - Not set up for GPUI app
 - [ ] **Portable package** - Not set up
 - [ ] **Window chrome** - Not implemented
 
 ### Linux
+- [x] **Build configuration** - Working with X11 dependencies
 - [ ] **AppImage** - Not set up for GPUI app
 - [ ] **Desktop file** - Not created
 - [ ] **Window chrome** - Not implemented
 
 ## Build & Deployment
 - [x] **GitHub workflow** - Created for Linux/Windows/macOS
+- [x] **macOS build fix** - Removed unsupported linker flag
 - [ ] **Artifact generation** - Workflow ready but untested
 - [ ] **Release automation** - Not configured
 - [ ] **Code signing** - Not configured
 - [ ] **Update mechanism** - Not implemented
 
+## Code Quality & Patterns
+
+### Following Zed Patterns
+- [ ] **Component prelude** - Not implemented (Zed has comprehensive prelude)
+- [ ] **Component traits** - Not implemented (Clickable, Disableable, etc.)
+- [ ] **Styled extensions** - Partial (could be more comprehensive)
+- [ ] **Builder patterns** - Basic (needs enhancement)
+- [ ] **Documentation** - Minimal (Zed has extensive docs)
+
+### Needed Improvements
+- [ ] **Refactor Button** - Use Zed's ButtonLike + traits pattern
+- [ ] **Add animation helpers** - Duration, easing, direction
+- [ ] **Color system** - Add Color enum like Zed
+- [ ] **Spacing helpers** - h_flex, v_flex, h_group, v_group
+- [ ] **Typography traits** - StyledTypography trait
+
 ## Summary Statistics
 
-**Overall Progress**: ~30% complete
+**Overall Progress**: ~32% complete (up from 30%)
 
 ### By Category:
 - **Design System**: 60% (colors good, animations missing)
-- **Layout**: 50% (basic structure, missing chrome/controls)
+- **Layout**: 50% (structure done, chrome missing)  
 - **Pages**: 40% (structure exists, functionality missing)
-- **Components**: 35% (4/11 components implemented)
+- **Components**: 35% (4/11 components, need refactoring)
 - **Bridges**: 40% (structure exists, not functional)
 - **i18n**: 0% (not started)
-- **Platform Features**: 10% (basic structure only)
-- **Build System**: 80% (workflow ready, packaging needed)
+- **Platform Features**: 25% (build fixes applied)
+- **Build System**: 85% (macOS fixed, workflow ready)
+- **Code Patterns**: 20% (basic patterns, need Zed alignment)
 
 ### Priority Items for Next Phase:
-1. **Implement window controls and title bar** - Critical for usability
-2. **Connect bridges to UI** - Make functionality work
-3. **Add missing interactive components** (Checkbox, Select, etc.)
-4. **Implement theme switching** - Light/dark mode toggle
-5. **Add icons to sidebar** - Visual polish
-6. **Wire up daemon start/stop** - Core functionality
-7. **Test build workflow** - Ensure artifacts work
-8. **Add animations/transitions** - Polish and feel
+1. **✅ Fix macOS build** - DONE (removed unsupported linker flag)
+2. **Refactor Button with Zed patterns** - Add traits and builder methods
+3. **Add component prelude** - Export common types and traits
+4. **Implement missing components** - Focus on Checkbox, Select first
+5. **Wire up bridges** - Make daemon control functional
+6. **Add animations** - Duration constants and transitions
+7. **Improve documentation** - Add examples and usage docs
+8. **Test build artifacts** - Verify workflow produces working binaries
