@@ -13,6 +13,7 @@ mod icons;
 mod logging;
 mod models;
 mod styles;
+mod ui_logger;
 mod views;
 
 // Initialize i18n at crate root with TOML locale files
