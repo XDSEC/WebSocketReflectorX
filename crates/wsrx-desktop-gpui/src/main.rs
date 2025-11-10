@@ -1,7 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::Result;
-use gpui::{App, AppContext, Application, Bounds, WindowBounds, WindowOptions, px, size};
+use gpui::{
+    App, AppContext, Application, Bounds, TitlebarOptions, WindowBounds, WindowOptions, px, size,
+};
 
 mod bridges;
 mod components;
@@ -36,10 +38,22 @@ fn main() -> Result<()> {
         // Create main window with centered bounds
         let bounds = Bounds::centered(None, size(px(1200.0), px(800.0)), cx);
 
+        // Platform-specific titlebar configuration
+        #[cfg(target_os = "macos")]
+        let titlebar_config = Some(TitlebarOptions {
+            title: Some("WebSocket Reflector X".into()),
+            appears_transparent: true,
+            traffic_light_position: Some(gpui::point(px(16.0), px(18.0))),
+            ..Default::default()
+        });
+
+        #[cfg(not(target_os = "macos"))]
+        let titlebar_config = None;
+
         cx.open_window(
             WindowOptions {
                 window_bounds: Some(WindowBounds::Windowed(bounds)),
-                titlebar: None,
+                titlebar: titlebar_config,
                 focus: true,
                 ..Default::default()
             },

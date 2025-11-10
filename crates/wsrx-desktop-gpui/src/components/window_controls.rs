@@ -94,11 +94,7 @@ impl Render for WindowControls {
                             .on_click({
                                 let window = window.clone();
                                 cx.listener(move |_this, _event, _window, cx| {
-                                    window
-                                        .update(cx, |_view, window, _cx| {
-                                            window.remove_window();
-                                        })
-                                        .ok();
+                                    cx.quit();
                                 })
                             })
                             .child(
