@@ -14,9 +14,45 @@ pub struct NetworkLogsView {
 
 impl NetworkLogsView {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
-        Self {
-            logs: VecDeque::new(),
-        }
+        // Add some sample logs for demonstration
+        let mut logs = VecDeque::new();
+        
+        logs.push_back(LogEntry {
+            timestamp: "2025-11-10 15:00:01".to_string(),
+            level: LogLevel::Info,
+            target: "wsrx::daemon".to_string(),
+            message: "Daemon started successfully".to_string(),
+        });
+        
+        logs.push_back(LogEntry {
+            timestamp: "2025-11-10 15:00:05".to_string(),
+            level: LogLevel::Debug,
+            target: "wsrx::tunnel".to_string(),
+            message: "Initializing WebSocket connection to ws://example.com".to_string(),
+        });
+        
+        logs.push_back(LogEntry {
+            timestamp: "2025-11-10 15:00:10".to_string(),
+            level: LogLevel::Info,
+            target: "wsrx::tunnel".to_string(),
+            message: "Connection established: 127.0.0.1:8080 → ws://example.com".to_string(),
+        });
+        
+        logs.push_back(LogEntry {
+            timestamp: "2025-11-10 15:00:15".to_string(),
+            level: LogLevel::Warn,
+            target: "wsrx::proxy".to_string(),
+            message: "High latency detected: 250ms".to_string(),
+        });
+        
+        logs.push_back(LogEntry {
+            timestamp: "2025-11-10 15:00:20".to_string(),
+            level: LogLevel::Error,
+            target: "wsrx::tunnel".to_string(),
+            message: "Connection failed: Connection refused".to_string(),
+        });
+
+        Self { logs }
     }
 
     fn log_level_color(&self, level: LogLevel) -> gpui::Rgba {
@@ -128,22 +164,45 @@ impl Render for NetworkLogsView {
                             .child("Network Logs"),
                     )
                     .child(
-                        div().flex().gap_2().child(
-                            div()
-                                .id("clear-logs-button")
-                                .px_3()
-                                .py_1()
-                                .text_sm()
-                                .bg(gpui::rgba(0x444444FF))
-                                .rounded_md()
-                                .cursor_pointer()
-                                .hover(|div| div.bg(gpui::rgba(0x555555FF)))
-                                .on_click(cx.listener(|this, _event, _window, cx| {
-                                    this.logs.clear();
-                                    cx.notify();
-                                }))
-                                .child("Clear"),
-                        ),
+                        div().flex().gap_2()
+                            .child(
+                                div()
+                                    .id("add-sample-log-button")
+                                    .px_3()
+                                    .py_1()
+                                    .text_sm()
+                                    .bg(colors::accent())
+                                    .rounded_md()
+                                    .cursor_pointer()
+                                    .hover(|div| div.bg(gpui::rgba(0x0088DDFF)))
+                                    .on_click(cx.listener(|this, _event, _window, cx| {
+                                        use chrono::Local;
+                                        this.logs.push_back(LogEntry {
+                                            timestamp: Local::now().format("%Y-%m-%d %H:%M:%S").to_string(),
+                                            level: LogLevel::Info,
+                                            target: "wsrx::test".to_string(),
+                                            message: format!("Sample log entry #{}", this.logs.len() + 1),
+                                        });
+                                        cx.notify();
+                                    }))
+                                    .child("Add Sample"),
+                            )
+                            .child(
+                                div()
+                                    .id("clear-logs-button")
+                                    .px_3()
+                                    .py_1()
+                                    .text_sm()
+                                    .bg(gpui::rgba(0x444444FF))
+                                    .rounded_md()
+                                    .cursor_pointer()
+                                    .hover(|div| div.bg(gpui::rgba(0x555555FF)))
+                                    .on_click(cx.listener(|this, _event, _window, cx| {
+                                        this.logs.clear();
+                                        cx.notify();
+                                    }))
+                                    .child("Clear"),
+                            ),
                     ),
             )
             .child(if self.logs.is_empty() {

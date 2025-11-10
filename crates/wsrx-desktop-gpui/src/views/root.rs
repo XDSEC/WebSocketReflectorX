@@ -101,8 +101,9 @@ impl RootView {
 
     fn render_page_content(&self) -> impl IntoElement {
         div()
+            .id("page-content")
             .flex_1()
-            .overflow_hidden() // Use basic overflow hidden
+            .overflow_y_scroll() // Allow vertical scrolling when content overflows
             .child(match self.current_page {
                 Page::GetStarted => div().h_full().child(self.get_started.clone()),
                 Page::Connections => div().h_full().child(self.connections.clone()),
