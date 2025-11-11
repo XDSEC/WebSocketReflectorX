@@ -3,10 +3,7 @@ use std::collections::VecDeque;
 
 use gpui::{Context, Render, SharedString, Window, div, prelude::*};
 
-use crate::{
-    models::{LogEntry, LogLevel},
-    styles::colors,
-};
+use crate::{models::LogEntry, styles::colors};
 
 pub struct NetworkLogsView {
     logs: VecDeque<LogEntry>,
@@ -19,35 +16,35 @@ impl NetworkLogsView {
         
         logs.push_back(LogEntry {
             timestamp: "2025-11-10 15:00:01".to_string(),
-            level: LogLevel::Info,
+            level: "INFO".to_string(),
             target: "wsrx::daemon".to_string(),
             message: "Daemon started successfully".to_string(),
         });
         
         logs.push_back(LogEntry {
             timestamp: "2025-11-10 15:00:05".to_string(),
-            level: LogLevel::Debug,
+            level: "DEBUG".to_string(),
             target: "wsrx::tunnel".to_string(),
             message: "Initializing WebSocket connection to ws://example.com".to_string(),
         });
         
         logs.push_back(LogEntry {
             timestamp: "2025-11-10 15:00:10".to_string(),
-            level: LogLevel::Info,
+            level: "INFO".to_string(),
             target: "wsrx::tunnel".to_string(),
             message: "Connection established: 127.0.0.1:8080 → ws://example.com".to_string(),
         });
         
         logs.push_back(LogEntry {
             timestamp: "2025-11-10 15:00:15".to_string(),
-            level: LogLevel::Warn,
+            level: "WARN".to_string(),
             target: "wsrx::proxy".to_string(),
             message: "High latency detected: 250ms".to_string(),
         });
         
         logs.push_back(LogEntry {
             timestamp: "2025-11-10 15:00:20".to_string(),
-            level: LogLevel::Error,
+            level: "ERROR".to_string(),
             target: "wsrx::tunnel".to_string(),
             message: "Connection failed: Connection refused".to_string(),
         });
@@ -55,28 +52,11 @@ impl NetworkLogsView {
         Self { logs }
     }
 
-    fn log_level_color(&self, level: LogLevel) -> gpui::Rgba {
-        match level {
-            LogLevel::Debug => gpui::rgba(0x888888FF),
-            LogLevel::Info => colors::foreground(),
-            LogLevel::Warn => colors::warning(),
-            LogLevel::Error => colors::error(),
-        }
-    }
-
-    fn log_level_text(&self, level: LogLevel) -> &'static str {
-        match level {
-            LogLevel::Debug => "DEBUG",
-            LogLevel::Info => "INFO",
-            LogLevel::Warn => "WARN",
-            LogLevel::Error => "ERROR",
-        }
-    }
-
     fn render_log_entry(&self, entry: &LogEntry, index: usize) -> impl IntoElement {
         let id = SharedString::from(format!("log-entry-{}", index));
-        let level_color = self.log_level_color(entry.level);
-        let level_text = self.log_level_text(entry.level);
+        let level_color = entry.level_color();
+        let level_text = &entry.level;
+        let opacity = entry.opacity();
 
         div()
             .id(id)
@@ -101,7 +81,7 @@ impl NetworkLogsView {
                     .text_sm()
                     .text_color(level_color)
                     .min_w_16()
-                    .child(level_text),
+                    .child(level_text.clone()),
             )
             .child(
                 div()
@@ -115,6 +95,7 @@ impl NetworkLogsView {
                     .flex_1()
                     .text_sm()
                     .text_color(colors::foreground())
+                    .opacity(opacity)
                     .child(entry.message.clone()),
             )
     }

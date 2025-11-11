@@ -2,28 +2,25 @@
 
 #![allow(dead_code)] // Events defined for future use
 
-use super::{Connection, LogEntry, Tunnel};
+use super::{Instance, LogEntry, Scope};
 
 /// Events that can occur in the application
 #[derive(Clone, Debug)]
 pub enum AppEvent {
     /// Page navigation event
-    NavigateToPage(super::app_state::Page),
+    NavigateToPage(super::app_state::PageId),
 
-    /// Tunnel-related events
-    TunnelCreated(Tunnel),
-    TunnelUpdated(Tunnel),
-    TunnelDeleted(String), // tunnel_id
-    TunnelEnabled(String),
-    TunnelDisabled(String),
-
-    /// Connection-related events
-    ConnectionEstablished(Connection),
-    ConnectionClosed(String), // connection_id
-    ConnectionError {
-        connection_id: String,
-        error: String,
-    },
+    /// Instance (tunnel) related events
+    InstanceCreated(Instance),
+    InstanceUpdated(Instance),
+    InstanceDeleted(String), // local address
+    
+    /// Scope-related events
+    ScopeAdded(Scope),
+    ScopeUpdated(Scope),
+    ScopeRemoved(String), // host
+    ScopeAllowed(String), // host
+    ScopeDeclined(String), // host
 
     /// Daemon-related events
     DaemonStarted,

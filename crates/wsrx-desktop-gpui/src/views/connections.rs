@@ -1,66 +1,51 @@
-// Connections view - Manage tunnels and connections
-use std::net::SocketAddr;
-
+// Connections view - Manage instances (tunnels) and connections
 use gpui::{Context, Render, SharedString, Window, div, prelude::*, px};
 
-use crate::{models::Tunnel, styles::colors};
+use crate::{models::Instance, styles::colors};
 
 pub struct ConnectionsView {
-    tunnels: Vec<Tunnel>,
+    instances: Vec<Instance>,
     show_add_modal: bool,
-    new_tunnel_name: String,
-    new_tunnel_local: String,
-    new_tunnel_remote: String,
+    new_instance_label: String,
+    new_instance_local: String,
+    new_instance_remote: String,
 }
 
 impl ConnectionsView {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
         Self {
-            tunnels: Vec::new(),
+            instances: Vec::new(),
             show_add_modal: false,
-            new_tunnel_name: String::new(),
-            new_tunnel_local: String::from("127.0.0.1:8080"),
-            new_tunnel_remote: String::from("ws://example.com"),
+            new_instance_label: String::new(),
+            new_instance_local: String::from("127.0.0.1:8080"),
+            new_instance_remote: String::from("ws://example.com"),
         }
     }
 
-    fn add_tunnel(&mut self, cx: &mut Context<Self>) {
-        // Parse addresses
-        let local_addr: Result<SocketAddr, _> = self.new_tunnel_local.parse();
-        let remote_addr: Result<SocketAddr, _> = self.new_tunnel_remote.parse();
+    fn add_instance(&mut self, cx: &mut Context<Self>) {
+        let instance = Instance {
+            label: if self.new_instance_label.is_empty() {
+                format!("Instance {}", self.instances.len() + 1)
+            } else {
+                self.new_instance_label.clone()
+            },
+            local: self.new_instance_local.clone(),
+            remote: self.new_instance_remote.clone(),
+            latency: -1, // Not connected yet
+            scope_host: "default-scope".to_string(),
+        };
 
-        if let (Ok(local), Ok(remote)) = (local_addr, remote_addr) {
-            let tunnel = Tunnel {
-                id: format!("tunnel-{}", self.tunnels.len()),
-                name: if self.new_tunnel_name.is_empty() {
-                    format!("Tunnel {}", self.tunnels.len() + 1)
-                } else {
-                    self.new_tunnel_name.clone()
-                },
-                local_addr: local,
-                remote_addr: remote,
-                enabled: true,
-            };
-
-            self.tunnels.push(tunnel);
-            self.show_add_modal = false;
-            self.new_tunnel_name.clear();
-            self.new_tunnel_local = String::from("127.0.0.1:8080");
-            self.new_tunnel_remote = String::from("ws://example.com");
-            cx.notify();
-        }
+        self.instances.push(instance);
+        self.show_add_modal = false;
+        self.new_instance_label.clear();
+        self.new_instance_local = String::from("127.0.0.1:8080");
+        self.new_instance_remote = String::from("ws://example.com");
+        cx.notify();
     }
 
-    fn remove_tunnel(&mut self, index: usize, cx: &mut Context<Self>) {
-        if index < self.tunnels.len() {
-            self.tunnels.remove(index);
-            cx.notify();
-        }
-    }
-
-    fn toggle_tunnel(&mut self, index: usize, cx: &mut Context<Self>) {
-        if let Some(tunnel) = self.tunnels.get_mut(index) {
-            tunnel.enabled = !tunnel.enabled;
+    fn remove_instance(&mut self, index: usize, cx: &mut Context<Self>) {
+        if index < self.instances.len() {
+            self.instances.remove(index);
             cx.notify();
         }
     }
@@ -77,12 +62,12 @@ impl ConnectionsView {
                 div()
                     .text_xl()
                     .text_color(gpui::rgba(0xAAAAAAFF))
-                    .child("No tunnels configured"),
+                    .child("No instances configured"),
             )
             .child(
                 div()
                     .text_color(gpui::rgba(0x888888FF))
-                    .child("Click the + button to create your first tunnel"),
+                    .child("Click the + button to create your first instance"),
             )
     }
 }
@@ -120,10 +105,10 @@ impl Render for ConnectionsView {
                                 this.show_add_modal = true;
                                 cx.notify();
                             }))
-                            .child("+ Add Tunnel"),
+                            .child("+ Add Instance"),
                     ),
             )
-            .child(if self.tunnels.is_empty() {
+            .child(if self.instances.is_empty() {
                 self.render_empty_state().into_any_element()
             } else {
                 div()
@@ -131,12 +116,17 @@ impl Render for ConnectionsView {
                     .flex_col()
                     .gap_2()
                     .children(
-                        self.tunnels
+                        self.instances
                             .iter()
                             .enumerate()
-                            .map(|(index, tunnel)| {
-                                let id = SharedString::from(format!("tunnel-{}", index));
-                                let status_color = if tunnel.enabled {
+                            .map(|(index, instance)| {
+                                let id = SharedString::from(format!("instance-{}", index));
+                                let latency_text = if instance.latency >= 0 {
+                                    format!("{} ms", instance.latency)
+                                } else {
+                                    "--".to_string()
+                                };
+                                let status_color = if instance.latency >= 0 {
                                     colors::success()
                                 } else {
                                     gpui::rgba(0x888888FF)
@@ -167,7 +157,7 @@ impl Render for ConnectionsView {
                                                     .child(
                                                         div()
                                                             .text_color(colors::foreground())
-                                                            .child(tunnel.name.clone()),
+                                                            .child(instance.label.clone()),
                                                     )
                                                     .child(
                                                         div()
@@ -175,7 +165,7 @@ impl Render for ConnectionsView {
                                                             .text_color(gpui::rgba(0xAAAAAAFF))
                                                             .child(format!(
                                                                 "{} → {}",
-                                                                tunnel.local_addr, tunnel.remote_addr
+                                                                instance.local, instance.remote
                                                             )),
                                                     ),
                                             ),
@@ -186,28 +176,12 @@ impl Render for ConnectionsView {
                                             .gap_2()
                                             .child(
                                                 div()
-                                                    .id(SharedString::from(format!("toggle-{}", index)))
                                                     .px_3()
                                                     .py_1()
                                                     .rounded_md()
                                                     .text_sm()
-                                                    .cursor_pointer()
-                                                    .bg(if tunnel.enabled {
-                                                        gpui::rgba(0x28A745FF)
-                                                    } else {
-                                                        gpui::rgba(0x555555FF)
-                                                    })
-                                                    .hover(|div| {
-                                                        div.bg(if tunnel.enabled {
-                                                            gpui::rgba(0x218838FF)
-                                                        } else {
-                                                            gpui::rgba(0x666666FF)
-                                                        })
-                                                    })
-                                                    .on_click(cx.listener(move |this, _event, _window, cx| {
-                                                        this.toggle_tunnel(index, cx);
-                                                    }))
-                                                    .child(if tunnel.enabled { "Enabled" } else { "Disabled" }),
+                                                    .text_color(status_color)
+                                                    .child(latency_text),
                                             )
                                             .child(
                                                 div()
@@ -220,7 +194,7 @@ impl Render for ConnectionsView {
                                                     .bg(colors::error())
                                                     .hover(|div| div.bg(gpui::rgba(0xFF6655FF)))
                                                     .on_click(cx.listener(move |this, _event, _window, cx| {
-                                                        this.remove_tunnel(index, cx);
+                                                        this.remove_instance(index, cx);
                                                     }))
                                                     .child("Delete"),
                                             ),
@@ -261,7 +235,7 @@ impl ConnectionsView {
                         div()
                             .text_xl()
                             .text_color(colors::foreground())
-                            .child("Add New Tunnel"),
+                            .child("Add New Instance"),
                     )
                     .child(
                         div()
@@ -281,7 +255,7 @@ impl ConnectionsView {
                                     .rounded_md()
                                     .bg(gpui::rgba(0x2A2A2AFF))
                                     .text_color(colors::foreground())
-                                    .child("Tunnel 1"),
+                                    .child(self.new_instance_label.clone()),
                             ),
                     )
                     .child(
@@ -302,7 +276,7 @@ impl ConnectionsView {
                                     .rounded_md()
                                     .bg(gpui::rgba(0x2A2A2AFF))
                                     .text_color(colors::foreground())
-                                    .child(self.new_tunnel_local.clone()),
+                                    .child(self.new_instance_local.clone()),
                             ),
                     )
                     .child(
@@ -323,7 +297,7 @@ impl ConnectionsView {
                                     .rounded_md()
                                     .bg(gpui::rgba(0x2A2A2AFF))
                                     .text_color(colors::foreground())
-                                    .child(self.new_tunnel_remote.clone()),
+                                    .child(self.new_instance_remote.clone()),
                             ),
                     )
                     .child(
@@ -356,7 +330,7 @@ impl ConnectionsView {
                                     .cursor_pointer()
                                     .hover(|div| div.bg(gpui::rgba(0x0088DDFF)))
                                     .on_click(cx.listener(|this, _event, _window, cx| {
-                                        this.add_tunnel(cx);
+                                        this.add_instance(cx);
                                     }))
                                     .child("Add"),
                             ),
