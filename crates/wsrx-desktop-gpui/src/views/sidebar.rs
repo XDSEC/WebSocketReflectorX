@@ -109,12 +109,12 @@ impl Render for SidebarView {
             .bg(colors::layer_1())
             .border_r_1()
             .border_color(colors::element_border())
-            .child(self.render_tab("home", t!("get_started"), "icons/home.svg", cx))
-            .child(self.render_tab("logs", t!("network_logs"), "icons/code.svg", cx))
+            .child(self.render_tab("home", &t!("get_started"), "icons/home.svg", cx))
+            .child(self.render_tab("logs", &t!("network_logs"), "icons/code.svg", cx))
             .child(
                 // Spacer
                 div().flex_1(),
             )
-            .child(self.render_tab("settings", t!("settings"), "icons/settings.svg", cx))
+            .child(self.render_tab("settings", &t!("settings"), "icons/settings.svg", cx))
     }
 }

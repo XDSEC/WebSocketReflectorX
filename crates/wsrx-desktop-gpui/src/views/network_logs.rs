@@ -160,7 +160,7 @@ impl Render for NetworkLogsView {
                                         use chrono::Local;
                                         this.logs.push_back(LogEntry {
                                             timestamp: Local::now().format("%Y-%m-%d %H:%M:%S").to_string(),
-                                            level: LogLevel::Info,
+                                            level: "INFO".to_string(),
                                             target: "wsrx::test".to_string(),
                                             message: format!("Sample log entry #{}", this.logs.len() + 1),
                                         });
