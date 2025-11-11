@@ -11,45 +11,19 @@ pub struct NetworkLogsView {
 
 impl NetworkLogsView {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
-        // Add some sample logs for demonstration
-        let mut logs = VecDeque::new();
-        
-        logs.push_back(LogEntry {
-            timestamp: "2025-11-10 15:00:01".to_string(),
-            level: "INFO".to_string(),
-            target: "wsrx::daemon".to_string(),
-            message: "Daemon started successfully".to_string(),
-        });
-        
-        logs.push_back(LogEntry {
-            timestamp: "2025-11-10 15:00:05".to_string(),
-            level: "DEBUG".to_string(),
-            target: "wsrx::tunnel".to_string(),
-            message: "Initializing WebSocket connection to ws://example.com".to_string(),
-        });
-        
-        logs.push_back(LogEntry {
-            timestamp: "2025-11-10 15:00:10".to_string(),
-            level: "INFO".to_string(),
-            target: "wsrx::tunnel".to_string(),
-            message: "Connection established: 127.0.0.1:8080 → ws://example.com".to_string(),
-        });
-        
-        logs.push_back(LogEntry {
-            timestamp: "2025-11-10 15:00:15".to_string(),
-            level: "WARN".to_string(),
-            target: "wsrx::proxy".to_string(),
-            message: "High latency detected: 250ms".to_string(),
-        });
-        
-        logs.push_back(LogEntry {
-            timestamp: "2025-11-10 15:00:20".to_string(),
-            level: "ERROR".to_string(),
-            target: "wsrx::tunnel".to_string(),
-            message: "Connection failed: Connection refused".to_string(),
-        });
+        // Start with empty logs - will be populated from tracing
+        Self {
+            logs: VecDeque::new(),
+        }
+    }
 
-        Self { logs }
+    /// Add a log entry (called from RootView when logs are received)
+    pub fn add_log(&mut self, entry: LogEntry) {
+        // Keep max 1000 logs to prevent memory issues
+        if self.logs.len() >= 1000 {
+            self.logs.pop_front();
+        }
+        self.logs.push_back(entry);
     }
 
     fn render_log_entry(&self, entry: &LogEntry, index: usize) -> impl IntoElement {
@@ -148,28 +122,6 @@ impl Render for NetworkLogsView {
                         div().flex().gap_2()
                             .child(
                                 div()
-                                    .id("add-sample-log-button")
-                                    .px_3()
-                                    .py_1()
-                                    .text_sm()
-                                    .bg(colors::accent())
-                                    .rounded_md()
-                                    .cursor_pointer()
-                                    .hover(|div| div.bg(gpui::rgba(0x0088DDFF)))
-                                    .on_click(cx.listener(|this, _event, _window, cx| {
-                                        use chrono::Local;
-                                        this.logs.push_back(LogEntry {
-                                            timestamp: Local::now().format("%Y-%m-%d %H:%M:%S").to_string(),
-                                            level: "INFO".to_string(),
-                                            target: "wsrx::test".to_string(),
-                                            message: format!("Sample log entry #{}", this.logs.len() + 1),
-                                        });
-                                        cx.notify();
-                                    }))
-                                    .child("Add Sample"),
-                            )
-                            .child(
-                                div()
                                     .id("clear-logs-button")
                                     .px_3()
                                     .py_1()
@@ -182,7 +134,7 @@ impl Render for NetworkLogsView {
                                         this.logs.clear();
                                         cx.notify();
                                     }))
-                                    .child("Clear"),
+                                    .child("Clear Logs"),
                             ),
                     ),
             )

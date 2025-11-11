@@ -2,7 +2,9 @@
 use gpui::{Context, Entity, Render, Window, div, prelude::*};
 
 use super::{ConnectionsView, GetStartedView, NetworkLogsView, SettingsView, SidebarView};
-use crate::{components::title_bar::TitleBar, models::app_state::PageId, styles::colors};
+use crate::{
+    components::title_bar::TitleBar, models::{LogEntry, app_state::PageId}, styles::colors,
+};
 
 pub struct RootView {
     /// Current active page (string-based: "home", "logs", "settings", "default-scope", or scope.host)
@@ -75,6 +77,14 @@ impl RootView {
     pub fn toggle_sidebar(&mut self, cx: &mut Context<Self>) {
         self.show_sidebar = !self.show_sidebar;
         cx.notify();
+    }
+
+    /// Add a log entry to the network logs view
+    pub fn add_log(&mut self, log_entry: LogEntry, cx: &mut Context<Self>) {
+        self.network_logs.update(cx, |logs_view, cx| {
+            logs_view.add_log(log_entry);
+            cx.notify();
+        });
     }
 
     fn render_sidebar(&self) -> impl IntoElement {

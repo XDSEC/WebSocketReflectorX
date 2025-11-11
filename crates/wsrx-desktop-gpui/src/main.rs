@@ -50,8 +50,10 @@ impl AssetSource for EmbeddedAssets {
 }
 
 fn main() -> Result<()> {
-    // Initialize logging
-    let (_console_guard, _file_guard) = logging::setup()?;
+    // Initialize logging with UI logger
+    let (_console_guard, _file_guard, mut log_receiver) = ui_logger::setup_with_ui()?;
+
+    tracing::info!("Starting wsrx-desktop-gpui");
 
     // Initialize i18n with system locale
     i18n::init_locale();
@@ -71,7 +73,7 @@ fn main() -> Result<()> {
             ..Default::default()
         });
 
-        cx.open_window(
+        let window_entity = cx.open_window(
             WindowOptions {
                 window_bounds: Some(WindowBounds::Windowed(bounds)),
                 titlebar: titlebar_config,
@@ -89,6 +91,19 @@ fn main() -> Result<()> {
             |window, cx| cx.new(|cx| RootView::new(window, cx)),
         )
         .expect("Failed to open window");
+
+        // Spawn task to receive logs and update the UI
+        let root_view = window_entity.root_view(cx).expect("Failed to get root view");
+        cx.spawn(|mut cx| async move {
+            while let Some(log_entry) = log_receiver.recv().await {
+                let _ = root_view.update(&mut cx, |root, cx| {
+                    root.add_log(log_entry, cx);
+                });
+            }
+        })
+        .detach();
+
+        tracing::info!("Application window created");
 
         cx.activate(true);
     });
