@@ -3,12 +3,14 @@ use gpui::{Context, Entity, Render, Window, div, prelude::*};
 
 use super::{ConnectionsView, GetStartedView, NetworkLogsView, SettingsView, SidebarView};
 use crate::{
-    components::title_bar::TitleBar, models::{LogEntry, app_state::PageId}, styles::colors,
+    components::title_bar::TitleBar,
+    models::{LogEntry, app_state::Page},
+    styles::colors,
 };
 
 pub struct RootView {
-    /// Current active page (string-based: "home", "logs", "settings", "default-scope", or scope.host)
-    current_page: PageId,
+    /// Current active page
+    current_page: Page,
 
     /// Title bar
     title_bar: Entity<TitleBar>,
@@ -28,14 +30,13 @@ pub struct RootView {
 
 impl RootView {
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
-        let current_page = "home".to_string();
         let window_handle = window.window_handle();
 
         let root = Self {
-            current_page: current_page.clone(),
+            current_page: Default::default(),
             show_sidebar: true,
-            title_bar: cx.new(|_cx| TitleBar::new(window_handle.clone())),
-            sidebar: cx.new(|cx| SidebarView::new(window, cx, current_page)),
+            title_bar: cx.new(|_cx| TitleBar::new(window_handle)),
+            sidebar: cx.new(|cx| SidebarView::new(window, cx, Default::default())),
             get_started: cx.new(|cx| GetStartedView::new(window, cx)),
             connections: cx.new(|cx| ConnectionsView::new(window, cx)),
             network_logs: cx.new(|cx| NetworkLogsView::new(window, cx)),
@@ -69,7 +70,7 @@ impl RootView {
         root
     }
 
-    pub fn set_page(&mut self, page: PageId, cx: &mut Context<Self>) {
+    pub fn set_page(&mut self, page: Page, cx: &mut Context<Self>) {
         self.current_page = page;
         cx.notify(); // Trigger re-render
     }
@@ -110,15 +111,14 @@ impl RootView {
     }
 
     fn render_page_content(&self) -> impl IntoElement {
-        let page = self.current_page.as_str();
         div()
             .id("page-content")
             .flex_1()
             .overflow_y_scroll() // Allow vertical scrolling when content overflows
-            .child(match page {
-                "home" => div().h_full().child(self.get_started.clone()),
-                "logs" => div().h_full().child(self.network_logs.clone()),
-                "settings" => div().h_full().child(self.settings.clone()),
+            .child(match self.current_page {
+                Page::Home => div().h_full().child(self.get_started.clone()),
+                Page::Logs => div().h_full().child(self.network_logs.clone()),
+                Page::Settings => div().h_full().child(self.settings.clone()),
                 _ => div().h_full().child(self.connections.clone()), // Scope pages show connections
             })
     }

@@ -148,7 +148,9 @@ impl Render for ConnectionsView {
                                             .flex()
                                             .items_center()
                                             .gap_3()
-                                            .child(div().w_3().h_3().rounded_full().bg(status_color))
+                                            .child(
+                                                div().w_3().h_3().rounded_full().bg(status_color),
+                                            )
                                             .child(
                                                 div()
                                                     .flex()
@@ -185,7 +187,10 @@ impl Render for ConnectionsView {
                                             )
                                             .child(
                                                 div()
-                                                    .id(SharedString::from(format!("delete-{}", index)))
+                                                    .id(SharedString::from(format!(
+                                                        "delete-{}",
+                                                        index
+                                                    )))
                                                     .px_3()
                                                     .py_1()
                                                     .rounded_md()
@@ -193,9 +198,11 @@ impl Render for ConnectionsView {
                                                     .cursor_pointer()
                                                     .bg(colors::error())
                                                     .hover(|div| div.bg(gpui::rgba(0xFF6655FF)))
-                                                    .on_click(cx.listener(move |this, _event, _window, cx| {
-                                                        this.remove_instance(index, cx);
-                                                    }))
+                                                    .on_click(cx.listener(
+                                                        move |this, _event, _window, cx| {
+                                                            this.remove_instance(index, cx);
+                                                        },
+                                                    ))
                                                     .child("Delete"),
                                             ),
                                     )

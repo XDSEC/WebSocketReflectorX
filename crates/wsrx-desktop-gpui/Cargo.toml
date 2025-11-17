@@ -47,6 +47,7 @@ toml       = { workspace = true }
 # Error handling and utilities
 anyhow    = "1.0"
 chrono    = { workspace = true }
+phf       = { version = "0.13", features = ["macros"] }
 thiserror = { workspace = true }
 url       = { workspace = true }
 
@@ -66,9 +67,9 @@ tower-http        = { workspace = true }
 [build-dependencies]
 build-target  = { workspace = true }
 git-version   = { workspace = true }
+rust-i18n     = "3"
 rustc_version = { workspace = true }
 winres        = { workspace = true }
-rust-i18n     = "3"
 
 [[bin]]
 name = "wsrx-desktop-gpui"
@@ -85,5 +86,5 @@ short_description = "Controlled TCP-over-WebSocket forwarding tunnel (GPUI Editi
 icon = [
   "../../arts/logo.png",
   "../../macos/WebSocketReflectorX.icns",
-  "../../windows/WebSocketReflectorX.ico",
+  "../../windows/WebSocketReflectorX.ico"
 ]

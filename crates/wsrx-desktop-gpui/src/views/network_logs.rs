@@ -119,23 +119,22 @@ impl Render for NetworkLogsView {
                             .child("Network Logs"),
                     )
                     .child(
-                        div().flex().gap_2()
-                            .child(
-                                div()
-                                    .id("clear-logs-button")
-                                    .px_3()
-                                    .py_1()
-                                    .text_sm()
-                                    .bg(gpui::rgba(0x444444FF))
-                                    .rounded_md()
-                                    .cursor_pointer()
-                                    .hover(|div| div.bg(gpui::rgba(0x555555FF)))
-                                    .on_click(cx.listener(|this, _event, _window, cx| {
-                                        this.logs.clear();
-                                        cx.notify();
-                                    }))
-                                    .child("Clear Logs"),
-                            ),
+                        div().flex().gap_2().child(
+                            div()
+                                .id("clear-logs-button")
+                                .px_3()
+                                .py_1()
+                                .text_sm()
+                                .bg(gpui::rgba(0x444444FF))
+                                .rounded_md()
+                                .cursor_pointer()
+                                .hover(|div| div.bg(gpui::rgba(0x555555FF)))
+                                .on_click(cx.listener(|this, _event, _window, cx| {
+                                    this.logs.clear();
+                                    cx.notify();
+                                }))
+                                .child("Clear Logs"),
+                        ),
                     ),
             )
             .child(if self.logs.is_empty() {

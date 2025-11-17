@@ -6,6 +6,7 @@
 
 use std::collections::HashMap;
 
+use gpui::SharedString;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -32,7 +33,7 @@ pub struct Instance {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Scope {
     /// Unique identifier (domain name)
-    pub host: String,
+    pub host: SharedString,
     /// Display name for the scope
     pub name: String,
     /// Current state: "pending", "allowed", "syncing"

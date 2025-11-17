@@ -1,7 +1,7 @@
 // Application State - Global application state management
 // Architecture: Scope-centric with dynamic page navigation
 
-#![allow(dead_code)] // State methods defined for future use
+use gpui::SharedString;
 
 use super::{Instance, LogEntry, Scope, Settings};
 
@@ -11,16 +11,36 @@ use super::{Instance, LogEntry, Scope, Settings};
 /// - "settings": Settings page
 /// - "default-scope": User's manual tunnels
 /// - <domain>: External scope (e.g., "gzctf.example.com")
-pub type PageId = String;
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub enum Page {
+    #[default]
+    Home,
+    Logs,
+    Settings,
+    DefaultScope,
+    Scope(SharedString),
+}
+
+impl Page {
+    pub fn as_page_id(&self) -> &str {
+        match self {
+            Page::Home => "home",
+            Page::Logs => "logs",
+            Page::Settings => "settings",
+            Page::DefaultScope => "default",
+            Page::Scope(scope) => scope,
+        }
+    }
+}
 
 /// Global UI state
 pub struct UiState {
     /// Current active page/scope
-    pub page: PageId,
-    
+    pub page: Page,
+
     /// Current scope for connections page
     pub current_scope: Option<Scope>,
-    
+
     /// Whether sidebar is visible
     pub show_sidebar: bool,
 }
@@ -28,26 +48,26 @@ pub struct UiState {
 impl UiState {
     pub fn new() -> Self {
         Self {
-            page: "home".to_string(),
+            page: Page::Home,
             current_scope: None,
             show_sidebar: true,
         }
     }
-    
+
     /// Navigate to a page
-    pub fn navigate_to(&mut self, page: PageId) {
+    pub fn navigate_to(&mut self, page: Page) {
         self.page = page;
     }
-    
+
     /// Change to a specific scope (for connections page)
     pub fn change_scope(&mut self, scope: Scope) {
+        self.page = Page::Scope(scope.host.clone());
         self.current_scope = Some(scope.clone());
-        self.page = scope.host.clone();
     }
-    
+
     /// Check if current page is a scope (connections page)
     pub fn is_scope_page(&self) -> bool {
-        self.page != "home" && self.page != "logs" && self.page != "settings"
+        matches!(self.page, Page::Scope(_) | Page::DefaultScope)
     }
 }
 

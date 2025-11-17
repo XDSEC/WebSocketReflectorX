@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use gpui::{
-    App, AppContext, Application, AssetSource, Bounds, SharedString, TitlebarOptions,
+    App, AppContext, Application, AssetSource, AsyncApp, Bounds, SharedString, TitlebarOptions,
     WindowBounds, WindowDecorations, WindowKind, WindowOptions, point, px, size,
 };
 
@@ -13,7 +13,6 @@ mod icons;
 mod logging;
 mod models;
 mod styles;
-mod ui_logger;
 mod views;
 
 // Initialize i18n at crate root with TOML locale files
@@ -30,28 +29,22 @@ include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 use views::RootView;
 
 /// Asset source that loads embedded SVG icons from binary
-struct EmbeddedAssets;
+struct IconAssets;
 
-impl AssetSource for EmbeddedAssets {
+impl AssetSource for IconAssets {
     fn load(&self, path: &str) -> Result<Option<std::borrow::Cow<'static, [u8]>>> {
-        // Handle icon paths like "icons/home.svg"
-        if let Some(icon_name) = path.strip_prefix("icons/").and_then(|p| p.strip_suffix(".svg")) {
-            if let Some(svg_content) = icons::get_icon(icon_name) {
-                return Ok(Some(std::borrow::Cow::Borrowed(svg_content.as_bytes())));
-            }
-        }
-        Ok(None)
+        Ok(icons::get_icon(path).map(|s| Cow::Borrowed(s.as_bytes())))
     }
 
     fn list(&self, _path: &str) -> Result<Vec<SharedString>> {
         // Return empty list - we don't need directory listing for embedded assets
-        Ok(Vec::new())
+        Ok(icons::list_icons())
     }
 }
 
 fn main() -> Result<()> {
     // Initialize logging with UI logger
-    let (_console_guard, _file_guard, mut log_receiver) = ui_logger::setup_with_ui()?;
+    let (_console_guard, _file_guard, mut log_receiver) = logging::setup_with_ui()?;
 
     tracing::info!("Starting wsrx-desktop-gpui");
 
@@ -60,53 +53,57 @@ fn main() -> Result<()> {
 
     // Create and run the GPUI application with embedded assets
     Application::new()
-        .with_assets(EmbeddedAssets)
+        .with_assets(IconAssets)
         .run(|cx: &mut App| {
-        // Create main window with centered bounds
-        let bounds = Bounds::centered(None, size(px(1200.0), px(800.0)), cx);
+            // Create main window with centered bounds
+            let bounds = Bounds::centered(None, size(px(1200.0), px(800.0)), cx);
 
-        // Platform-specific window configuration (following Zed's pattern)
-        let titlebar_config = Some(TitlebarOptions {
-            title: None, // Custom titlebar will show title
-            appears_transparent: true,
-            traffic_light_position: Some(point(px(9.0), px(9.0))),
-            ..Default::default()
+            // Platform-specific window configuration (following Zed's pattern)
+            let titlebar_config = Some(TitlebarOptions {
+                title: None, // Custom titlebar will show title
+                appears_transparent: true,
+                traffic_light_position: Some(point(px(9.0), px(9.0))),
+            });
+
+            cx.open_window(
+                WindowOptions {
+                    window_bounds: Some(WindowBounds::Windowed(bounds)),
+                    titlebar: titlebar_config,
+                    window_decorations: Some(WindowDecorations::Client), // Client-side decorations
+                    kind: WindowKind::Normal,
+                    is_movable: true,
+                    focus: true,
+                    show: true,
+                    window_min_size: Some(gpui::Size {
+                        width: px(800.0),
+                        height: px(600.0),
+                    }),
+                    ..Default::default()
+                },
+                |window, cx| {
+                    let root_view = cx.new(|cx| RootView::new(window, cx));
+                    let root_view_ref = root_view.downgrade();
+                    cx.spawn(move |async_app: &mut AsyncApp| {
+                        let mut async_app = async_app.clone();
+                        async move {
+                            while let Some(log_entry) = log_receiver.recv().await {
+                                let _ =
+                                    root_view_ref.update(&mut async_app, |root, root_view_cx| {
+                                        root.add_log(log_entry, root_view_cx);
+                                    });
+                            }
+                        }
+                    })
+                    .detach();
+                    root_view
+                },
+            )
+            .expect("Failed to open window");
+
+            tracing::info!("Application window created");
+
+            cx.activate(true);
         });
-
-        let window_entity = cx.open_window(
-            WindowOptions {
-                window_bounds: Some(WindowBounds::Windowed(bounds)),
-                titlebar: titlebar_config,
-                window_decorations: Some(WindowDecorations::Client), // Client-side decorations
-                kind: WindowKind::Normal,
-                is_movable: true,
-                focus: true,
-                show: true,
-                window_min_size: Some(gpui::Size {
-                    width: px(800.0),
-                    height: px(600.0),
-                }),
-                ..Default::default()
-            },
-            |window, cx| cx.new(|cx| RootView::new(window, cx)),
-        )
-        .expect("Failed to open window");
-
-        // Spawn task to receive logs and update the UI
-        let root_view = window_entity.root_view(cx).expect("Failed to get root view");
-        cx.spawn(|mut cx| async move {
-            while let Some(log_entry) = log_receiver.recv().await {
-                let _ = root_view.update(&mut cx, |root, cx| {
-                    root.add_log(log_entry, cx);
-                });
-            }
-        })
-        .detach();
-
-        tracing::info!("Application window created");
-
-        cx.activate(true);
-    });
 
     Ok(())
 }

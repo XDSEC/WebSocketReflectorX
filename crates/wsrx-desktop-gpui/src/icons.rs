@@ -1,6 +1,8 @@
 // Embedded SVG icons
 // All SVG files are embedded directly into the binary at compile time
 
+use gpui::SharedString;
+
 pub const HOME: &str = include_str!("../icons/home.svg");
 pub const CODE: &str = include_str!("../icons/code.svg");
 pub const SETTINGS: &str = include_str!("../icons/settings.svg");
@@ -18,25 +20,33 @@ pub const CHECKBOX_UNCHECKED: &str = include_str!("../icons/checkbox-unchecked.s
 pub const ARROW_UP_RIGHT: &str = include_str!("../icons/arrow-up-right.svg");
 pub const ARROW_SYNC_OFF: &str = include_str!("../icons/arrow-sync-off.svg");
 
+static ICON_MAP: phf::Map<&'static str, &'static str> = phf::phf_map! {
+    "home" => HOME,
+    "code" => CODE,
+    "settings" => SETTINGS,
+    "globe-star" => GLOBE_STAR,
+    "navigation" => NAVIGATION,
+    "logo" => LOGO,
+    "logo-stroked" => LOGO_STROKED,
+    "warning" => WARNING,
+    "dismiss" => DISMISS,
+    "maximize" => MAXIMIZE,
+    "subtract" => SUBTRACT,
+    "lock-closed" => LOCK_CLOSED,
+    "checkmark" => CHECKMARK,
+    "checkbox-unchecked" => CHECKBOX_UNCHECKED,
+    "arrow-up-right" => ARROW_UP_RIGHT,
+    "arrow-sync-off" => ARROW_SYNC_OFF,
+};
+
 /// Get icon SVG content by name
 pub fn get_icon(name: &str) -> Option<&'static str> {
-    match name {
-        "home" => Some(HOME),
-        "code" => Some(CODE),
-        "settings" => Some(SETTINGS),
-        "globe-star" => Some(GLOBE_STAR),
-        "navigation" => Some(NAVIGATION),
-        "logo" => Some(LOGO),
-        "logo-stroked" => Some(LOGO_STROKED),
-        "warning" => Some(WARNING),
-        "dismiss" => Some(DISMISS),
-        "maximize" => Some(MAXIMIZE),
-        "subtract" => Some(SUBTRACT),
-        "lock-closed" => Some(LOCK_CLOSED),
-        "checkmark" => Some(CHECKMARK),
-        "checkbox-unchecked" => Some(CHECKBOX_UNCHECKED),
-        "arrow-up-right" => Some(ARROW_UP_RIGHT),
-        "arrow-sync-off" => Some(ARROW_SYNC_OFF),
-        _ => None,
-    }
+    ICON_MAP.get(name).copied()
+}
+
+pub fn list_icons() -> Vec<SharedString> {
+    ICON_MAP
+        .keys()
+        .map(|k| SharedString::new_static(k))
+        .collect()
 }

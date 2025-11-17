@@ -44,7 +44,7 @@ impl SettingsView {
 }
 
 impl Render for SettingsView {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
             .flex_col()
@@ -90,22 +90,25 @@ impl Render for SettingsView {
                                     Theme::Auto => "Auto",
                                 },
                             ))
-                            .child(self.render_setting_row(
-                                "Language",
-                                &self.settings.language,
-                            )),
+                            .child(self.render_setting_row("Language", &self.settings.language)),
                     )
                     .child(
                         div()
                             .flex()
                             .flex_col()
                             .child(self.render_section_title("Daemon"))
-                            .child(
-                                self.render_setting_row("API Port", &self.settings.api_port.to_string()),
-                            )
-                            .child(
-                                self.render_setting_row("Status", if self.settings.online { "Online" } else { "Offline" }),
-                            ),
+                            .child(self.render_setting_row(
+                                "API Port",
+                                &self.settings.api_port.to_string(),
+                            ))
+                            .child(self.render_setting_row(
+                                "Status",
+                                if self.settings.online {
+                                    "Online"
+                                } else {
+                                    "Offline"
+                                },
+                            )),
                     )
                     .child(
                         div()

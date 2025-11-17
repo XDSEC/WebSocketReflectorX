@@ -123,10 +123,9 @@ where
 
                         if let (Some(index), Some(callback)) =
                             (this.selected_index, &this.on_select)
+                            && let Some(item) = this.options.get(index).cloned()
                         {
-                            if let Some(item) = this.options.get(index).cloned() {
-                                callback(window, cx, item);
-                            }
+                            callback(window, cx, item);
                         }
 
                         cx.notify();
