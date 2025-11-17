@@ -69,16 +69,8 @@ impl Render for SettingsView {
                             .flex_col()
                             .child(self.render_section_title("Application"))
                             .child(self.render_setting_row(
-                                "Auto-start Daemon",
-                                if self.settings.daemon_auto_start {
-                                    "Enabled"
-                                } else {
-                                    "Disabled"
-                                },
-                            ))
-                            .child(self.render_setting_row(
-                                "Show Network Logs",
-                                if self.settings.show_network_logs {
+                                "Running in Tray",
+                                if self.settings.running_in_tray {
                                     "Enabled"
                                 } else {
                                     "Disabled"
@@ -97,16 +89,26 @@ impl Render for SettingsView {
                                     Theme::Dark => "Dark",
                                     Theme::Auto => "Auto",
                                 },
-                            )),
+                            ))
+                            .child(self.render_setting_row("Language", &self.settings.language)),
                     )
                     .child(
                         div()
                             .flex()
                             .flex_col()
-                            .child(self.render_section_title("Logging"))
-                            .child(
-                                self.render_setting_row("Log Level", &self.settings.logging_level),
-                            ),
+                            .child(self.render_section_title("Daemon"))
+                            .child(self.render_setting_row(
+                                "API Port",
+                                &self.settings.api_port.to_string(),
+                            ))
+                            .child(self.render_setting_row(
+                                "Status",
+                                if self.settings.online {
+                                    "Online"
+                                } else {
+                                    "Offline"
+                                },
+                            )),
                     )
                     .child(
                         div()

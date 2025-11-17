@@ -65,7 +65,7 @@ and find the binary in `target/release`.
 
 ## Further Reading
 
-If you want to intergrate `wsrx` in your own server project, you can read the [crate docs](https://docs.rs/crate/wsrx/latest).
+If you want to integrate `wsrx` in your own server project, you can read the [crate docs](https://docs.rs/crate/wsrx/latest).
 
 Also, `wsrx` is a simple tool that using plain WebSocket protocol to tunnel TCP connections,
 so you can implement your own server / client in other languages you like.

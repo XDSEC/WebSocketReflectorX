@@ -15,7 +15,7 @@ impl WindowControls {
 
 impl Render for WindowControls {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let window = self.window.clone();
+        let window = self.window;
         let is_macos = cfg!(target_os = "macos");
 
         div()
@@ -36,7 +36,6 @@ impl Render for WindowControls {
                             .hover(|this| this.bg(styles::colors::layer_2()))
                             .cursor_pointer()
                             .on_click({
-                                let window = window.clone();
                                 cx.listener(move |_this, _event, _window, cx| {
                                     window
                                         .update(cx, |_view, window, _cx| {
@@ -47,7 +46,7 @@ impl Render for WindowControls {
                             })
                             .child(
                                 svg()
-                                    .path("icons/subtract.svg")
+                                    .path("subtract")
                                     .size(styles::sizes::icon_sm())
                                     .text_color(styles::colors::window_fg()),
                             ),
@@ -64,7 +63,6 @@ impl Render for WindowControls {
                             .hover(|this| this.bg(styles::colors::layer_2()))
                             .cursor_pointer()
                             .on_click({
-                                let window = window.clone();
                                 cx.listener(move |_this, _event, _window, cx| {
                                     window
                                         .update(cx, |_view, window, _cx| {
@@ -75,7 +73,7 @@ impl Render for WindowControls {
                             })
                             .child(
                                 svg()
-                                    .path("icons/maximize.svg")
+                                    .path("maximize")
                                     .size(styles::sizes::icon_sm())
                                     .text_color(styles::colors::window_fg()),
                             ),
@@ -96,7 +94,7 @@ impl Render for WindowControls {
                             }))
                             .child(
                                 svg()
-                                    .path("icons/dismiss.svg")
+                                    .path("dismiss")
                                     .size(styles::sizes::icon_sm())
                                     .text_color(styles::colors::window_fg()),
                             ),

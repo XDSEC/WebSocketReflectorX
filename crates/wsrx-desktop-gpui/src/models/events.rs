@@ -1,6 +1,6 @@
 // Events - Application event definitions for inter-component communication
 
-use super::{Connection, LogEntry, Tunnel};
+use super::{Instance, LogEntry, Scope};
 
 /// Events that can occur in the application
 #[derive(Clone, Debug)]
@@ -8,20 +8,17 @@ pub enum AppEvent {
     /// Page navigation event
     NavigateToPage(super::app_state::Page),
 
-    /// Tunnel-related events
-    TunnelCreated(Tunnel),
-    TunnelUpdated(Tunnel),
-    TunnelDeleted(String), // tunnel_id
-    TunnelEnabled(String),
-    TunnelDisabled(String),
+    /// Instance (tunnel) related events
+    InstanceCreated(Instance),
+    InstanceUpdated(Instance),
+    InstanceDeleted(String), // local address
 
-    /// Connection-related events
-    ConnectionEstablished(Connection),
-    ConnectionClosed(String), // connection_id
-    ConnectionError {
-        connection_id: String,
-        error: String,
-    },
+    /// Scope-related events
+    ScopeAdded(Scope),
+    ScopeUpdated(Scope),
+    ScopeRemoved(String),  // host
+    ScopeAllowed(String),  // host
+    ScopeDeclined(String), // host
 
     /// Daemon-related events
     DaemonStarted,

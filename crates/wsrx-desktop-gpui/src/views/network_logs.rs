@@ -3,10 +3,7 @@ use std::collections::VecDeque;
 
 use gpui::{Context, Render, SharedString, Window, div, prelude::*};
 
-use crate::{
-    models::{LogEntry, LogLevel},
-    styles::colors,
-};
+use crate::{models::LogEntry, styles::colors};
 
 pub struct NetworkLogsView {
     logs: VecDeque<LogEntry>,
@@ -14,33 +11,26 @@ pub struct NetworkLogsView {
 
 impl NetworkLogsView {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
+        // Start with empty logs - will be populated from tracing
         Self {
             logs: VecDeque::new(),
         }
     }
 
-    fn log_level_color(&self, level: LogLevel) -> gpui::Rgba {
-        match level {
-            LogLevel::Debug => gpui::rgba(0x888888FF),
-            LogLevel::Info => colors::foreground(),
-            LogLevel::Warn => colors::warning(),
-            LogLevel::Error => colors::error(),
+    /// Add a log entry (called from RootView when logs are received)
+    pub fn add_log(&mut self, entry: LogEntry) {
+        // Keep max 1000 logs to prevent memory issues
+        if self.logs.len() >= 1000 {
+            self.logs.pop_front();
         }
-    }
-
-    fn log_level_text(&self, level: LogLevel) -> &'static str {
-        match level {
-            LogLevel::Debug => "DEBUG",
-            LogLevel::Info => "INFO",
-            LogLevel::Warn => "WARN",
-            LogLevel::Error => "ERROR",
-        }
+        self.logs.push_back(entry);
     }
 
     fn render_log_entry(&self, entry: &LogEntry, index: usize) -> impl IntoElement {
         let id = SharedString::from(format!("log-entry-{}", index));
-        let level_color = self.log_level_color(entry.level);
-        let level_text = self.log_level_text(entry.level);
+        let level_color = entry.level_color();
+        let level_text = &entry.level;
+        let opacity = entry.opacity();
 
         div()
             .id(id)
@@ -65,7 +55,7 @@ impl NetworkLogsView {
                     .text_sm()
                     .text_color(level_color)
                     .min_w_16()
-                    .child(level_text),
+                    .child(level_text.clone()),
             )
             .child(
                 div()
@@ -79,6 +69,7 @@ impl NetworkLogsView {
                     .flex_1()
                     .text_sm()
                     .text_color(colors::foreground())
+                    .opacity(opacity)
                     .child(entry.message.clone()),
             )
     }
@@ -142,7 +133,7 @@ impl Render for NetworkLogsView {
                                     this.logs.clear();
                                     cx.notify();
                                 }))
-                                .child("Clear"),
+                                .child("Clear Logs"),
                         ),
                     ),
             )

@@ -23,7 +23,7 @@ impl TitleBar {
 
 impl Render for TitleBar {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let window = self.window.clone();
+        let window = self.window;
         let is_macos = cfg!(target_os = "macos");
 
         div()
@@ -39,7 +39,6 @@ impl Render for TitleBar {
             .bg(gpui::transparent_black())
             // Drag area
             .on_mouse_down(MouseButton::Left, {
-                let window = window.clone();
                 cx.listener(move |_this, _event: &MouseDownEvent, _window, cx| {
                     window
                         .update(cx, |_view, window, _cx| {
@@ -72,7 +71,7 @@ impl Render for TitleBar {
                                 }))
                                 .child(
                                     svg()
-                                        .path("icons/navigation.svg")
+                                        .path("navigation")
                                         .size(styles::sizes::icon_sm())
                                         .text_color(styles::colors::window_fg()),
                                 ),

@@ -1,5 +1,7 @@
 // i18n - Internationalization support using rust-i18n
 
+#![allow(dead_code)] // Functions defined for future use
+
 // Provides multi-language support with YAML locale files
 // NOTE: The i18n! macro is initialized in lib.rs at crate root
 

@@ -25,22 +25,16 @@ impl SidebarView {
         self.on_page_change = Some(callback);
     }
 
+    #[allow(dead_code)] // Intended for future use
     pub fn set_active_page(&mut self, page: Page) {
         self.active_page = page;
     }
 
     fn render_tab(
-        &self, page: Page, icon_path: &'static str, cx: &mut Context<Self>,
+        &self, page: Page, label: &str, icon_path: &'static str, cx: &mut Context<Self>,
     ) -> impl IntoElement {
         let is_active = self.active_page == page;
-        let label_text = match page {
-            Page::GetStarted => t!("get_started"),
-            Page::Connections => t!("connections"),
-            Page::NetworkLogs => t!("network_logs"),
-            Page::Settings => t!("settings"),
-        };
-
-        let id = SharedString::from(format!("sidebar-tab-{:?}", page));
+        let id = SharedString::from(format!("sidebar-tab-{}", page.as_page_id()));
 
         div()
             .id(id)
@@ -64,10 +58,10 @@ impl SidebarView {
             })
             .on_click(cx.listener(move |this, _event, _window, cx| {
                 // Update our own state first
-                this.active_page = page;
+                this.active_page = page.clone();
                 // Then notify parent
                 if let Some(ref callback) = this.on_page_change {
-                    callback(page, cx);
+                    callback(page.clone(), cx);
                 }
             }))
             .child(
@@ -89,7 +83,7 @@ impl SidebarView {
                     } else {
                         gpui::FontWeight::NORMAL
                     })
-                    .child(label_text.to_string()),
+                    .child(label.to_string()),
             )
     }
 }
@@ -113,13 +107,12 @@ impl Render for SidebarView {
             .bg(colors::layer_1())
             .border_r_1()
             .border_color(colors::element_border())
-            .child(self.render_tab(Page::GetStarted, "icons/home.svg", cx))
-            .child(self.render_tab(Page::Connections, "icons/globe-star.svg", cx))
-            .child(self.render_tab(Page::NetworkLogs, "icons/code.svg", cx))
+            .child(self.render_tab(Page::Home, &t!("get_started"), "home", cx))
+            .child(self.render_tab(Page::Logs, &t!("network_logs"), "code", cx))
             .child(
                 // Spacer
                 div().flex_1(),
             )
-            .child(self.render_tab(Page::Settings, "icons/settings.svg", cx))
+            .child(self.render_tab(Page::Settings, &t!("settings"), "settings", cx))
     }
 }

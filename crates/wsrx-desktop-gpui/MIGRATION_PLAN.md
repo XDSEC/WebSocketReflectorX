@@ -1,5 +1,73 @@
 # WebSocketReflectorX GPUI Migration Plan
 
+## ⚠️ CORRECTED ARCHITECTURE (2025-11-10)
+
+**See `ACTUAL_ARCHITECTURE.md` for detailed analysis.**
+
+### Key Corrections from Original Slint Analysis:
+
+1. **Application is Scope-Centric, NOT Page-Centric**
+   - Sidebar shows **scopes** (domains), not pages
+   - Each scope has its own connections view
+   - "Default Scope" for user-created tunnels
+   - External scopes for domain-controlled tunnels
+
+2. **Get Started Page IS the Tunnel Creation Form**
+   - NOT a modal dialog
+   - Main page with network interface selector, port input, remote address input
+   - Creating a tunnel navigates to "default-scope"
+
+3. **Connections Page is Dynamic per Scope**
+   - Shows tunnels filtered by current scope
+   - Header shows scope status (pending/allowed)
+   - Accept/Decline buttons for pending scopes
+   - Each tunnel displays: label, local (copyable), remote, latency
+
+4. **Network Logs Must Stream from Tracing**
+   - Reads `wsrx.log` JSON file
+   - NOT sample data
+   - Displays real-time tracing output
+
+5. **Sidebar Structure**:
+   ```
+   - Get Started (home)
+   - Network Logs (logs)
+   ---
+   - Default Scope (default-scope)
+   - [External Scopes...] (dynamic)
+   ---
+   - Settings (settings)
+   - Controller Port (API status)
+   ```
+
+### Data Models (Corrected):
+
+```rust
+pub struct Instance {  // NOT "Tunnel"
+    label: String,
+    remote: String,
+    local: String,
+    latency: i32,
+    scope_host: String,
+}
+
+pub struct Scope {
+    host: String,      // Unique ID
+    name: String,      // Display name
+    state: String,     // "pending" | "allowed" | "syncing"
+    features: String,  // "basic,pingfall"
+    settings: HashMap,
+}
+
+pub struct UiState {
+    page: String,      // "home", "logs", "settings", "default-scope", or scope.host
+    scope: Scope,      // Current scope for connections page
+    show_sidebar: bool,
+}
+```
+
+---
+
 ## Overview
 
 This document provides a comprehensive migration plan for transitioning the WebSocketReflectorX desktop application from the Slint-based `crates/desktop` to the GPUI-based `crates/wsrx-desktop-gpui`.

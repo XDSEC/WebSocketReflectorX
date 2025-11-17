@@ -96,7 +96,7 @@ impl IntoElement for Checkbox {
                 box_div = box_div.child(
                     // Checkmark icon
                     svg()
-                        .path("icons/checkmark.svg")
+                        .path("checkmark")
                         .size(sizes::icon_xs())
                         .text_color(colors::window_bg()),
                 );

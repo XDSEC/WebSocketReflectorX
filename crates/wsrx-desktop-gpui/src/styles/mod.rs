@@ -1,6 +1,8 @@
 // Styles - Theme and styling definitions for the application
 // This module contains all the styling, colors, and theming configuration
 
+#![allow(dead_code)] // Utility functions defined for future use
+
 /// Color palette for the application
 /// Aligned with Slint design system for consistency
 pub mod colors {
