@@ -158,8 +158,8 @@ async fn process_traffic(
         let tcp_addr = conn.to_owned();
         Ok(ws.on_upgrade(move |socket| async move {
             let tcp = TcpStream::connect(&tcp_addr).await;
-            if tcp.is_err() {
-                error!("failed to connect to tcp server: {}", tcp.unwrap_err());
+            if let Err(e) = tcp {
+                error!("failed to connect to tcp server: {e:?}");
                 return;
             }
             let tcp = tcp.unwrap();

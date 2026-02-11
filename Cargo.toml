@@ -9,7 +9,7 @@ homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
 rust-version = "1.89.0"
-version      = "0.5.15"
+version      = "0.5.16"
 
 [profile.release]
 codegen-units = 1
@@ -36,7 +36,7 @@ bitflags           = { version = "2.10" }
 chrono             = { version = "0.4", features = ["serde"] }
 clap               = { version = "4.5", features = ["derive"] }
 once_cell          = { version = "1.21" }
-rand               = { version = "0.9" }
+rand               = { version = "0.10" }
 serde              = { version = "1.0", features = ["derive", "rc"] }
 serde_json         = { version = "1.0" }
 subprocess         = { version = "0.2" }
@@ -70,7 +70,7 @@ slint = { version = "1.14", default-features = false, features = [
 ] }
 
 sys-locale = "0.3"
-sysinfo    = "0.37"
+sysinfo    = "0.38"
 toml       = "0.9"
 winit      = "0.30"
 
