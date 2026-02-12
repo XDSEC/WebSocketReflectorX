@@ -71,7 +71,7 @@ slint = { version = "1.14", default-features = false, features = [
 
 sys-locale = "0.3"
 sysinfo    = "0.38"
-toml       = "0.9"
+toml       = "1.0"
 winit      = "0.30"
 
 # build dependencies
