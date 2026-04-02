@@ -69,7 +69,6 @@ If you want to intergrate `wsrx` in your own server project, you can read the [c
 
 Also, `wsrx` is a simple tool that using plain WebSocket protocol to tunnel TCP connections,
 so you can implement your own server / client in other languages you like.
-You can read the [Protocol Docs](docs/PROTOCOL.md) for more information.
 
 ## Desktop Preview
 
