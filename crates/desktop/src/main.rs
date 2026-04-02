@@ -31,9 +31,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Create the main window.
     let ui = launcher::setup()?;
+    let ui_weak = ui.as_weak();
     ui.run().ok();
-    drop(console_guard);
     drop(file_guard);
+    drop(console_guard);
+    launcher::cleanup_runtime_state(&ui_weak);
     drop(ui);
 
     Ok(())
