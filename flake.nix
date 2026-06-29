@@ -1,85 +1,200 @@
 {
-  description = "WebSocketReflectorX CLI flake";
+  description = "WebSocketReflectorX";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }:
     let
+      inherit (nixpkgs) lib;
+
       systems = [
         "x86_64-linux"
+        "aarch64-linux"
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
-      version = "0.5.16";
-      assets = {
-        x86_64-linux = {
-          url = "https://github.com/XDSEC/WebSocketReflectorX/releases/download/${version}/wsrx-cli-${version}-linux-gnu-x86_64.tar.gz";
-          sha256 = "0fixr2hhj707yk5w7l505gdmhdb45pyhlsb45lps3794qihvqs4f";
+
+      forAllSystems = lib.genAttrs systems;
+
+      workspace = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+      version = workspace.workspace.package.version;
+
+      mkPkgs = system:
+        import nixpkgs {
+          inherit system;
         };
-        x86_64-darwin = {
-          url = "https://github.com/XDSEC/WebSocketReflectorX/releases/download/${version}/wsrx-cli-${version}-macos-x86_64.zip";
-          sha256 = "1kfhgyna7i7259mapmz540favvdp1a2ac90ka08a1lf7blzgksk1";
-        };
-        aarch64-darwin = {
-          url = "https://github.com/XDSEC/WebSocketReflectorX/releases/download/${version}/wsrx-cli-${version}-macos-aarch64.zip";
-          sha256 = "0a3ylyhy2c0b1212dlw1q3z2r46kafkb22d9mmps381psvgbn038";
-        };
-      };
     in
     {
       packages = forAllSystems (system:
         let
-          pkgs = import nixpkgs { inherit system; };
-          asset = assets.${system};
-          pkg = pkgs.stdenvNoCC.mkDerivation {
-            pname = "wsrx";
-            inherit version;
-            src = pkgs.fetchurl {
-              inherit (asset) url sha256;
-            };
-            nativeBuildInputs = [ pkgs.unzip ];
-            dontUnpack = true;
-            installPhase = ''
-              runHook preInstall
+          pkgs = mkPkgs system;
 
-              case "$src" in
-                *.tar.gz) tar -xzf "$src" ;;
-                *.zip) unzip -q "$src" ;;
-                *) echo "Unsupported archive: $src" >&2; exit 1 ;;
-              esac
+          inherit (pkgs) stdenv;
 
-              bin_path="$(find . -type f -name wsrx | head -n1)"
-              install -Dm755 "$bin_path" "$out/bin/wsrx"
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+          };
 
-              runHook postInstall
-            '';
-            meta = with pkgs.lib; {
-              description = "Controlled TCP-over-WebSocket forwarding tunnel";
+          commonNativeBuildInputs = with pkgs; [
+            pkg-config
+          ];
+
+          commonBuildInputs = lib.optionals stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+            AppKit
+            CoreFoundation
+            CoreGraphics
+            CoreServices
+            Foundation
+            Security
+          ]);
+
+          linuxDesktopLibraries = with pkgs; [
+            fontconfig
+            freetype
+            libGL
+            libxkbcommon
+            libx11
+            libxcb
+            libxcb-cursor
+            libxcb-image
+            libxcb-keysyms
+            libxcb-render-util
+            libxcb-util
+            libxcb-wm
+            libxcursor
+            libxi
+            libxkbfile
+            libxrandr
+            wayland
+          ];
+
+          skiaBinaries = pkgs.fetchurl {
+            url = "https://github.com/rust-skia/skia-binaries/releases/download/0.99.0/skia-binaries-a25a0fdb7d90429aa2d1-x86_64-unknown-linux-gnu-gl-jpegd-jpege-pdf-textlayout-vulkan.tar.gz";
+            hash = "sha256-CX5413XJFW3EsHC5zKcAjbq1h1E+yxkkuvTPliDzEZs=";
+          };
+
+          desktopBuildInputs =
+            commonBuildInputs
+            ++ lib.optionals stdenv.isLinux linuxDesktopLibraries;
+
+          commonArgs = {
+            inherit version cargoLock;
+
+            src = lib.cleanSource ./.;
+
+            nativeBuildInputs = commonNativeBuildInputs;
+
+            buildInputs = commonBuildInputs;
+
+            WSRX_GIT_VERSION =
+              self.shortRev or self.dirtyShortRev or "unknown";
+
+            meta = with lib; {
               homepage = "https://github.com/XDSEC/WebSocketReflectorX";
               license = licenses.mit;
-              mainProgram = "wsrx";
-              platforms = builtins.attrNames assets;
+              maintainers = [ ];
             };
           };
+
+          wsrx = pkgs.rustPlatform.buildRustPackage (commonArgs // {
+            pname = "wsrx";
+
+            cargoBuildFlags = [
+              "-p"
+              "wsrx"
+            ];
+
+            cargoTestFlags = [
+              "-p"
+              "wsrx"
+            ];
+
+            meta = commonArgs.meta // {
+              description = "Controlled TCP-over-WebSocket forwarding tunnel";
+              mainProgram = "wsrx";
+            };
+          });
+
+          wsrx-desktop = pkgs.rustPlatform.buildRustPackage (commonArgs // {
+            pname = "wsrx-desktop";
+
+            nativeBuildInputs =
+              commonNativeBuildInputs
+              ++ lib.optionals stdenv.isLinux (with pkgs; [
+                curl
+                makeWrapper
+                python3
+              ]);
+
+            buildInputs = desktopBuildInputs;
+
+            cargoBuildFlags = [
+              "-p"
+              "wsrx-desktop"
+            ];
+
+            cargoTestFlags = [
+              "-p"
+              "wsrx-desktop"
+            ];
+
+            postInstall = lib.optionalString stdenv.isLinux ''
+              install -Dm644 freedesktop/wsrx-desktop.desktop \
+                "$out/share/applications/wsrx-desktop.desktop"
+              install -Dm644 freedesktop/wsrx-desktop.svg \
+                "$out/share/icons/hicolor/scalable/apps/wsrx-desktop.svg"
+
+              wrapProgram "$out/bin/wsrx-desktop" \
+                --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath linuxDesktopLibraries}
+            '';
+
+            meta = commonArgs.meta // {
+              description = "Desktop interface for WebSocketReflectorX";
+              mainProgram = "wsrx-desktop";
+            };
+          } // lib.optionalAttrs (system == "x86_64-linux") {
+            SKIA_BINARIES_URL = "file://${skiaBinaries}";
+          });
         in
         {
-          default = pkg;
-          wsrx = pkg;
+          default = wsrx;
+          inherit wsrx wsrx-desktop;
         });
 
       apps = forAllSystems (system:
         let
-          pkg = self.packages.${system}.default;
+          mkApp = packageName: {
+            type = "app";
+            program =
+              "${self.packages.${system}.${packageName}}/bin/${packageName}";
+          };
         in
         {
-          default = {
-            type = "app";
-            program = "${pkg}/bin/wsrx";
-          };
-          wsrx = {
-            type = "app";
-            program = "${pkg}/bin/wsrx";
+          default = mkApp "wsrx";
+          wsrx = mkApp "wsrx";
+          wsrx-desktop = mkApp "wsrx-desktop";
+        });
+
+      devShells = forAllSystems (system:
+        let
+          pkgs = mkPkgs system;
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              cargo
+              rustc
+              rustfmt
+              clippy
+              pkg-config
+            ] ++ lib.optionals pkgs.stdenv.isLinux [
+              libGL
+              libxkbcommon
+              wayland
+              libx11
+              libxcb
+              libxcb-cursor
+            ];
           };
         });
     };

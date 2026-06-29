@@ -4,5 +4,5 @@ dist/
 contribs/
 node_modules/
 *.rs.bk
-Cargo.lock
 pnpm-lock.yaml
+result
