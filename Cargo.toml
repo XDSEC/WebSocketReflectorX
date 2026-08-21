@@ -8,8 +8,8 @@ edition      = "2024"
 homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
-rust-version = "1.89.0"
-version      = "0.5.17"
+rust-version = "1.95"
+version      = "0.6.0"
 
 [profile.release]
 codegen-units = 1
@@ -47,9 +47,13 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url                = { version = "2.5" }
 
 # GUI
-async-compat          = { version = "0.2" }
-i-slint-backend-winit = "1.15"
-open                  = "5.3"
+async-compat = { version = "0.2" }
+open         = "5.3"
+
+# GPUI / Woocraft
+gpui          = { git = "https://github.com/zed-industries/zed", package = "gpui" }
+gpui_platform = { git = "https://github.com/zed-industries/zed", package = "gpui_platform", features = ["font-kit", "wayland", "x11"] }
+woocraft      = { git = "https://github.com/Reverier-Xu/woocraft", package = "woocraft" }
 
 reqwest = { version = "0.13", features = [
   "blocking",
@@ -58,25 +62,12 @@ reqwest = { version = "0.13", features = [
   "json",
 ] }
 
-slint = { version = "1.15", default-features = false, features = [
-  "accessibility",
-  "backend-winit",
-  "compat-1-2",
-  "gettext",
-  "renderer-skia",
-  "renderer-software",
-  "serde",
-  "std",
-] }
-
 sys-locale = "0.3"
 sysinfo    = "0.38"
 toml       = "1.0"
-winit      = "0.30"
 
 # build dependencies
 build-target  = "0.8"
 git-version   = "0.3"
 rustc_version = "0.4"
-slint-build   = "1.15"
 winres        = "0.1"

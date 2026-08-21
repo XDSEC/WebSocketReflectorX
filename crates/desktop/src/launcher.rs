@@ -1,48 +1,56 @@
 use std::{path::Path, time::Duration};
 
 use directories::ProjectDirs;
-use slint::PlatformError;
-use tracing::info;
+use tracing::error;
 
-use crate::{bridges, daemon, ui::MainWindow};
-
-pub fn setup() -> Result<MainWindow, PlatformError> {
-    let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
+/// Returns the `org.xdsec.wsrx` project directories, exiting with an error
+/// message when the platform cannot provide them.
+pub fn project_dirs() -> ProjectDirs {
+    match ProjectDirs::from("org", "xdsec", "wsrx") {
         Some(dirs) => dirs,
         None => {
             eprintln!("Unable to find project config directories");
-            return Err(PlatformError::Other(
-                "Unable to find project config directories".to_string(),
-            ));
+            std::process::exit(1);
         }
-    };
-    let lock_file = proj_dirs.data_local_dir().join(".rx.is.alive");
-
-    if lock_file.exists() && try_focus_existing_instance(&lock_file) {
-        std::process::exit(0);
     }
-
-    let ui = MainWindow::new()?;
-
-    info!("WSRX initialization started...");
-
-    info!("Setting up data bridges...");
-    bridges::setup(&ui);
-    bridges::settings::load_config(&ui);
-
-    info!("Launching API server...");
-    daemon::setup(&ui);
-
-    info!("Initialization is finished.");
-    info!("高性能ですから! (∠・ω< )⌒☆");
-
-    Ok(ui)
 }
 
-fn try_focus_existing_instance(lock_file: &Path) -> bool {
+/// The lock file used for single-instance detection. Contains the API port.
+pub fn lock_file_path() -> std::path::PathBuf {
+    project_dirs().data_local_dir().join(".rx.is.alive")
+}
+
+/// Writes the lock file with the API server port.
+pub fn write_lock_file(port: u16) {
+    let lock_file = lock_file_path();
+    std::fs::write(&lock_file, port.to_string()).unwrap_or_else(|err| {
+        error!("Failed to write lock file {}: {err}", lock_file.display());
+        std::process::exit(1);
+    });
+}
+
+/// Removes the lock file, ignoring "not found" errors.
+pub fn remove_lock_file(lock_file: &Path) {
+    std::fs::remove_file(lock_file).unwrap_or_else(|err| {
+        if err.kind() != std::io::ErrorKind::NotFound {
+            eprintln!("Failed to remove lock file: {err}");
+        }
+    });
+}
+
+/// Checks whether another wsrx instance is already running. When one is found,
+/// it is notified to pop up its window and this instance should exit.
+///
+/// Returns `true` when the running instance was notified successfully.
+pub fn try_notify_existing_instance() -> bool {
+    let lock_file = lock_file_path();
+    if !lock_file.exists() {
+        return false;
+    }
+
     eprintln!("Detected existing instance lock file. Trying to notify running app...");
 
-    let Some(api_port) = read_lock_file_port(lock_file) else {
+    let Some(api_port) = read_lock_file_port(&lock_file) else {
         return false;
     };
 
@@ -53,18 +61,10 @@ fn try_focus_existing_instance(lock_file: &Path) -> bool {
         }
         Err(err) => {
             eprintln!("Failed to notify existing app: {err}. Removing stale lock file.");
-            remove_lock_file(lock_file);
+            remove_lock_file(&lock_file);
             false
         }
     }
-}
-
-fn remove_lock_file(lock_file: &Path) {
-    std::fs::remove_file(lock_file).unwrap_or_else(|err| {
-        if err.kind() != std::io::ErrorKind::NotFound {
-            eprintln!("Failed to remove lock file: {err}");
-        }
-    });
 }
 
 fn read_lock_file_port(lock_file: &Path) -> Option<u16> {
@@ -110,34 +110,15 @@ fn notify_existing_instance(api_port: u16) -> Result<(), String> {
     }
 }
 
-pub fn cleanup_runtime_state(ui: &slint::Weak<MainWindow>) {
-    if let Some(window) = ui.upgrade() {
-        bridges::settings::save_config(&window);
-        daemon::save_scopes(ui);
-    }
+/// Removes runtime files (logs, lock file) that should not outlive the app.
+pub fn cleanup_runtime_files() {
+    let dirs = project_dirs();
+    let data_local_dir = dirs.data_local_dir().to_path_buf();
 
-    let proj_dirs = match ProjectDirs::from("org", "xdsec", "wsrx") {
-        Some(dirs) => dirs,
-        None => {
-            eprintln!("Unable to find project config directories");
-            return;
-        }
-    };
-
-    cleanup_runtime_files(proj_dirs.data_local_dir());
-}
-
-pub fn shutdown(ui: &slint::Weak<MainWindow>) {
-    cleanup_runtime_state(ui);
-    std::process::exit(0);
-}
-
-fn cleanup_runtime_files(data_local_dir: &Path) {
     let log_dir = data_local_dir.join("logs");
-    std::fs::remove_dir_all(log_dir).unwrap_or_else(|_| {
+    std::fs::remove_dir_all(&log_dir).unwrap_or_else(|_| {
         eprintln!("Failed to remove log directory");
     });
 
-    let lock_file = data_local_dir.join(".rx.is.alive");
-    remove_lock_file(&lock_file);
+    remove_lock_file(&lock_file_path().as_path());
 }

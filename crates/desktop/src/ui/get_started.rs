@@ -1,0 +1,178 @@
+use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px, prelude::FluentBuilder as _};
+use woocraft::{
+    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input, PopupMenuItem,
+    Sizable as _, h_flex, v_flex,
+};
+
+use crate::{daemon, i18n, models::InstanceData, ui::RootView};
+
+/// Renders the "Get Started" home page.
+pub(crate) fn render_get_started(
+    _window: &mut Window,
+    cx: &mut Context<RootView>,
+    root: &mut RootView,
+) -> impl IntoElement {
+    let theme = cx.theme();
+    let weak = cx.entity().downgrade();
+    let state = root.state().clone();
+
+    let has_updates = root.has_updates();
+    let cursor = if root.cursor_visible() { "_" } else { " " };
+    let interfaces = root.interfaces().to_vec();
+    let selected = root.selected_interface().to_string();
+    let remote_input = root.remote_input().clone();
+    let port_input = root.port_input().clone();
+
+    v_flex()
+        .size_full()
+        .items_center()
+        .justify_center()
+        .gap_6()
+        .px_10()
+        .child(
+            // Header: logo + title + subtitle
+            v_flex()
+                .items_center()
+                .gap_2()
+                .child(Icon::new(IconName::GlobeStar).size(px(64.)).text_color(theme.primary))
+                .child(
+                    h_flex()
+                        .items_center()
+                        .gap_3()
+                        .child(
+                            div()
+                                .text_2xl()
+                                .font_weight(gpui::FontWeight::BOLD)
+                                .child("WebSocket Reflector X"),
+                        )
+                        .when(has_updates, |this| {
+                            this.child(
+                                Button::new("update")
+                                    .flat()
+                                    .small()
+                                    .icon(Icon::new(IconName::Sparkle))
+                                    .label(i18n::t("Update"))
+                                    .on_click(|_, _, _| {
+                                        RootView::open_link(
+                                            "https://github.com/XDSEC/WebSocketReflectorX/releases",
+                                        );
+                                    }),
+                            )
+                        }),
+                )
+                .child(
+                    div()
+                        .text_color(theme.muted_foreground)
+                        .child(format!(
+                            "{}{cursor}",
+                            i18n::t(
+                                "Controlled TCP-over-WebSocket forwarding tunnel"
+                            )
+                        )),
+                ),
+        )
+        .child(
+            // Form: local interface + port, remote address + send
+            v_flex()
+                .w(px(520.))
+                .gap_3()
+                .child(
+                    h_flex()
+                        .gap_3()
+                        .child(
+                            Button::new("refresh-interfaces")
+                                .flat()
+                                .icon(Icon::new(IconName::ArrowSync))
+                                .on_click({
+                                    let weak = weak.clone();
+                                    move |_, _, cx| {
+                                        let _ = weak.update(cx, |root, cx| {
+                                            root.refresh_interfaces();
+                                            cx.notify();
+                                        });
+                                    }
+                                }),
+                        )
+                        .child(
+                            Button::new("interface-selector")
+                                .flat()
+                                .expand(true)
+                                .icon(Icon::new(IconName::Globe))
+                                .label(selected.clone())
+                                .dropdown_menu({
+                                    let weak = weak.clone();
+                                    let selected = selected.clone();
+                                    let interfaces = interfaces.clone();
+                                    move |menu, _, _| {
+                                        let mut menu = menu;
+                                        for interface in interfaces.iter() {
+                                            let interface = interface.clone();
+                                            let weak = weak.clone();
+                                            let checked = interface == selected;
+                                            menu = menu.item(
+                                                PopupMenuItem::new(interface.clone())
+                                                    .checked(checked)
+                                                    .on_click(move |_, _, cx| {
+                                                        let _ = weak.update(cx, |root, cx| {
+                                                            root.select_interface(
+                                                                interface.clone(),
+                                                            );
+                                                            cx.notify();
+                                                        });
+                                                    }),
+                                            );
+                                        }
+                                        menu
+                                    }
+                                }),
+                        )
+                        .child(Input::new(&port_input).w(px(90.))),
+                )
+                .child(
+                    h_flex()
+                        .gap_3()
+                        .child(
+                            Input::new(&remote_input)
+                                .flex_1()
+                                .bordered(true),
+                        )
+                        .child(
+                            Button::new("send")
+                                .primary()
+                                .icon(Icon::new(IconName::Send))
+                                .on_click({
+                                    let weak = weak.clone();
+                                    let state = state.clone();
+                                    let selected = selected.clone();
+                                    move |_, _, cx| {
+                                        let state = state.clone();
+                                        let remote = remote_input.read(cx).value().to_string();
+                                        let port = port_input.read(cx).value().to_string();
+                                        let local = format!("{selected}:{port}");
+
+                                        daemon::tokio_handle().spawn(async move {
+                                            let data = InstanceData {
+                                                label: daemon::default_label(),
+                                                remote,
+                                                local,
+                                                latency: -1,
+                                                scope_host: "default-scope".to_string(),
+                                            };
+                                            let _ =
+                                                daemon::launch_instance(&state, &data).await;
+                                        });
+
+                                        let _ = weak.update(cx, |root, cx| {
+                                            root.change_page(
+                                                crate::ui::Page::Scope(
+                                                    "default-scope".to_string(),
+                                                ),
+                                                cx,
+                                            );
+                                        });
+                                    }
+                                }),
+                        ),
+                ),
+        )
+}

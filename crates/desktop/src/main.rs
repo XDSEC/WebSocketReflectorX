@@ -1,42 +1,82 @@
-// Prevent console window in addition to Slint window in Windows release builds
-// when, e.g., starting the app via file manager. Ignored on other platforms.
+// Prevent console window in addition to the GPUI window in Windows release
+// builds when, e.g., starting the app via file manager. Ignored on other
+// platforms.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::error::Error;
 
-use slint::ComponentHandle;
-use wsrx_desktop::{launcher, logging};
+use gpui::{App, Bounds, Size as GpuiSize, WindowBounds, WindowOptions, px};
+use wsrx_desktop::{daemon, launcher, logging, ui::RootView};
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Initialize the logger.
     let (console_guard, file_guard) = logging::setup()?;
 
-    // Set the platform backend to winit.
-    #[cfg(not(target_os = "macos"))]
-    slint::platform::set_platform(Box::new(i_slint_backend_winit::Backend::new().unwrap()))?;
+    // Install the crypto backend for rustls.
+    daemon::setup_crypto();
 
-    #[cfg(target_os = "macos")]
-    {
-        use winit::platform::macos::WindowAttributesExtMacOS;
-
-        let mut backend = i_slint_backend_winit::Backend::new().unwrap();
-        backend.window_attributes_hook = Some(Box::new(|attr| {
-            attr.with_fullsize_content_view(true)
-                .with_title_hidden(true)
-                .with_titlebar_transparent(true)
-        }));
-
-        slint::platform::set_platform(Box::new(backend))?;
+    // If another instance is already running, ask it to pop up and exit.
+    if launcher::try_notify_existing_instance() {
+        std::process::exit(0);
     }
 
-    // Create the main window.
-    let ui = launcher::setup()?;
-    let ui_weak = ui.as_weak();
-    ui.run().ok();
-    launcher::cleanup_runtime_state(&ui_weak);
+    // Spawn the background daemon (API server, latency worker, ...).
+    let (state, events_rx) = daemon::spawn_background();
+
+    // Load persisted settings and scopes into shared state before the UI
+    // reads them.
+    daemon::load_persisted_state(&state);
+
+    // Launch the GPUI application with the woocraft component library.
+    gpui_platform::application()
+        .with_assets(woocraft::Assets)
+        .run(move |cx: &mut App| {
+            woocraft::init(cx);
+            cx.activate(true);
+
+            // Open the main window.
+            let bounds = Bounds::centered(None, GpuiSize::new(px(1080.), px(600.)), cx);
+            let window = cx
+                .open_window(
+                    WindowOptions {
+                        window_bounds: Some(WindowBounds::Windowed(bounds)),
+                        titlebar: Some(woocraft::TitleBar::title_bar_options()),
+                        window_min_size: Some(GpuiSize::new(px(800.), px(540.))),
+                        #[cfg(target_os = "linux")]
+                        window_background: gpui::WindowBackgroundAppearance::Transparent,
+                        #[cfg(target_os = "linux")]
+                        window_decorations: Some(gpui::WindowDecorations::Client),
+                        ..Default::default()
+                    },
+                    |window, cx| RootView::view(window, cx, state.clone()),
+                )
+                .expect("failed to open main window");
+
+            window
+                .update(cx, |_, window, cx| {
+                    window.activate_window();
+                    window.set_window_title("WebSocket Reflector X");
+                    window.on_window_should_close(cx, move |_, cx| {
+                        daemon::shutdown(&state);
+                        cx.quit();
+                        true
+                    });
+                })
+                .expect("failed to update main window");
+
+            // Background -> UI event pump.
+            let window_handle = window.clone();
+            cx.spawn(async move |cx| {
+                while let Ok(event) = events_rx.recv().await {
+                    let _ = window_handle.update(cx, |root, window, cx| {
+                        root.handle_event(event, window, cx);
+                    });
+                }
+            })
+            .detach();
+        });
+
     drop(file_guard);
     drop(console_guard);
-    drop(ui);
-
     Ok(())
 }

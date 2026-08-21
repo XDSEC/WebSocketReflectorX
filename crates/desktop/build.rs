@@ -1,12 +1,6 @@
 use std::{env, fs, path::Path};
 
 fn main() {
-    let config = slint_build::CompilerConfiguration::new()
-        .with_bundled_translations("ui/i18n")
-        .embed_resources(slint_build::EmbedResourcesKind::EmbedFiles);
-    slint_build::compile_with_config("ui/main.slint", config).expect("Slint build failed");
-
-    println!("cargo::rerun-if-changed=ui/i18n");
     println!("cargo::rerun-if-env-changed=WSRX_GIT_VERSION");
     let out_dir = env::var_os("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("constants.rs");
