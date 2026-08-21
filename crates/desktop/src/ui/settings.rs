@@ -4,7 +4,7 @@ use woocraft::{
     PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
 };
 
-use crate::{i18n, ui::RootView};
+use crate::{daemon, i18n, ui::RootView};
 
 /// Renders the settings page.
 pub(crate) fn render_settings(
@@ -134,6 +134,7 @@ pub(crate) fn render_settings(
                                                 .settings
                                                 .blocking_write()
                                                 .language = code.to_string();
+                                            daemon::persist_settings_sync(&state);
                                             let _ = weak.update(cx, |root, cx| {
                                                 root.settings.language = code.to_string();
                                                 cx.notify();

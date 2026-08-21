@@ -1,7 +1,7 @@
 use gpui::{App, ClickEvent, Context, Entity, IntoElement, Window};
 use woocraft::{ActiveTheme, Icon, IconName, Theme, ThemeMode, TitleBar};
 
-use crate::{daemon::ServerState, i18n, ui::RootView};
+use crate::{daemon, daemon::ServerState, i18n, ui::RootView};
 
 /// Renders the woocraft title bar with persisted theme / language handlers.
 pub(crate) fn render_title_bar(
@@ -11,7 +11,6 @@ pub(crate) fn render_title_bar(
     state: &ServerState,
 ) -> impl IntoElement {
     let weak = this.downgrade();
-    let settings_arc = state.settings.clone();
 
     TitleBar::new()
         .title("WebSocket Reflector X")
@@ -20,7 +19,7 @@ pub(crate) fn render_title_bar(
         .language_button(true)
         .on_theme_button_click({
             let weak = weak.clone();
-            let settings_arc = settings_arc.clone();
+            let state = state.clone();
             move |_: &ClickEvent, _: &mut Window, cx: &mut App| {
                 let next = if cx.theme().mode.is_dark() {
                     ThemeMode::Light
@@ -29,7 +28,8 @@ pub(crate) fn render_title_bar(
                 };
                 Theme::set_mode(next, cx);
                 let theme_str = if next.is_dark() { "dark" } else { "light" };
-                settings_arc.blocking_write().theme = theme_str.to_string();
+                state.settings.blocking_write().theme = theme_str.to_string();
+                daemon::persist_settings_sync(&state);
                 let _ = weak.update(cx, |root, cx| {
                     root.settings.theme = theme_str.to_string();
                     cx.notify();
@@ -38,12 +38,13 @@ pub(crate) fn render_title_bar(
         })
         .on_language_button_click({
             let weak = weak.clone();
-            let settings_arc = settings_arc.clone();
+            let state = state.clone();
             move |_: &ClickEvent, _: &mut Window, cx: &mut App| {
                 let woocraft_locale = woocraft::locale();
                 let locale = normalize_woocraft_locale(&woocraft_locale);
                 i18n::set_locale(locale);
-                settings_arc.blocking_write().language = locale.to_string();
+                state.settings.blocking_write().language = locale.to_string();
+                daemon::persist_settings_sync(&state);
                 let _ = weak.update(cx, |root, cx| {
                     root.settings.language = locale.to_string();
                     cx.notify();

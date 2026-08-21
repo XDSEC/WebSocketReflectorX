@@ -216,10 +216,11 @@ struct ScopesConfig {
     scopes: Vec<ScopeData>,
 }
 
-fn save_scopes(scopes: &Arc<RwLock<Vec<ScopeData>>>) {
-    let scopes_vec = scopes.blocking_read().clone();
+fn write_scopes_to_disk(scopes: &[ScopeData]) {
     let config_file = launcher::project_dirs().config_dir().join("scopes.toml");
-    let config_obj = ScopesConfig { scopes: scopes_vec };
+    let config_obj = ScopesConfig {
+        scopes: scopes.to_vec(),
+    };
     let config = toml::to_string(&config_obj).unwrap_or_else(|e| {
         error!("Failed to serialize scopes: {}", e);
         String::new()
@@ -227,14 +228,34 @@ fn save_scopes(scopes: &Arc<RwLock<Vec<ScopeData>>>) {
     persist_to(config_file, config);
 }
 
-fn save_config(settings: &Arc<RwLock<WsrxDesktopConfig>>) {
-    let config = settings.blocking_read().clone();
+fn save_scopes(scopes: &Arc<RwLock<Vec<ScopeData>>>) {
+    write_scopes_to_disk(&scopes.blocking_read());
+}
+
+fn write_settings_to_disk(settings: &WsrxDesktopConfig) {
     let config_file = launcher::project_dirs().config_dir().join("config.toml");
-    let config = toml::to_string(&config).unwrap_or_else(|e| {
+    let config = toml::to_string(settings).unwrap_or_else(|e| {
         error!("Failed to serialize config: {}", e);
         String::new()
     });
     persist_to(config_file, config);
+}
+
+fn save_config(settings: &Arc<RwLock<WsrxDesktopConfig>>) {
+    write_settings_to_disk(&settings.blocking_read());
+}
+
+/// Immediately persists the current scopes to `scopes.toml`. Async variant
+/// for use inside the tokio runtime (axum handlers / background workers).
+pub(crate) async fn persist_scopes(state: &ServerState) {
+    let scopes = state.scopes.read().await;
+    write_scopes_to_disk(&scopes);
+}
+
+/// Immediately persists the current settings to `config.toml`. Sync variant
+/// for use on the UI thread (theme / language handlers).
+pub(crate) fn persist_settings_sync(state: &ServerState) {
+    write_settings_to_disk(&state.settings.blocking_read());
 }
 
 fn persist_to(config_file: std::path::PathBuf, config: String) {
@@ -342,6 +363,7 @@ pub async fn allow_scope(state: &ServerState, scope_host: &str) {
     }
     drop(scopes);
 
+    persist_scopes(state).await;
     state.events.send(UiEvent::Refresh).await.ok();
 }
 
@@ -368,6 +390,7 @@ pub async fn remove_scope(state: &ServerState, scope_host: &str) {
         None => return,
     };
 
+    persist_scopes(state).await;
     state.events.send(UiEvent::Refresh).await.ok();
 }
 

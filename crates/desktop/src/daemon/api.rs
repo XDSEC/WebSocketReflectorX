@@ -268,6 +268,7 @@ async fn request_control(
     drop(scopes);
 
     debug!("Scope {} requested control", req_scope);
+    super::persist_scopes(&state).await;
     state.events.send(UiEvent::Refresh).await.ok();
 
     Ok(StatusCode::OK)
@@ -285,6 +286,7 @@ async fn update_website_info(
         scope.settings = scope_data.settings.clone();
         drop(scopes);
 
+        super::persist_scopes(&state).await;
         state.events.send(UiEvent::Refresh).await.ok();
 
         Ok(StatusCode::OK)
