@@ -42,13 +42,16 @@ pub struct RootView {
     pub(crate) port_input: gpui::Entity<woocraft::InputState>,
     cursor_visible: bool,
 
+    // --- network logs page ---
+    pub(crate) logs_editor: gpui::Entity<woocraft::EditorState>,
+
     // --- settings page ---
     info: String,
     version: String,
 }
 
 impl RootView {
-    pub fn view(_window: &mut Window, cx: &mut App, state: ServerState) -> Entity<Self> {
+    pub fn view(window: &mut Window, cx: &mut App, state: ServerState) -> Entity<Self> {
         // Apply persisted settings before the first frame.
         let settings = state.settings.blocking_read().clone();
         match settings.theme.as_str() {
@@ -56,6 +59,12 @@ impl RootView {
             _ => Theme::set_mode(ThemeMode::Dark, cx),
         }
         i18n::set_locale(&settings.language);
+
+        let logs_editor = cx.new(|cx| {
+            woocraft::EditorState::new(window, cx)
+                .code_editor("text")
+                .read_only(true)
+        });
 
         cx.new(|cx| {
             let remote_input = cx.new(|cx| {
@@ -82,6 +91,7 @@ impl RootView {
                 remote_input,
                 port_input,
                 cursor_visible: true,
+                logs_editor,
                 info: daemon::system_info(),
                 version: env!("CARGO_PKG_VERSION").to_string(),
             };
@@ -118,6 +128,16 @@ impl RootView {
                     let excess = self.logs.len() - MAX_LOGS;
                     self.logs.drain(..excess);
                 }
+
+                // Render the accumulated logs into the readonly editor.
+                let text = super::network_logs::format_logs(&self.logs);
+                let editor = self.logs_editor.clone();
+                cx.spawn_in(window, async move |_, cx| {
+                    let _ = editor.update_in(cx, |state, window, cx| {
+                        state.set_value(text, window, cx);
+                    });
+                })
+                .detach();
             }
             UiEvent::HasUpdates(value) => self.has_updates = value,
             UiEvent::Popup => {
@@ -183,10 +203,6 @@ impl RootView {
 
     pub(crate) fn port_input(&self) -> &gpui::Entity<woocraft::InputState> {
         &self.port_input
-    }
-
-    pub(crate) fn logs(&self) -> &[LogEntry] {
-        &self.logs
     }
 
     pub(crate) fn has_updates(&self) -> bool {
