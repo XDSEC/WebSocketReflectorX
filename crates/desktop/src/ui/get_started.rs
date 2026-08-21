@@ -1,7 +1,7 @@
 use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px, prelude::FluentBuilder as _};
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input, PopupMenuItem,
-    Sizable as _, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input,
+    PopupMenuItem, ScrollableElement as _, Sizable as _, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, models::InstanceData, ui::RootView};
@@ -24,21 +24,22 @@ pub(crate) fn render_get_started(
     let port_input = root.port_input().clone();
 
     v_flex()
-        .size_full()
-        .items_center()
-        .justify_center()
-        .gap_6()
+        .gap_1()
         .px_10()
+        .py_6()
+        .items_center()
+        .overflow_y_scrollbar()
+        .size_full()
         .child(
             // Header: logo + title + subtitle
             v_flex()
                 .items_center()
-                .gap_2()
+                .gap_1()
                 .child(Icon::new(IconName::GlobeStar).size(px(64.)).text_color(theme.primary))
                 .child(
                     h_flex()
                         .items_center()
-                        .gap_3()
+                        .gap_1()
                         .child(
                             div()
 
@@ -75,10 +76,10 @@ pub(crate) fn render_get_started(
             // Form: local interface + port, remote address + send
             v_flex()
                 .w(px(520.))
-                .gap_3()
+                .gap_1()
                 .child(
                     h_flex()
-                        .gap_3()
+                        .gap_1()
                         .child(
                             Button::new("refresh-interfaces")
                                 .flat()
@@ -130,7 +131,7 @@ pub(crate) fn render_get_started(
                 )
                 .child(
                     h_flex()
-                        .gap_3()
+                        .gap_1()
                         .child(
                             Input::new(&remote_input)
                                 .flex_1()

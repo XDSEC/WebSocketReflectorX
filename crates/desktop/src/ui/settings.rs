@@ -27,16 +27,16 @@ pub(crate) fn render_settings(
     let info = root.info().to_string();
 
     v_flex()
-        .size_full()
-        .overflow_y_scrollbar()
+        .gap_1()
         .px_8()
         .py_6()
-        .gap_4()
+        .overflow_y_scrollbar()
+        .size_full()
         .child(
             // Header
             h_flex()
                 .items_center()
-                .gap_4()
+                .gap_1()
                 .child(Icon::new(IconName::GlobeStar).size(px(48.)).text_color(primary))
                 .child(
                     v_flex()
@@ -197,7 +197,6 @@ pub(crate) fn render_settings(
         )
         .child(
             div()
-                .mt_2()
 
                 .text_color(muted_foreground)
                 .child(i18n::t(
@@ -212,7 +211,7 @@ pub(crate) fn render_settings(
                 .py_3()
                 .child(div().child(info)),
         )
-        .child(div().flex_1())
+        .child(div().h_6())
         .child(
             v_flex()
                 .gap_1()
@@ -244,8 +243,8 @@ fn settings_row(
     let theme = cx.theme();
     h_flex()
         .items_center()
-        .gap_4()
-        .py_2()
+        .gap_1()
+        .py_1()
         .child(
             div()
                 .flex_1()

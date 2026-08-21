@@ -130,11 +130,15 @@ impl RootView {
                 }
 
                 // Render the accumulated logs into the readonly editor.
+                // `set_value` is a no-op while `read_only` is set, so flip it
+                // around the update.
                 let text = super::network_logs::format_logs(&self.logs);
                 let editor = self.logs_editor.clone();
                 cx.spawn_in(window, async move |_, cx| {
                     let _ = editor.update_in(cx, |state, window, cx| {
+                        state.set_read_only(false, window, cx);
                         state.set_value(text, window, cx);
+                        state.set_read_only(true, window, cx);
                     });
                 })
                 .detach();

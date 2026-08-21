@@ -34,18 +34,19 @@ pub(crate) fn render_connections(
         .unwrap_or(false);
 
     v_flex()
+        .gap_1()
+        .px_8()
+        .py_4()
+        .overflow_y_scrollbar()
         .size_full()
-        .min_h_0()
         .child(
             // Header
             v_flex()
-                .px_8()
-                .py_5()
-                .gap_3()
+                .gap_1()
                 .child(
                     h_flex()
                         .items_center()
-                        .gap_3()
+                        .gap_1()
                         .child(
                             Icon::new(if is_default {
                                 IconName::GlobeStar
@@ -117,7 +118,7 @@ pub(crate) fn render_connections(
                 .child(
                     h_flex()
                         .items_center()
-                        .gap_2()
+                        .gap_1()
                         .child(
                             div()
                                 .flex_1()
@@ -218,32 +219,22 @@ pub(crate) fn render_connections(
                 )
                 .child(div().h_px().bg(theme.border)),
         )
-        .child(
-            // Instance list
-            v_flex()
-                .flex_1()
-                .min_h_0()
-                .overflow_y_scrollbar()
-                .px_8()
-                .py_4()
-                .gap_2()
-                .children(instances.iter().map(|instance| {
-                    let theme = cx.theme();
-                    render_instance_row(
-                        &weak,
-                        &state,
-                        instance,
-                        is_default,
-                        theme.secondary_hover,
-                        theme.success,
-                        theme.danger,
-                        theme.primary,
-                        theme.muted_foreground,
-                        theme.border,
-                    )
-                }))
-                .child(div().flex_1()),
-        )
+        .children(instances.iter().map(|instance| {
+            let theme = cx.theme();
+            render_instance_row(
+                &weak,
+                &state,
+                instance,
+                is_default,
+                theme.secondary_hover,
+                theme.success,
+                theme.danger,
+                theme.primary,
+                theme.muted_foreground,
+                theme.border,
+            )
+        }))
+        .child(div().h_6())
 }
 
 fn scope_name(scope: &Option<ScopeData>, is_default: bool) -> String {

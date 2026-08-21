@@ -131,7 +131,8 @@ fn nav_item(
 
 /// The controller port entry at the bottom of the sidebar. Uses the same
 /// [`nav_item`] button as every other entry; clicking it copies the API
-/// address when online and opens the network logs otherwise.
+/// address when online and opens the network logs otherwise. The port number
+/// is right-aligned via an extra flex child.
 fn controller_port_item(
     online: bool,
     api_port: u16,
@@ -144,15 +145,7 @@ fn controller_port_item(
         } else {
             IconName::GlobeWarning
         },
-        format!(
-            "{}  {}",
-            i18n::t("Controller port"),
-            if online {
-                api_port.to_string()
-            } else {
-                "--".to_string()
-            }
-        ),
+        i18n::t("Controller port"),
         false,
         move |_, _, cx| {
             if online {
@@ -162,5 +155,16 @@ fn controller_port_item(
                 let _ = weak.update(cx, |root, cx| root.change_page(Page::Logs, cx));
             }
         },
+    )
+    .child(
+        div()
+            .flex_1()
+            .flex_shrink_0()
+            .text_right()
+            .child(if online {
+                api_port.to_string()
+            } else {
+                "--".to_string()
+            }),
     )
 }
