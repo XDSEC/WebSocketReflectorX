@@ -267,6 +267,7 @@ impl Render for RootView {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let this = cx.entity();
         let background = cx.theme().background;
+        let border = cx.theme().border;
         let state = self.state.clone();
 
         window_border().child(
@@ -279,6 +280,8 @@ impl Render for RootView {
                     &this,
                     &state,
                 ))
+                // Divider between the title bar and the content area.
+                .child(div().h_px().bg(border))
                 .child(
                     h_flex()
                         .size_full()
