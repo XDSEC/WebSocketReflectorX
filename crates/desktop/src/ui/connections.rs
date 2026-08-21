@@ -62,13 +62,13 @@ pub(crate) fn render_connections(
                                 .flex_1()
                                 .child(
                                     div()
-                                        .text_lg()
+
                                         .font_weight(gpui::FontWeight::BOLD)
                                         .child(scope_name(&scope, is_default)),
                                 )
                                 .child(
                                     div()
-                                        .text_sm()
+
                                         .text_color(theme.muted_foreground)
                                         .child(if is_default {
                                             i18n::t("This is the default scope.").to_string()
@@ -85,7 +85,7 @@ pub(crate) fn render_connections(
                                 .items_end()
                                 .child(
                                     div()
-                                        .text_sm()
+
                                         .font_weight(gpui::FontWeight::MEDIUM)
                                         .text_color(if is_default {
                                             theme.primary
@@ -100,7 +100,7 @@ pub(crate) fn render_connections(
                                 )
                                 .child(
                                     div()
-                                        .text_sm()
+
                                         .text_color(theme.muted_foreground)
                                         .child(if is_default {
                                             "basic".to_string()
@@ -121,7 +121,7 @@ pub(crate) fn render_connections(
                         .child(
                             div()
                                 .flex_1()
-                                .text_sm()
+
                                 .text_color(if is_default {
                                     theme.primary
                                 } else if allowed {
@@ -307,7 +307,7 @@ fn render_instance_row(
                         )
                         .child(
                             div()
-                                .text_sm()
+
                                 .text_color(primary)
                                 .child(format!("{local}")),
                         ),
@@ -319,7 +319,7 @@ fn render_instance_row(
                         .child(
                             div()
                                 .flex_1()
-                                .text_sm()
+
                                 .text_color(muted_foreground)
                                 .child(remote),
                         )
@@ -329,7 +329,7 @@ fn render_instance_row(
                                 .gap_2()
                                 .child(
                                     div()
-                                        .text_sm()
+
                                         .text_color(latency_color)
                                         .child(latency_text),
                                 )

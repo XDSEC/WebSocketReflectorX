@@ -41,7 +41,7 @@ pub(crate) fn render_get_started(
                         .gap_3()
                         .child(
                             div()
-                                .text_2xl()
+
                                 .font_weight(gpui::FontWeight::BOLD)
                                 .child("WebSocket Reflector X"),
                         )

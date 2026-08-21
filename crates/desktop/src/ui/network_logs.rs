@@ -69,7 +69,7 @@ fn render_log_row(
                 .gap_3()
                 .child(
                     div()
-                        .text_sm()
+
                         .font_weight(gpui::FontWeight::MEDIUM)
                         .text_color(level_color)
                         .child(log.level.clone()),
@@ -77,20 +77,20 @@ fn render_log_row(
                 .child(
                     div()
                         .flex_1()
-                        .text_sm()
+
                         .text_color(muted)
                         .child(log.target.clone()),
                 )
                 .child(
                     div()
-                        .text_sm()
+
                         .text_color(muted)
                         .child(timestamp),
                 ),
         )
         .child(
             div()
-                .text_sm()
+
                 .mt_1()
                 .text_color(foreground)
                 .child(log.fields.message.clone()),

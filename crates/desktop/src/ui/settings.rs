@@ -42,13 +42,13 @@ pub(crate) fn render_settings(
                     v_flex()
                         .child(
                             div()
-                                .text_2xl()
+
                                 .font_weight(gpui::FontWeight::BOLD)
                                 .child("WebSocket Reflector X"),
                         )
                         .child(
                             div()
-                                .text_sm()
+
                                 .text_color(muted_foreground)
                                 .child(format!(
                                     "{}{cursor}",
@@ -198,7 +198,7 @@ pub(crate) fn render_settings(
         .child(
             div()
                 .mt_2()
-                .text_sm()
+
                 .text_color(muted_foreground)
                 .child(i18n::t(
                     "Please include the following information when reporting bugs or asking for help.",
@@ -210,7 +210,7 @@ pub(crate) fn render_settings(
                 .bg(secondary_hover.opacity(0.4))
                 .px_4()
                 .py_3()
-                .child(div().text_sm().child(info)),
+                .child(div().child(info)),
         )
         .child(div().flex_1())
         .child(
@@ -218,7 +218,7 @@ pub(crate) fn render_settings(
                 .gap_1()
                 .child(
                     div()
-                        .text_sm()
+
                         .text_color(muted_foreground)
                         .child(i18n::t(
                             "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.",
@@ -226,7 +226,7 @@ pub(crate) fn render_settings(
                 )
                 .child(
                     div()
-                        .text_sm()
+
                         .text_color(muted_foreground)
                         .child(i18n::t(
                             "(c) 2022 - 2025 XDSEC, distributed with MIT license.",
