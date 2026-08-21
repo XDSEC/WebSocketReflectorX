@@ -42,9 +42,6 @@ pub struct RootView {
     pub(crate) port_input: gpui::Entity<woocraft::InputState>,
     cursor_visible: bool,
 
-    // --- sidebar ---
-    pub(crate) show_sidebar: bool,
-
     // --- settings page ---
     info: String,
     version: String,
@@ -73,7 +70,6 @@ impl RootView {
             let mut view = Self {
                 state: state.clone(),
                 page: Page::Home,
-                show_sidebar: true,
                 scopes: vec![],
                 instances: vec![],
                 logs: vec![],
@@ -291,7 +287,6 @@ impl Render for RootView {
                             window,
                             cx,
                             &this,
-                            self.show_sidebar,
                             &self.page,
                             &self.scopes,
                             self.online,

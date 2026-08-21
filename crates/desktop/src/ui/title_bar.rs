@@ -1,13 +1,9 @@
-use gpui::{App, ClickEvent, Context, Entity, IntoElement, ParentElement, Window};
-use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, Icon, IconName, Sizable as _, Theme, ThemeMode,
-    TitleBar,
-};
+use gpui::{App, ClickEvent, Context, Entity, IntoElement, Window};
+use woocraft::{ActiveTheme, Icon, IconName, Theme, ThemeMode, TitleBar};
 
 use crate::{daemon::ServerState, i18n, ui::RootView};
 
-/// Renders the woocraft title bar with the sidebar toggle and persisted
-/// theme / language handlers.
+/// Renders the woocraft title bar with persisted theme / language handlers.
 pub(crate) fn render_title_bar(
     _window: &mut Window,
     _cx: &mut Context<RootView>,
@@ -16,21 +12,6 @@ pub(crate) fn render_title_bar(
 ) -> impl IntoElement {
     let weak = this.downgrade();
     let settings_arc = state.settings.clone();
-
-    // Sidebar toggle.
-    let sidebar_button = Button::new("sidebar-toggle")
-        .flat()
-        .medium()
-        .icon(Icon::new(IconName::Navigation))
-        .on_click({
-            let weak = weak.clone();
-            move |_, _, cx| {
-                let _ = weak.update(cx, |root, cx| {
-                    root.show_sidebar = !root.show_sidebar;
-                    cx.notify();
-                });
-            }
-        });
 
     TitleBar::new()
         .title("WebSocket Reflector X")
@@ -69,7 +50,6 @@ pub(crate) fn render_title_bar(
                 });
             }
         })
-        .child(sidebar_button)
 }
 
 /// Maps a woocraft locale (e.g. `"zh-hans"`, `"zh-hant"`, `"en-us"`) onto the

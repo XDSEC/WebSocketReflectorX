@@ -1,11 +1,5 @@
-use gpui::{
-    Context, Entity, IntoElement, InteractiveElement, ParentElement, StatefulInteractiveElement,
-    Styled, Window, div, px,
-};
-use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, Icon, IconName, Selectable as _, StyledExt, h_flex,
-    v_flex,
-};
+use gpui::{Context, Entity, IntoElement, ParentElement, Styled, Window, div, px};
+use woocraft::{ActiveTheme, Button, ButtonVariants as _, Icon, IconName, Selectable as _, v_flex};
 
 use crate::{
     i18n,
@@ -14,11 +8,14 @@ use crate::{
 };
 
 /// Renders the navigation sidebar.
+///
+/// The whole sidebar is a `p-1 gap-1` flex column; every entry (including the
+/// controller port row at the bottom) is the same full-width flat [`Button`]
+/// component.
 pub(crate) fn render_sidebar(
     _window: &mut Window,
     cx: &mut Context<RootView>,
     this: &Entity<RootView>,
-    show_sidebar: bool,
     page: &Page,
     scopes: &[ScopeData],
     online: bool,
@@ -26,17 +23,17 @@ pub(crate) fn render_sidebar(
 ) -> impl IntoElement {
     let weak = this.downgrade();
     let theme = cx.theme();
-    let sidebar_width = px(256.);
 
     v_flex()
-        .w(if show_sidebar { sidebar_width } else { px(0.) })
+        .w(px(256.))
         .h_full()
         .flex_shrink_0()
         .overflow_hidden()
+        .p_1()
+        .gap_1()
         .bg(theme.tab_bar)
         .border_r_1()
         .border_color(theme.border)
-        .child(sidebar_header())
         .child(nav_item(
             "nav-home",
             IconName::Home,
@@ -61,14 +58,7 @@ pub(crate) fn render_sidebar(
                 }
             },
         ))
-        .child(
-            div()
-                .mt_2()
-                .mb_2()
-                .mx_4()
-                .h_px()
-                .bg(theme.border),
-        )
+        .child(div().mx_1().h_px().bg(theme.border))
         .child(nav_item(
             "nav-default-scope",
             IconName::GlobeStar,
@@ -119,24 +109,7 @@ pub(crate) fn render_sidebar(
                 }
             },
         ))
-        .child(controller_port_item(
-            cx, online, api_port, weak.clone(),
-        ))
-}
-
-fn sidebar_header() -> impl IntoElement {
-    h_flex()
-        .items_center()
-        .gap_2()
-        .px_4()
-        .py_3()
-        .child(Icon::new(IconName::GlobeStar).size(px(20.)))
-        .child(
-            div()
-                .text_sm()
-                .font_semibold()
-                .child("WebSocket Reflector X"),
-        )
+        .child(controller_port_item(online, api_port, weak.clone()))
 }
 
 /// A full-width flat navigation button with an active state.
@@ -156,70 +129,38 @@ fn nav_item(
         .on_click(on_click)
 }
 
-/// Bottom row showing the controller port; copies the API address when online
-/// and opens the network logs otherwise.
+/// The controller port entry at the bottom of the sidebar. Uses the same
+/// [`nav_item`] button as every other entry; clicking it copies the API
+/// address when online and opens the network logs otherwise.
 fn controller_port_item(
-    cx: &mut Context<RootView>,
     online: bool,
     api_port: u16,
     weak: gpui::WeakEntity<RootView>,
-) -> impl IntoElement {
-    let theme = cx.theme();
-
-    div()
-        .id("controller-port")
-        .mx_2()
-        .mb_3()
-        .px_3()
-        .py_2()
-        .flex()
-        .items_center()
-        .gap_2()
-        .rounded_md()
-        .hover(|this| this.bg(theme.secondary_hover.opacity(0.6)))
-        .cursor_pointer()
-        .on_click(move |_, _, cx| {
+) -> Button {
+    nav_item(
+        "nav-controller-port",
+        if online {
+            IconName::FlashFlow
+        } else {
+            IconName::GlobeWarning
+        },
+        format!(
+            "{}  {}",
+            i18n::t("Controller port"),
+            if online {
+                api_port.to_string()
+            } else {
+                "--".to_string()
+            }
+        ),
+        false,
+        move |_, _, cx| {
             if online {
                 let address = format!("http://127.0.0.1:{api_port}");
                 cx.write_to_clipboard(gpui::ClipboardItem::new_string(address));
             } else {
                 let _ = weak.update(cx, |root, cx| root.change_page(Page::Logs, cx));
             }
-        })
-        .child(
-            h_flex()
-                .flex_1()
-                .items_center()
-                .gap_2()
-                .child(
-                    Icon::new(if online {
-                        IconName::FlashFlow
-                    } else {
-                        IconName::GlobeWarning
-                    })
-                    .size(px(16.))
-                    .text_color(if online {
-                        theme.success
-                    } else {
-                        theme.danger
-                    }),
-                )
-                .child(
-                    div()
-                        .flex_1()
-                        .text_sm()
-                        .child(i18n::t("Controller port")),
-                )
-                .child(
-                    div()
-                        .text_sm()
-                        .font_semibold()
-                        .text_color(theme.primary)
-                        .child(if online {
-                            api_port.to_string()
-                        } else {
-                            "--".to_string()
-                        }),
-                ),
-        )
+        },
+    )
 }
