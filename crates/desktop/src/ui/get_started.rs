@@ -1,11 +1,8 @@
-use std::cell::Cell;
-use std::rc::Rc;
-
 use gpui::{
     Context, IntoElement, ParentElement, Styled, Window, div, prelude::FluentBuilder as _, px,
 };
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, ElementExt, Icon, IconName, Input,
+    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input,
     PopupMenuItem, ScrollableElement as _, Sizable as _, h_flex, v_flex,
 };
 
@@ -101,52 +98,38 @@ pub(crate) fn render_get_started(
                         .child(
                             div().flex_1().child(
                                 // Local address selector with a dropdown interface picker.
-                                // The dropdown width is synced to the button via
-                                // on_prepaint, which captures the laid-out width.
-                                {
-                                    let selector_width = Rc::new(Cell::new(px(200.)));
-                                    Button::new("interface-selector")
-                                        .default()
-                                        .expand(true)
-                                        .w_full()
-                                        .icon(Icon::new(IconName::Globe))
-                                        .label(selected.clone())
-                                        .on_prepaint({
-                                            let selector_width = selector_width.clone();
-                                            move |bounds, _, _| {
-                                                selector_width.set(bounds.size.width)
+                                Button::new("interface-selector")
+                                    .default()
+                                    .expand(true)
+                                    .w_full()
+                                    .icon(Icon::new(IconName::Globe))
+                                    .label(selected.clone())
+                                    .dropdown_menu({
+                                        let weak = weak.clone();
+                                        let selected = selected.clone();
+                                        let interfaces = interfaces.clone();
+                                        move |menu, _, _| {
+                                            let mut menu = menu.min_w(px(282.)).max_w(px(282.));
+                                            for interface in interfaces.iter() {
+                                                let interface = interface.clone();
+                                                let weak = weak.clone();
+                                                let checked = interface == selected;
+                                                menu = menu.item(
+                                                    PopupMenuItem::new(interface.clone())
+                                                        .checked(checked)
+                                                        .on_click(move |_, _, cx| {
+                                                            let _ = weak.update(cx, |root, cx| {
+                                                                root.select_interface(
+                                                                    interface.clone(),
+                                                                );
+                                                                cx.notify();
+                                                            });
+                                                        }),
+                                                );
                                             }
-                                        })
-                                        .dropdown_menu({
-                                            let weak = weak.clone();
-                                            let selected = selected.clone();
-                                            let interfaces = interfaces.clone();
-                                            let selector_width = selector_width.clone();
-                                            move |menu, _, _| {
-                                                let width = selector_width.get();
-                                                let mut menu = menu.min_w(width).max_w(width);
-                                                for interface in interfaces.iter() {
-                                                    let interface = interface.clone();
-                                                    let weak = weak.clone();
-                                                    let checked = interface == selected;
-                                                    menu = menu.item(
-                                                        PopupMenuItem::new(interface.clone())
-                                                            .checked(checked)
-                                                            .on_click(move |_, _, cx| {
-                                                                let _ =
-                                                                    weak.update(cx, |root, cx| {
-                                                                        root.select_interface(
-                                                                            interface.clone(),
-                                                                        );
-                                                                        cx.notify();
-                                                                    });
-                                                            }),
-                                                    );
-                                                }
-                                                menu
-                                            }
-                                        })
-                                },
+                                            menu
+                                        }
+                                    }),
                             ),
                         )
                         .child(Input::new(&port_input).w(px(90.))),
