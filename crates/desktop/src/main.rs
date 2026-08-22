@@ -9,16 +9,22 @@ use gpui::{App, Bounds, Size as GpuiSize, WindowBounds, WindowOptions, px};
 use wsrx_desktop::{daemon, launcher, logging, ui::RootView};
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // If another instance is already running, ask it to pop up and exit.
+    // This must run first so a second instance never touches the running
+    // instance's live log.
+    if launcher::try_notify_existing_instance() {
+        std::process::exit(0);
+    }
+
+    // Prepare the log directory: prune >3-day archives and archive any stale
+    // `wsrx.log` from a crashed session, so this session starts clean.
+    launcher::prepare_log_dir();
+
     // Initialize the logger.
     let (console_guard, file_guard) = logging::setup()?;
 
     // Install the crypto backend for rustls.
     daemon::setup_crypto();
-
-    // If another instance is already running, ask it to pop up and exit.
-    if launcher::try_notify_existing_instance() {
-        std::process::exit(0);
-    }
 
     // Spawn the background daemon (API server, latency worker, ...).
     let (state, events_rx) = daemon::spawn_background();
@@ -56,10 +62,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .update(cx, |_, window, cx| {
                     window.activate_window();
                     window.set_window_title("WebSocket Reflector X");
-                    window.on_window_should_close(cx, move |_, cx| {
-                        daemon::shutdown(&state);
-                        cx.quit();
-                        true
+                    window.on_window_should_close(cx, {
+                        let state = state.clone();
+                        move |_, cx| {
+                            daemon::shutdown(&state);
+                            cx.quit();
+                            true
+                        }
                     });
                 })
                 .expect("failed to update main window");
@@ -72,6 +81,16 @@ fn main() -> Result<(), Box<dyn Error>> {
                         root.handle_event(event, window, cx);
                     });
                 }
+            })
+            .detach();
+
+            // Safety net: archive the session log and drop the lock even if
+            // the window-close handler was bypassed. Idempotent with
+            // daemon::shutdown.
+            let quit_state = state.clone();
+            cx.on_app_quit(move |_| {
+                daemon::shutdown(&quit_state);
+                async {}
             })
             .detach();
         });

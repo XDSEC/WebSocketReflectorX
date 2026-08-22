@@ -110,15 +110,69 @@ fn notify_existing_instance(api_port: u16) -> Result<(), String> {
     }
 }
 
-/// Removes runtime files (logs, lock file) that should not outlive the app.
-pub fn cleanup_runtime_files() {
+/// Prepares the log directory for a new session: prunes archived logs older
+/// than 3 days and archives any `wsrx.log` left over from a previous (crashed)
+/// session, so the current session always starts with a clean log.
+///
+/// Must be called before the logger is initialized and only after the
+/// single-instance check (otherwise it would archive the running instance's
+/// live log).
+pub fn prepare_log_dir() {
     let dirs = project_dirs();
-    let data_local_dir = dirs.data_local_dir().to_path_buf();
+    let log_dir = dirs.data_local_dir().join("logs");
+    if std::fs::create_dir_all(&log_dir).is_err() {
+        return;
+    }
 
-    let log_dir = data_local_dir.join("logs");
-    std::fs::remove_dir_all(&log_dir).unwrap_or_else(|_| {
-        eprintln!("Failed to remove log directory");
-    });
+    // Prune archived logs older than 3 days.
+    let cutoff = std::time::SystemTime::now()
+        .checked_sub(std::time::Duration::from_secs(3 * 24 * 60 * 60))
+        .unwrap_or(std::time::UNIX_EPOCH);
+    if let Ok(entries) = std::fs::read_dir(&log_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) != Some("log") {
+                continue;
+            }
+            let stale = entry
+                .metadata()
+                .ok()
+                .and_then(|meta| meta.modified().ok())
+                .is_some_and(|modified| modified < cutoff);
+            if stale {
+                std::fs::remove_file(&path).unwrap_or_else(|err| {
+                    eprintln!("Failed to remove stale log {}: {err}", path.display());
+                });
+            }
+        }
+    }
 
+    // Archive any leftover live log from a crashed session.
+    archive_current_log();
+}
+
+/// Archives the current session's `wsrx.log` to a timestamped file so the
+/// live file stays scoped to a single run. Idempotent: a no-op when there is
+/// no live log.
+pub fn archive_current_log() {
+    let dirs = project_dirs();
+    let log_dir = dirs.data_local_dir().join("logs");
+    let live = log_dir.join("wsrx.log");
+    if !live.exists() {
+        return;
+    }
+
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let archive = log_dir.join(format!("wsrx-{timestamp}.log"));
+    if let Err(err) = std::fs::rename(&live, &archive) {
+        eprintln!("Failed to archive log {}: {err}", live.display());
+    }
+}
+
+/// Removes the single-instance lock file if present.
+pub fn remove_lock() {
     remove_lock_file(lock_file_path().as_path());
 }

@@ -208,7 +208,11 @@ pub fn load_persisted_state(state: &ServerState) {
 pub fn shutdown(state: &ServerState) {
     save_config(&state.settings);
     save_scopes(&state.scopes);
-    launcher::cleanup_runtime_files();
+    // Archive the current session's log and drop the single-instance lock.
+    // Idempotent, safe to call from both the window-close handler and the
+    // app-quit observer.
+    launcher::archive_current_log();
+    launcher::remove_lock();
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
