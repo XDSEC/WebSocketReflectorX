@@ -8728,7 +8728,7 @@ checksum = "1ebf944e87a7c253233ad6766e082e3cd714b5d03812acc24c318f549614536e"
 [[package]]
 name = "woocraft"
 version = "0.5.6"
-source = "git+https://github.com/Reverier-Xu/woocraft#3a56f82cd6db23eb6709340b08bd910facea4b21"
+source = "git+https://github.com/Reverier-Xu/woocraft#4ecb3b80706d1ed2f044456ee54b11e7660d6326"
 dependencies = [
  "aho-corasick",
  "anyhow",

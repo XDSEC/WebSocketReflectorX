@@ -1,11 +1,11 @@
 use std::{ops::Range, sync::Arc};
 
-use gpui::{Context, HighlightStyle, Hsla, IntoElement, Styled, Window, rgb};
+use gpui::{Context, HighlightStyle, Hsla, IntoElement, Styled, Window, px, rgb};
 use woocraft::{
     CodeEditor, EditorActionSink, EditorBackend, EditorBackendCapabilities,
     EditorBackendEditRequest, EditorBackendEditResult, EditorContextMenuProvider, EditorEditError,
     EditorHighlighter, EditorHighlighterProvider, EditorSnapshot, EditorTextChange, HighlightTheme,
-    Rope, RopeEditorSnapshot, RopeExt, ScrollbarPreviewLine,
+    Rope, RopeEditorSnapshot, RopeExt, ScrollbarPreview, ScrollbarPreviewLine,
 };
 
 use crate::{models::LogEntry, ui::RootView};
@@ -120,11 +120,11 @@ impl EditorBackend for LogBackend {
     /// requested window, colored by the row's level. Only rows within the
     /// window are inspected — the parsing budget is bounded by the window
     /// size, which the editor caps at the track height in pixels.
-    fn scrollbar_preview(&self, window: Range<u64>) -> Vec<ScrollbarPreviewLine> {
+    fn scrollbar_preview(&self, window: Range<u64>) -> ScrollbarPreview {
         let start = (window.start as usize).min(self.text.lines_len());
         let end = (window.end as usize).min(self.text.lines_len());
         if end <= start {
-            return Vec::new();
+            return ScrollbarPreview::default();
         }
         let mut lines = Vec::with_capacity(end - start);
         for row in start..end {
@@ -136,7 +136,13 @@ impl EditorBackend for LogBackend {
                 .unwrap_or_default();
             lines.push(ScrollbarPreviewLine::new(color));
         }
-        lines
+        // A narrow column near the inner edge of the track, so future status
+        // strips (git, LSP diagnostics…) can be drawn alongside.
+        ScrollbarPreview {
+            left: px(2.0),
+            width: px(6.0),
+            lines,
+        }
     }
 }
 
@@ -359,12 +365,13 @@ mod tests {
             + "2026-08-22T14:07:01Z  WARN b: two\n"
             + "2026-08-22T14:07:02Z ERROR c: three\n";
         let backend = LogBackend::new(&text);
-        let lines = backend.scrollbar_preview(0..3);
+        let preview = backend.scrollbar_preview(0..3);
+        let lines = &preview.lines;
         assert_eq!(lines.len(), 3, "one preview line per requested row");
         // Errors are fully opaque, info lines stay subtle.
         assert_eq!(lines[2].color.a, 1.0);
         assert!(lines[0].color.a < 0.7);
-        assert!(backend.scrollbar_preview(0..0).is_empty());
+        assert!(backend.scrollbar_preview(0..0).lines.is_empty());
     }
 
     #[test]
@@ -372,7 +379,8 @@ mod tests {
         let text = "2026-08-22T14:07:00Z  INFO a: one\n2026-08-22T14:07:01Z ERROR b: two\n";
         let backend = LogBackend::new(&text);
         // Window far beyond the document must not produce phantom rows.
-        let lines = backend.scrollbar_preview(0..1000);
+        let preview = backend.scrollbar_preview(0..1000);
+        let lines = &preview.lines;
         assert_eq!(lines.len(), 3, "2 log lines + trailing empty row");
         assert!(lines[2].color.a <= 0.0, "empty row previews as transparent");
     }
@@ -384,11 +392,12 @@ mod tests {
             .map(|i| format!("2026-08-22T14:07:0{i}Z  INFO line {i}: hello\n"))
             .collect::<String>();
         let backend = LogBackend::new(&text);
-        let lines = backend.scrollbar_preview(3..8);
+        let preview = backend.scrollbar_preview(3..8);
+        let lines = &preview.lines;
         assert_eq!(lines.len(), 5);
         assert!(lines.iter().all(|line| line.color.a > 0.0));
         // A window past the document yields nothing.
-        assert!(backend.scrollbar_preview(20..30).is_empty());
+        assert!(backend.scrollbar_preview(20..30).lines.is_empty());
     }
 
     #[test]
@@ -398,7 +407,8 @@ mod tests {
         let text =
             "2026-08-22T14:07:00Z ERROR first\n".to_owned() + "2026-08-22T14:07:01Z  INFO second\n";
         let backend = LogBackend::new(&text);
-        let lines = backend.scrollbar_preview(1..2);
+        let preview = backend.scrollbar_preview(1..2);
+        let lines = &preview.lines;
         assert_eq!(lines.len(), 1);
         // Row 1 is the INFO line, not the ERROR line.
         assert!(lines[0].color.a < 1.0);
@@ -443,9 +453,25 @@ mod tests {
         assert_eq!(&second[spans.level], "INFO");
         assert_eq!(spans.module, None);
         let backend = LogBackend::new(&text);
-        let lines = backend.scrollbar_preview(0..10);
+        let preview = backend.scrollbar_preview(0..10);
+        let lines = &preview.lines;
         assert_eq!(lines.len(), 3, "2 entries + trailing empty row");
         assert!(lines[0].color.a > 0.0);
         assert!(lines[2].color.a <= 0.0);
+    }
+
+    #[test]
+    fn preview_uses_a_narrow_strip_geometry() {
+        // The strip must not claim the full track: future status markers
+        // (git, LSP…) need room to sit alongside.
+        let backend = LogBackend::new("2026-08-22T14:07:00Z  INFO a: one\n");
+        let preview = backend.scrollbar_preview(0..10);
+        assert!(!preview.lines.is_empty());
+        assert_eq!(f32::from(preview.width), 6.0);
+        assert_eq!(f32::from(preview.left), 2.0);
+        assert!(
+            f32::from(preview.width) < 32.0,
+            "strip must not span the whole track"
+        );
     }
 }
