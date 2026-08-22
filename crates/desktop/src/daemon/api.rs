@@ -35,6 +35,7 @@ pub async fn serve(state: ServerState) {
 
     let port = listener.local_addr().unwrap().port();
 
+    *state.api_port.write().await = port;
     launcher::write_lock_file(port);
 
     state.events.send(UiEvent::Online { port }).await.ok();

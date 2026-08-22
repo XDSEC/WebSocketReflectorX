@@ -1,4 +1,4 @@
-use std::sync::{Arc, OnceLock};
+use std::{collections::VecDeque, sync::{Arc, OnceLock}};
 
 use async_channel::{Receiver, Sender, unbounded};
 use serde::{Deserialize, Serialize};
@@ -41,6 +41,12 @@ pub struct ServerState {
     pub instances: Arc<RwLock<Vec<ProxyInstance>>>,
     pub scopes: Arc<RwLock<Vec<ScopeData>>>,
     pub settings: Arc<RwLock<WsrxDesktopConfig>>,
+    /// The API server port, once bound.
+    pub api_port: Arc<RwLock<u16>>,
+    /// Whether a newer release exists on GitHub.
+    pub has_updates: Arc<RwLock<bool>>,
+    /// Accumulated log entries (capped), so a reopened window can restore them.
+    pub logs: Arc<RwLock<VecDeque<LogEntry>>>,
     pub events: Sender<UiEvent>,
 }
 
@@ -132,6 +138,9 @@ pub fn spawn_background() -> (ServerState, Receiver<UiEvent>) {
         instances: Arc::new(RwLock::new(vec![])),
         scopes: Arc::new(RwLock::new(vec![])),
         settings: Arc::new(RwLock::new(WsrxDesktopConfig::default())),
+        api_port: Arc::new(RwLock::new(0)),
+        has_updates: Arc::new(RwLock::new(false)),
+        logs: Arc::new(RwLock::new(VecDeque::new())),
         events,
     };
 

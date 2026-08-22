@@ -62,10 +62,18 @@ impl RootView {
         }
         i18n::set_locale(&settings.language);
 
+        // Restore shared runtime state so a reopened window shows the same
+        // controller port, update flag and session logs.
+        let api_port = *state.api_port.blocking_read();
+        let has_updates = *state.has_updates.blocking_read();
+        let logs: Vec<LogEntry> = state.logs.blocking_read().iter().cloned().collect();
+
         let logs_editor = cx.new(|cx| {
             woocraft::EditorState::new(window, cx)
                 .code_editor("text")
-                .backend(super::network_logs::LogBackend::new(""))
+                .backend(super::network_logs::LogBackend::new(
+                    super::network_logs::format_logs(&logs),
+                ))
                 .read_only(true)
         });
 
@@ -92,10 +100,10 @@ impl RootView {
                 page: Page::Home,
                 scopes: vec![],
                 instances: vec![],
-                logs: vec![],
-                api_port: 0,
-                online: false,
-                has_updates: false,
+                logs,
+                api_port,
+                online: api_port != 0,
+                has_updates,
                 settings: settings.clone(),
                 interfaces: default_interfaces(),
                 selected_interface: "127.0.0.1".to_string(),

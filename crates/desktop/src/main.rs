@@ -143,10 +143,30 @@ fn process_event(
             false
         }
         UiEvent::Logs(batch) => {
+            // Keep the shared log buffer current even while the window is
+            // hidden, so a reopened window can restore the session logs.
+            {
+                const MAX_LOGS: usize = 1000;
+                let mut logs = state.logs.blocking_write();
+                logs.extend(batch.iter().cloned());
+                while logs.len() > MAX_LOGS {
+                    logs.pop_front();
+                }
+            }
             let handle = *window_ref.lock().unwrap();
             if let Some(handle) = handle {
                 let _ = handle.update(cx, |root, window, cx| {
                     root.handle_logs(batch, window, cx);
+                });
+            }
+            false
+        }
+        UiEvent::HasUpdates(value) => {
+            *state.has_updates.blocking_write() = value;
+            let handle = *window_ref.lock().unwrap();
+            if let Some(handle) = handle {
+                let _ = handle.update(cx, |root, window, cx| {
+                    root.handle_event(UiEvent::HasUpdates(value), window, cx);
                 });
             }
             false
