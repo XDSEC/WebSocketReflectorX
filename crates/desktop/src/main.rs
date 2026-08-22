@@ -123,11 +123,18 @@ fn process_event(
         UiEvent::Popup => {
             tracing::debug!("event: popup");
             // Restore the window: activate it if it still exists, otherwise
-            // reopen it (it was closed-to-tray).
+            // reopen it. The stored handle can be stale (the window was
+            // removed by close-to-tray), so a failed update means reopen.
             let handle = *window_ref.lock().unwrap();
-            if let Some(handle) = handle {
-                let _ = handle.update(cx, |_, window, _| window.activate_window());
-            } else {
+            let needs_reopen = match handle {
+                Some(handle) => {
+                    handle
+                        .update(cx, |_, window, _| window.activate_window())
+                        .is_err()
+                }
+                None => true,
+            };
+            if needs_reopen {
                 cx.update(|cx| {
                     let handle = open_main_window(cx, state.clone(), window_ref);
                     let _ = handle.update(cx, |_, window, _| window.activate_window());
