@@ -5,7 +5,7 @@ use woocraft::{
     CodeEditor, EditorActionSink, EditorBackend, EditorBackendCapabilities,
     EditorBackendEditRequest, EditorBackendEditResult, EditorContextMenuProvider, EditorEditError,
     EditorHighlighter, EditorHighlighterProvider, EditorSnapshot, EditorTextChange, HighlightTheme,
-    Rope, RopeEditorSnapshot, RopeExt,
+    Rope, RopeEditorSnapshot, RopeExt, ScrollbarPreviewLine,
 };
 
 use crate::{models::LogEntry, ui::RootView};
@@ -45,12 +45,27 @@ pub(crate) fn format_logs(logs: &[LogEntry]) -> String {
 
 /// The default `tracing-subscriber` console level colors.
 const LEVEL_COLORS: [(&str, u32); 5] = [
-    ("TRACE", 0x9a6fce),
-    ("DEBUG", 0x4f9cf6),
-    ("INFO", 0x3fb950),
-    ("WARN", 0xd29922),
-    ("ERROR", 0xf85149),
+    ("TRACE", 0x9A6FCE),
+    ("DEBUG", 0x4F9CF6),
+    ("INFO", 0x3FB950),
+    ("WARN", 0xD29922),
+    ("ERROR", 0xF85149),
 ];
+
+/// Severity-scaled preview opacity: errors stand out on the minimap while
+/// debug/trace lines stay subtle.
+fn preview_color(level: &str) -> Option<Hsla> {
+    let (color, alpha) = match level {
+        "TRACE" => (0x9A6FCE, 0.4),
+        "DEBUG" => (0x4F9CF6, 0.5),
+        "INFO" => (0x3FB950, 0.6),
+        "WARN" => (0xD29922, 0.85),
+        "ERROR" => (0xF85149, 1.0),
+        _ => return None,
+    };
+    let color: Hsla = rgb(color).into();
+    Some(color.opacity(alpha))
+}
 
 fn level_color(level: &str) -> Option<Hsla> {
     LEVEL_COLORS
@@ -100,6 +115,29 @@ impl EditorBackend for LogBackend {
             cursor: Some((start + request.new_text.len()) as u64),
         })
     }
+
+    /// Preview strip for the scrollbar: one 1px line per log row inside the
+    /// requested window, colored by the row's level. Only rows within the
+    /// window are inspected — the parsing budget is bounded by the window
+    /// size, which the editor caps at the track height in pixels.
+    fn scrollbar_preview(&self, window: Range<u64>) -> Vec<ScrollbarPreviewLine> {
+        let start = (window.start as usize).min(self.text.lines_len());
+        let end = (window.end as usize).min(self.text.lines_len());
+        if end <= start {
+            return Vec::new();
+        }
+        let mut lines = Vec::with_capacity(end - start);
+        for row in start..end {
+            let line = self.text.slice_line(row);
+            let color = line
+                .as_str()
+                .and_then(find_level)
+                .and_then(|(_, level)| preview_color(level))
+                .unwrap_or_default();
+            lines.push(ScrollbarPreviewLine::new(color));
+        }
+        lines
+    }
 }
 
 impl EditorActionSink for LogBackend {}
@@ -112,51 +150,84 @@ impl EditorHighlighterProvider for LogBackend {
     }
 }
 
-/// Highlights the level token of every log line with the
-/// `tracing-subscriber` console colors.
+/// Highlights log lines with the `tracing-subscriber` console styling:
+/// timestamp and target are dimmed, the level token keeps its level color.
 struct LogHighlighter;
 
 impl EditorHighlighter for LogHighlighter {
     fn sync(&mut self, _snapshot: &dyn EditorSnapshot, _change: Option<&EditorTextChange>) {}
 
     fn highlight_range(
-        &self, snapshot: &dyn EditorSnapshot, range: Range<u64>, _theme: &HighlightTheme,
+        &self, snapshot: &dyn EditorSnapshot, range: Range<u64>, theme: &HighlightTheme,
     ) -> Vec<(Range<u64>, HighlightStyle)> {
         let Some(text) = snapshot.text_for_range(range.clone()) else {
             return Vec::new();
         };
         let visible_len = (range.end - range.start) as usize;
 
-        // Collect colored level segments, offsets relative to `range.start`.
-        let mut segments: Vec<(usize, usize, Hsla)> = Vec::new();
+        // `tracing-subscriber` renders the timestamp and the target dimmed, so
+        // derive the dim color from the editor foreground blended toward the
+        // editor background.
+        let fg = theme
+            .style
+            .editor_foreground
+            .unwrap_or_else(|| rgb(0xCCCCCC).into());
+        let bg = theme
+            .style
+            .editor_background
+            .unwrap_or_else(|| rgb(0x0D1117).into());
+        let dim = HighlightStyle {
+            color: Some(fg.blend(bg.opacity(0.5))),
+            ..Default::default()
+        };
+
+        // Collect styled segments, offsets relative to `range.start`.
+        let mut segments: Vec<(usize, usize, HighlightStyle)> = Vec::new();
         let mut line_start = 0usize;
         for line in text.split('\n') {
-            if let Some((offset, level)) = find_level(line)
-                && let Some(color) = level_color(level)
+            if let Some(spans) = spans_for_line(line)
+                && let Some(color) = level_color(&line[spans.level.clone()])
             {
-                let start = line_start + offset;
-                segments.push((start, start + level.len(), color));
-            }
-            line_start += line.len() + 1;
-        }
+                // Timestamp: dimmed, like `tracing-subscriber`.
+                if !spans.timestamp.is_empty() {
+                    segments.push((
+                        line_start + spans.timestamp.start,
+                        line_start + spans.timestamp.end,
+                        dim,
+                    ));
+                }
 
-        // The editor treats highlight runs as a contiguous partition of the
-        // visible text, so fill the gaps between colored segments with the
-        // default style.
-        let mut highlights = Vec::new();
-        let mut cursor = 0usize;
-        for (start, end, color) in segments {
-            if start > cursor && cursor < visible_len {
-                highlights.push((cursor as u64..start as u64, HighlightStyle::default()));
-            }
-            if end > cursor {
-                highlights.push((
-                    start as u64..end as u64,
+                // Level token: level color.
+                segments.push((
+                    line_start + spans.level.start,
+                    line_start + spans.level.end,
                     HighlightStyle {
                         color: Some(color),
                         ..Default::default()
                     },
                 ));
+
+                // Target and its trailing colon: dimmed, like
+                // `tracing-subscriber`. Module paths use `::`, so the first
+                // colon-space pair after the level unambiguously ends it.
+                if let Some(module) = spans.module {
+                    segments.push((line_start + module.start, line_start + module.end, dim));
+                }
+            }
+            line_start += line.len() + 1;
+        }
+
+        // The editor treats highlight runs as a contiguous partition of the
+        // visible text, so fill the gaps between styled segments with the
+        // default style.
+        let mut highlights = Vec::new();
+        let mut cursor = 0usize;
+        for (start, end, style) in segments {
+            if start > cursor && cursor < visible_len {
+                highlights.push((cursor as u64..start as u64, HighlightStyle::default()));
+            }
+            if end > cursor {
+                highlights.push((start as u64..end as u64, style));
                 cursor = end;
             }
         }
@@ -181,6 +252,37 @@ fn find_level(line: &str) -> Option<(usize, &'static str)> {
     best
 }
 
+/// Parsed spans of one log line formatted by [`format_logs`]: the timestamp,
+/// the level token, and the module path including its trailing colon (when
+/// present).
+/// Parsed spans of one log line formatted by [`format_logs`]: the timestamp,
+/// the level token, and the module path including its trailing colon (when
+/// present). All ranges are byte offsets relative to the line start.
+struct LineSpans {
+    timestamp: Range<usize>,
+    level: Range<usize>,
+    module: Option<Range<usize>>,
+}
+
+fn spans_for_line(line: &str) -> Option<LineSpans> {
+    let (offset, level) = find_level(line)?;
+    let ts_end = line[..offset].trim_end().len();
+    let level_range = offset..offset + level.len();
+    let module_start = offset + level.len() + 1;
+    let module = if module_start < line.len() {
+        line[module_start..]
+            .find(": ")
+            .map(|rel| module_start..module_start + rel + 1)
+    } else {
+        None
+    };
+    Some(LineSpans {
+        timestamp: 0..ts_end,
+        level: level_range,
+        module,
+    })
+}
+
 /// Finds the first word-boundary occurrence of `word` in `line`.
 fn find_word(line: &str, word: &str) -> Option<usize> {
     let mut search = 0;
@@ -195,4 +297,155 @@ fn find_word(line: &str, word: &str) -> Option<usize> {
         search = abs + word.len();
     }
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn level_colors_cover_all_levels() {
+        for (level, _) in LEVEL_COLORS {
+            assert!(level_color(level).is_some(), "{level} has no color");
+        }
+    }
+
+    #[test]
+    fn find_level_ignores_level_words_in_messages_and_targets() {
+        let line =
+            "2026-08-22T14:07:00.123456Z  INFO wsrx_desktop::daemon: error in handler warning";
+        let (offset, level) = find_level(line).unwrap();
+        assert_eq!(level, "INFO");
+        assert_eq!(&line[offset..offset + level.len()], "INFO");
+        // "warning" embeds the WARN token without word boundaries, so it is
+        // not mistaken for the real level.
+        assert_eq!(find_word(line, "WARN"), None);
+    }
+
+    #[test]
+    fn spans_for_line_parses_timestamp_level_module() {
+        let line = "2026-08-22T14:07:00.123456Z  INFO wsrx_desktop::daemon: something happened";
+        let spans = spans_for_line(line).unwrap();
+        assert_eq!(&line[spans.timestamp], "2026-08-22T14:07:00.123456Z");
+        assert_eq!(&line[spans.level], "INFO");
+        let module = spans.module.unwrap();
+        assert_eq!(&line[module], "wsrx_desktop::daemon:");
+    }
+
+    #[test]
+    fn spans_for_line_keeps_message_colon_space_untouched() {
+        // `::` inside the module path and a later `: ` inside the message
+        // must not confuse the module boundary.
+        let line =
+            "2026-08-22T14:07:00.123456Z ERROR wsrx_desktop::daemon::workers: read timeout: retry";
+        let spans = spans_for_line(line).unwrap();
+        assert_eq!(&line[spans.level], "ERROR");
+        let module = spans.module.unwrap();
+        assert_eq!(&line[module], "wsrx_desktop::daemon::workers:");
+    }
+
+    #[test]
+    fn spans_for_line_handles_missing_target() {
+        let line = "2026-08-22T14:07:00.123456Z  INFO plain message without target";
+        let spans = spans_for_line(line).unwrap();
+        assert_eq!(&line[spans.timestamp], "2026-08-22T14:07:00.123456Z");
+        assert_eq!(&line[spans.level], "INFO");
+        assert_eq!(spans.module, None);
+    }
+
+    #[test]
+    fn preview_returns_one_line_per_window_row() {
+        let text = "2026-08-22T14:07:00Z  INFO a: one\n".to_owned()
+            + "2026-08-22T14:07:01Z  WARN b: two\n"
+            + "2026-08-22T14:07:02Z ERROR c: three\n";
+        let backend = LogBackend::new(&text);
+        let lines = backend.scrollbar_preview(0..3);
+        assert_eq!(lines.len(), 3, "one preview line per requested row");
+        // Errors are fully opaque, info lines stay subtle.
+        assert_eq!(lines[2].color.a, 1.0);
+        assert!(lines[0].color.a < 0.7);
+        assert!(backend.scrollbar_preview(0..0).is_empty());
+    }
+
+    #[test]
+    fn preview_window_is_clamped_to_the_document() {
+        let text = "2026-08-22T14:07:00Z  INFO a: one\n2026-08-22T14:07:01Z ERROR b: two\n";
+        let backend = LogBackend::new(&text);
+        // Window far beyond the document must not produce phantom rows.
+        let lines = backend.scrollbar_preview(0..1000);
+        assert_eq!(lines.len(), 3, "2 log lines + trailing empty row");
+        assert!(lines[2].color.a <= 0.0, "empty row previews as transparent");
+    }
+
+    #[test]
+    fn preview_respects_the_parsing_budget() {
+        // 13 lines but a window of 5: only the requested rows are inspected.
+        let text = (0..13)
+            .map(|i| format!("2026-08-22T14:07:0{i}Z  INFO line {i}: hello\n"))
+            .collect::<String>();
+        let backend = LogBackend::new(&text);
+        let lines = backend.scrollbar_preview(3..8);
+        assert_eq!(lines.len(), 5);
+        assert!(lines.iter().all(|line| line.color.a > 0.0));
+        // A window past the document yields nothing.
+        assert!(backend.scrollbar_preview(20..30).is_empty());
+    }
+
+    #[test]
+    fn preview_follows_the_window_position() {
+        // The strip is positional: window line 0 always refers to the row the
+        // window starts at, so scrolling moves the preview content.
+        let text =
+            "2026-08-22T14:07:00Z ERROR first\n".to_owned() + "2026-08-22T14:07:01Z  INFO second\n";
+        let backend = LogBackend::new(&text);
+        let lines = backend.scrollbar_preview(1..2);
+        assert_eq!(lines.len(), 1);
+        // Row 1 is the INFO line, not the ERROR line.
+        assert!(lines[0].color.a < 1.0);
+    }
+
+    #[test]
+    fn format_logs_roundtrips_through_spans() {
+        let logs = vec![
+            LogEntry {
+                timestamp: chrono::DateTime::parse_from_rfc3339("2026-08-22T14:07:00.123456Z")
+                    .unwrap()
+                    .with_timezone(&chrono::Utc),
+                level: "WARN".into(),
+                target: "wsrx_desktop::daemon".into(),
+                fields: crate::models::LogEntryFields {
+                    message: "retrying after timeout".into(),
+                },
+            },
+            LogEntry {
+                timestamp: chrono::DateTime::parse_from_rfc3339("2026-08-22T14:07:01Z")
+                    .unwrap()
+                    .with_timezone(&chrono::Utc),
+                level: "INFO".into(),
+                target: String::new(),
+                fields: crate::models::LogEntryFields {
+                    message: "no target here".into(),
+                },
+            },
+        ];
+        let text = format_logs(&logs);
+        let first_len = text.find('\n').unwrap() + 1;
+        let spans = spans_for_line(&text[..first_len - 1]).unwrap();
+        assert_eq!(
+            &text[..first_len - 1][spans.timestamp],
+            "2026-08-22T14:07:00.123456Z"
+        );
+        assert_eq!(&text[spans.level], "WARN");
+        assert_eq!(&text[spans.module.unwrap()], "wsrx_desktop::daemon:");
+
+        let second = &text[first_len..];
+        let spans = spans_for_line(second).unwrap();
+        assert_eq!(&second[spans.level], "INFO");
+        assert_eq!(spans.module, None);
+        let backend = LogBackend::new(&text);
+        let lines = backend.scrollbar_preview(0..10);
+        assert_eq!(lines.len(), 3, "2 entries + trailing empty row");
+        assert!(lines[0].color.a > 0.0);
+        assert!(lines[2].color.a <= 0.0);
+    }
 }
