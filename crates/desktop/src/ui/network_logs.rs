@@ -126,24 +126,43 @@ impl EditorHighlighter for LogHighlighter {
         let Some(text) = snapshot.text_for_range(range.clone()) else {
             return Vec::new();
         };
+        let visible_len = (range.end - range.start) as usize;
 
-        let mut highlights = Vec::new();
-        let mut line_start = 0u64;
+        // Collect colored level segments, offsets relative to `range.start`.
+        let mut segments: Vec<(usize, usize, Hsla)> = Vec::new();
+        let mut line_start = 0usize;
         for line in text.split('\n') {
-            if let Some((offset, level)) = find_level(line) {
-                let start = range.start + line_start + offset as u64;
-                let end = start + level.len() as u64;
-                if let Some(color) = level_color(level) {
-                    highlights.push((
-                        start..end,
-                        HighlightStyle {
-                            color: Some(color),
-                            ..Default::default()
-                        },
-                    ));
-                }
+            if let Some((offset, level)) = find_level(line)
+                && let Some(color) = level_color(level)
+            {
+                let start = line_start + offset;
+                segments.push((start, start + level.len(), color));
             }
-            line_start += line.len() as u64 + 1;
+            line_start += line.len() + 1;
+        }
+
+        // The editor treats highlight runs as a contiguous partition of the
+        // visible text, so fill the gaps between colored segments with the
+        // default style.
+        let mut highlights = Vec::new();
+        let mut cursor = 0usize;
+        for (start, end, color) in segments {
+            if start > cursor && cursor < visible_len {
+                highlights.push((cursor as u64..start as u64, HighlightStyle::default()));
+            }
+            if end > cursor {
+                highlights.push((
+                    start as u64..end as u64,
+                    HighlightStyle {
+                        color: Some(color),
+                        ..Default::default()
+                    },
+                ));
+                cursor = end;
+            }
+        }
+        if cursor < visible_len {
+            highlights.push((cursor as u64..visible_len as u64, HighlightStyle::default()));
         }
         highlights
     }
