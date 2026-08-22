@@ -27,6 +27,8 @@ pub enum UiEvent {
     HasUpdates(bool),
     /// Another instance asked this app to pop up its window.
     Popup,
+    /// The system tray asked the app to quit.
+    Quit,
     /// Cursor blink tick for the get-started page.
     CursorTick,
 }

@@ -7,6 +7,7 @@ use std::error::Error;
 
 use gpui::{App, Bounds, Size as GpuiSize, WindowBounds, WindowOptions, px};
 use wsrx_desktop::{daemon, launcher, logging, ui::RootView};
+use wsrx_desktop::daemon::UiEvent;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // If another instance is already running, ask it to pop up and exit.
@@ -64,22 +65,45 @@ fn main() -> Result<(), Box<dyn Error>> {
                     window.set_window_title("WebSocket Reflector X");
                     window.on_window_should_close(cx, {
                         let state = state.clone();
-                        move |_, cx| {
-                            daemon::shutdown(&state);
-                            cx.quit();
-                            true
+                        move |window, cx| {
+                            if state.settings.blocking_read().running_in_tray {
+                                // Minimize to the tray instead of quitting.
+                                window.minimize_window();
+                                false
+                            } else {
+                                daemon::shutdown(&state);
+                                cx.quit();
+                                true
+                            }
                         }
                     });
                 })
                 .expect("failed to update main window");
 
+            // Enable the tray icon when configured.
+            if state.settings.blocking_read().running_in_tray
+                && let Err(err) = wsrx_desktop::tray::enable(cx, &state)
+            {
+                tracing::error!("failed to enable system tray: {err}");
+            }
+
             // Background -> UI event pump.
             let window_handle = window;
+            let pump_state = state.clone();
             cx.spawn(async move |cx| {
                 while let Ok(event) = events_rx.recv().await {
-                    let _ = window_handle.update(cx, |root, window, cx| {
-                        root.handle_event(event, window, cx);
-                    });
+                    match event {
+                        UiEvent::Quit => {
+                            daemon::shutdown(&pump_state);
+                            cx.update(|cx| cx.quit());
+                            return;
+                        }
+                        _ => {
+                            let _ = window_handle.update(cx, |root, window, cx| {
+                                root.handle_event(event, window, cx);
+                            });
+                        }
+                    }
                 }
             })
             .detach();

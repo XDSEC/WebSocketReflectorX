@@ -16,7 +16,7 @@ wsrx = { path = "../wsrx" }
 
 gpui          = { workspace = true }
 gpui_platform = { workspace = true }
-woocraft      = { workspace = true }
+woocraft      = { workspace = true, features = ["tray"] }
 
 async-channel = "2.2"
 rust-embed   = { version = "8.11", features = ["interpolate-folder-path", "include-exclude"] }

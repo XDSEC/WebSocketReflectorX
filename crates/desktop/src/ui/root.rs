@@ -159,6 +159,8 @@ impl RootView {
             UiEvent::Popup => {
                 window.activate_window();
             }
+            // Handled by the app-level event loop in `main`.
+            UiEvent::Quit => {}
             UiEvent::CursorTick => {
                 if matches!(self.page, Page::Home) {
                     self.cursor_visible = !self.cursor_visible;

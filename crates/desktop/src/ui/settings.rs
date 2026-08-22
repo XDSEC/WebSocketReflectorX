@@ -19,6 +19,7 @@ pub(crate) fn render_settings(
     let has_updates = root.has_updates();
     let version = root.version().to_string();
     let language = root.settings().language.clone();
+    let running_in_tray = root.settings().running_in_tray;
     let cursor = if root.cursor_visible() { "_" } else { " " };
     let info = root.info().to_string();
 
@@ -82,18 +83,45 @@ pub(crate) fn render_settings(
         )
         .child(div().h_px().bg(border))
         .child(
-            // Running in system tray (not implemented yet)
+            // Running in system tray when closed
             settings_row(
                 cx,
-                format!(
-                    "{}{}",
-                    i18n::t("Running in system tray when closed"),
-                    i18n::t(" (not implemented yet) ")
-                ),
+                i18n::t("Running in system tray when closed"),
                 Button::new("tray-toggle")
                     .flat()
-                    .label(i18n::t("Disabled"))
-                    .disabled(true),
+                    .icon(Icon::new(if running_in_tray {
+                        IconName::ToggleRight
+                    } else {
+                        IconName::ToggleLeft
+                    }))
+                    .label(if running_in_tray {
+                        i18n::t("Enabled")
+                    } else {
+                        i18n::t("Disabled")
+                    })
+                    .on_click({
+                        let weak = weak.clone();
+                        let state = state.clone();
+                        move |_, _, cx| {
+                            let running = {
+                                let mut settings = state.settings.blocking_write();
+                                settings.running_in_tray = !settings.running_in_tray;
+                                settings.running_in_tray
+                            };
+                            daemon::persist_settings_sync(&state);
+                            if running {
+                                if let Err(err) = crate::tray::enable(cx, &state) {
+                                    tracing::error!("failed to enable system tray: {err}");
+                                }
+                            } else {
+                                crate::tray::disable(cx);
+                            }
+                            let _ = weak.update(cx, |root, cx| {
+                                root.settings.running_in_tray = running;
+                                cx.notify();
+                            });
+                        }
+                    }),
             ),
         )
         .child(div().h_px().bg(border))
