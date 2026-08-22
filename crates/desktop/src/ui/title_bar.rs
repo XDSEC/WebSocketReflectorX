@@ -14,7 +14,7 @@ pub(crate) fn render_title_bar(
 
     TitleBar::new()
         .title("WebSocket Reflector X")
-        .icon(Icon::new("logo.svg").colorized(false))
+        .icon(Icon::new("logo-stroked.svg").colorized(false))
         .theme_button(true)
         .language_button(true)
         .on_theme_button_click({
