@@ -38,7 +38,7 @@ pub(crate) fn render_get_started(
             v_flex()
                 .items_center()
                 .gap_1()
-                .child(img("logo.svg").size(px(64.)))
+                .child(img("logo-stroked.svg").size(px(64.)))
                 .child(
                     h_flex()
                         .items_center()
