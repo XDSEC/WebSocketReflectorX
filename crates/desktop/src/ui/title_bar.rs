@@ -14,6 +14,20 @@ pub(crate) fn render_title_bar(
         .icon(Icon::new("logo-stroked.svg").colorized(false))
         .theme_button(true)
         .language_button(true)
+        // The woocraft title bar's own close button calls remove_window()
+        // directly, bypassing `on_window_should_close`; route it through the
+        // same logic (minimize-to-tray or real shutdown). Linux only.
+        .on_close_window({
+            let state = state.clone();
+            move |_: &ClickEvent, window: &mut Window, cx: &mut App| {
+                if state.settings.blocking_read().running_in_tray {
+                    window.minimize_window();
+                } else {
+                    daemon::shutdown(&state);
+                    cx.quit();
+                }
+            }
+        })
         .on_theme_button_click({
             let weak = weak.clone();
             let state = state.clone();
