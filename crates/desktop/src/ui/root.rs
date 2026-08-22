@@ -1,13 +1,14 @@
-use gpui::{App, AppContext, Context, Entity, IntoElement, ParentElement, Render, Styled, Window, div};
+use gpui::{
+    App, AppContext, Context, Entity, IntoElement, ParentElement, Render, Styled, Window, div,
+};
 use woocraft::{ActiveTheme, Theme, ThemeMode, h_flex, v_flex, window_border};
 
+use super::{connections, get_started, network_logs, settings, sidebar, title_bar};
 use crate::{
     daemon::{self, ServerState, UiEvent},
     i18n, launcher,
     models::{InstanceData, LogEntry, ScopeData, WsrxDesktopConfig},
 };
-
-use super::{connections, get_started, network_logs, settings, sidebar, title_bar};
 
 /// The page currently displayed in the main content area.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -102,7 +103,7 @@ impl RootView {
                 cursor_visible: true,
                 logs_editor,
                 info_editor,
-                info: info,
+                info,
                 version: env!("CARGO_PKG_VERSION").to_string(),
             };
             view.refresh_from_state();
@@ -304,12 +305,7 @@ impl Render for RootView {
             v_flex()
                 .size_full()
                 .min_h_0()
-                .child(title_bar::render_title_bar(
-                    window,
-                    cx,
-                    &this,
-                    &state,
-                ))
+                .child(title_bar::render_title_bar(window, cx, &this, &state))
                 // Divider between the title bar and the content area.
                 .child(div().h_px().bg(border))
                 .child(

@@ -16,7 +16,10 @@ use tower_http::{
 use tracing::{Span, debug, info, warn};
 
 use super::{ServerState, UiEvent, launch_instance};
-use crate::{launcher, models::{FeatureFlags, InstanceData, ScopeData}};
+use crate::{
+    launcher,
+    models::{FeatureFlags, InstanceData, ScopeData},
+};
 
 pub async fn serve(state: ServerState) {
     let listener = match tokio::net::TcpListener::bind(&format!("{}:{}", "127.0.0.1", 3307)).await {
@@ -70,9 +73,7 @@ pub fn router(state: ServerState) -> axum::Router {
             axum::Router::new()
                 .route(
                     "/pool",
-                    get(get_instances)
-                        .post(launch)
-                        .delete(close_instance),
+                    get(get_instances).post(launch).delete(close_instance),
                 )
                 .route("/popup", post(popup_window))
                 .layer(cors_layer)

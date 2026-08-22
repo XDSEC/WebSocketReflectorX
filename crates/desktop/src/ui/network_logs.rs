@@ -5,9 +5,7 @@ use crate::{models::LogEntry, ui::RootView};
 
 /// Renders the network logs page as a readonly code editor.
 pub(crate) fn render_network_logs(
-    _window: &mut Window,
-    _cx: &mut Context<RootView>,
-    root: &mut RootView,
+    _window: &mut Window, _cx: &mut Context<RootView>, root: &mut RootView,
 ) -> impl IntoElement {
     CodeEditor::new(&root.logs_editor)
         .h_full()

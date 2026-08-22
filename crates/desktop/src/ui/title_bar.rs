@@ -5,10 +5,7 @@ use crate::{daemon, daemon::ServerState, i18n, ui::RootView};
 
 /// Renders the woocraft title bar with persisted theme / language handlers.
 pub(crate) fn render_title_bar(
-    _window: &mut Window,
-    _cx: &mut Context<RootView>,
-    this: &Entity<RootView>,
-    state: &ServerState,
+    _window: &mut Window, _cx: &mut Context<RootView>, this: &Entity<RootView>, state: &ServerState,
 ) -> impl IntoElement {
     let weak = this.downgrade();
 

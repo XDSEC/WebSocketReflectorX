@@ -120,5 +120,5 @@ pub fn cleanup_runtime_files() {
         eprintln!("Failed to remove log directory");
     });
 
-    remove_lock_file(&lock_file_path().as_path());
+    remove_lock_file(lock_file_path().as_path());
 }

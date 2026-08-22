@@ -1,25 +1,21 @@
 use gpui::{
-    Context, IntoElement, InteractiveElement, ParentElement, StatefulInteractiveElement, Styled,
-    Window, div, px, prelude::FluentBuilder as _,
+    Context, InteractiveElement, IntoElement, ParentElement, StatefulInteractiveElement, Styled,
+    Window, div, prelude::FluentBuilder as _, px,
 };
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, Disableable as _, Icon, IconName, Sizable as _,
-    ScrollableElement as _, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, Disableable as _, Icon, IconName,
+    ScrollableElement as _, Sizable as _, h_flex, v_flex,
 };
 
 use crate::{
-    daemon,
-    i18n,
+    daemon, i18n,
     models::{InstanceData, ScopeData},
     ui::{Page, RootView},
 };
 
 /// Renders the connections page for a scope.
 pub(crate) fn render_connections(
-    _window: &mut Window,
-    cx: &mut Context<RootView>,
-    root: &mut RootView,
-    host: &str,
+    _window: &mut Window, cx: &mut Context<RootView>, root: &mut RootView, host: &str,
 ) -> impl IntoElement {
     let theme = cx.theme();
     let weak = cx.entity().downgrade();
@@ -63,30 +59,22 @@ pub(crate) fn render_connections(
                                 .flex_1()
                                 .child(
                                     div()
-
                                         .font_weight(gpui::FontWeight::BOLD)
                                         .child(scope_name(&scope, is_default)),
                                 )
-                                .child(
-                                    div()
-
-                                        .text_color(theme.muted_foreground)
-                                        .child(if is_default {
-                                            i18n::t("This is the default scope.").to_string()
-                                        } else {
-                                            scope
-                                                .as_ref()
-                                                .map(|s| s.host.clone())
-                                                .unwrap_or_default()
-                                        }),
-                                ),
+                                .child(div().text_color(theme.muted_foreground).child(
+                                    if is_default {
+                                        i18n::t("This is the default scope.").to_string()
+                                    } else {
+                                        scope.as_ref().map(|s| s.host.clone()).unwrap_or_default()
+                                    },
+                                )),
                         )
                         .child(
                             v_flex()
                                 .items_end()
                                 .child(
                                     div()
-
                                         .font_weight(gpui::FontWeight::MEDIUM)
                                         .text_color(if is_default {
                                             theme.primary
@@ -99,19 +87,16 @@ pub(crate) fn render_connections(
                                             i18n::t("External Controlled")
                                         }),
                                 )
-                                .child(
-                                    div()
-
-                                        .text_color(theme.muted_foreground)
-                                        .child(if is_default {
-                                            "basic".to_string()
-                                        } else {
-                                            scope
-                                                .as_ref()
-                                                .map(|s| s.features.to_string())
-                                                .unwrap_or_default()
-                                        }),
-                                ),
+                                .child(div().text_color(theme.muted_foreground).child(
+                                    if is_default {
+                                        "basic".to_string()
+                                    } else {
+                                        scope
+                                            .as_ref()
+                                            .map(|s| s.features.to_string())
+                                            .unwrap_or_default()
+                                    },
+                                )),
                         ),
                 )
                 .child(div().h_px().bg(theme.border))
@@ -122,7 +107,6 @@ pub(crate) fn render_connections(
                         .child(
                             div()
                                 .flex_1()
-
                                 .text_color(if is_default {
                                     theme.primary
                                 } else if allowed {
@@ -222,16 +206,16 @@ pub(crate) fn render_connections(
         .children(instances.iter().map(|instance| {
             let theme = cx.theme();
             render_instance_row(
-                &weak,
                 &state,
                 instance,
-                is_default,
-                theme.secondary_hover,
-                theme.success,
-                theme.danger,
-                theme.primary,
-                theme.muted_foreground,
-                theme.border,
+                InstanceRowColors {
+                    secondary_hover: theme.secondary_hover,
+                    success: theme.success,
+                    danger: theme.danger,
+                    primary: theme.primary,
+                    muted_foreground: theme.muted_foreground,
+                    border: theme.border,
+                },
             )
         }))
         .child(div().h_6())
@@ -248,17 +232,18 @@ fn scope_name(scope: &Option<ScopeData>, is_default: bool) -> String {
     }
 }
 
-fn render_instance_row(
-    _weak: &gpui::WeakEntity<RootView>,
-    state: &crate::daemon::ServerState,
-    instance: &InstanceData,
-    _is_default: bool,
+/// Theme colors used by an instance row.
+struct InstanceRowColors {
     secondary_hover: gpui::Hsla,
     success: gpui::Hsla,
     danger: gpui::Hsla,
     primary: gpui::Hsla,
     muted_foreground: gpui::Hsla,
     border: gpui::Hsla,
+}
+
+fn render_instance_row(
+    state: &crate::daemon::ServerState, instance: &InstanceData, colors: InstanceRowColors,
 ) -> impl IntoElement {
     let state = state.clone();
     let local = instance.local.clone();
@@ -272,12 +257,12 @@ fn render_instance_row(
     } else {
         "-- ms".to_string()
     };
-    let latency_color = if latency >= 0 { success } else { danger };
+    let latency_color = if latency >= 0 { colors.success } else { colors.danger };
 
     div()
         .id(format!("instance-{local}"))
         .rounded_md()
-        .hover(|this| this.bg(secondary_hover.opacity(0.4)))
+        .hover(|this| this.bg(colors.secondary_hover.opacity(0.4)))
         .cursor_pointer()
         .on_click(move |_, _, cx| {
             RootView::copy_to_clipboard(cx, &local_copy);
@@ -296,42 +281,23 @@ fn render_instance_row(
                                 .font_weight(gpui::FontWeight::SEMIBOLD)
                                 .child(label),
                         )
-                        .child(
-                            div()
-
-                                .text_color(primary)
-                                .child(format!("{local}")),
-                        ),
+                        .child(div().text_color(colors.primary).child(local.to_string())),
                 )
                 .child(
                     h_flex()
                         .items_center()
                         .gap_4()
-                        .child(
-                            div()
-                                .flex_1()
-
-                                .text_color(muted_foreground)
-                                .child(remote),
-                        )
+                        .child(div().flex_1().text_color(colors.muted_foreground).child(remote))
                         .child(
                             h_flex()
                                 .items_center()
                                 .gap_2()
-                                .child(
-                                    div()
-
-                                        .text_color(latency_color)
-                                        .child(latency_text),
-                                )
+                                .child(div().text_color(latency_color).child(latency_text))
                                 .child(
                                     Button::new(format!("close-{local}"))
                                         .flat()
                                         .small()
-                                        .icon(
-                                            Icon::new(IconName::Dismiss)
-                                                .text_color(danger),
-                                        )
+                                        .icon(Icon::new(IconName::Dismiss).text_color(colors.danger))
                                         .on_click({
                                             let state = state.clone();
                                             let local = local.clone();
@@ -348,5 +314,5 @@ fn render_instance_row(
                         ),
                 ),
         )
-        .child(div().h_px().bg(border))
+        .child(div().h_px().bg(colors.border))
 }

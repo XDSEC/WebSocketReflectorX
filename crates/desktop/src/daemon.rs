@@ -259,12 +259,14 @@ pub(crate) fn persist_settings_sync(state: &ServerState) {
 }
 
 fn persist_to(config_file: std::path::PathBuf, config: String) {
-    if let Some(parent) = config_file.parent() {
-        if let Err(e) = std::fs::create_dir_all(parent) {
-            error!("Failed to create config directory {}: {e}", parent.display());
+    if let Some(parent) = config_file.parent()
+        && let Err(e) = std::fs::create_dir_all(parent) {
+            error!(
+                "Failed to create config directory {}: {e}",
+                parent.display()
+            );
             return;
         }
-    }
     if let Err(e) = std::fs::write(&config_file, config) {
         error!("Failed to write config file {}: {e}", config_file.display());
     }

@@ -65,7 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .expect("failed to update main window");
 
             // Background -> UI event pump.
-            let window_handle = window.clone();
+            let window_handle = window;
             cx.spawn(async move |cx| {
                 while let Ok(event) = events_rx.recv().await {
                     let _ = window_handle.update(cx, |root, window, cx| {

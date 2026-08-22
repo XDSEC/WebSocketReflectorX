@@ -1,16 +1,14 @@
 use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _, Icon,
-    IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _,
+    Icon, IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, ui::RootView};
 
 /// Renders the settings page.
 pub(crate) fn render_settings(
-    _window: &mut Window,
-    cx: &mut Context<RootView>,
-    root: &mut RootView,
+    _window: &mut Window, cx: &mut Context<RootView>, root: &mut RootView,
 ) -> impl IntoElement {
     let weak = cx.entity().downgrade();
     let state = root.state().clone();
@@ -34,7 +32,8 @@ pub(crate) fn render_settings(
             // Header
             h_flex()
                 .items_center()
-                .gap_1()
+                .gap_3()
+                .pl_3()
                 .child(img("logo.svg").size(px(48.)))
                 .child(
                     v_flex()
@@ -46,8 +45,7 @@ pub(crate) fn render_settings(
                         )
                         .child(
                             div()
-
-                                .text_color(muted_foreground)
+                                .opacity(0.6)
                                 .child(format!(
                                     "{}{cursor}",
                                     "Idealism is that you will never receive something back,\nbut nonetheless still decide to give."
@@ -191,22 +189,12 @@ pub(crate) fn render_settings(
                     }),
             ),
         )
-        .child(div().h_px().bg(border))
-        .child(
-            div()
-
-                .text_color(muted_foreground)
-                .child(i18n::t(
-                    "Please include the following information when reporting bugs or asking for help.",
-                )),
-        )
         .child(
             CodeEditor::new(&root.info_editor)
-                .h(px(120.))
+                .h(px(160.))
                 .w_full()
-                .appearance(false)
-                .bordered(false)
-                .focus_bordered(false),
+                .appearance(true)
+                .bordered(true)
         )
         .child(div().h_6())
         .child(
@@ -231,20 +219,13 @@ pub(crate) fn render_settings(
 
 /// A labeled settings row with an action control on the right.
 fn settings_row(
-    cx: &mut Context<RootView>,
-    label: impl IntoElement,
-    control: impl IntoElement,
+    cx: &mut Context<RootView>, label: impl IntoElement, control: impl IntoElement,
 ) -> impl IntoElement {
     let theme = cx.theme();
     h_flex()
         .items_center()
         .gap_1()
-        .child(
-            div()
-                .flex_1()
-                .text_color(theme.foreground)
-                .child(label),
-        )
+        .child(div().flex_1().text_color(theme.foreground).child(label))
         .child(control)
 }
 

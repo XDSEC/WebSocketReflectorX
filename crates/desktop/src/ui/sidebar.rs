@@ -13,13 +13,8 @@ use crate::{
 /// controller port row at the bottom) is the same full-width flat [`Button`]
 /// component.
 pub(crate) fn render_sidebar(
-    _window: &mut Window,
-    cx: &mut Context<RootView>,
-    this: &Entity<RootView>,
-    page: &Page,
-    scopes: &[ScopeData],
-    online: bool,
-    api_port: u16,
+    _window: &mut Window, cx: &mut Context<RootView>, this: &Entity<RootView>, page: &Page,
+    scopes: &[ScopeData], online: bool, api_port: u16,
 ) -> impl IntoElement {
     let weak = this.downgrade();
     let theme = cx.theme();
@@ -112,11 +107,8 @@ pub(crate) fn render_sidebar(
 
 /// A full-width flat navigation button with an active state.
 fn nav_item(
-    id: impl Into<gpui::ElementId>,
-    icon: IconName,
-    label: impl Into<gpui::SharedString>,
-    active: bool,
-    on_click: impl Fn(&gpui::ClickEvent, &mut Window, &mut gpui::App) + 'static,
+    id: impl Into<gpui::ElementId>, icon: IconName, label: impl Into<gpui::SharedString>,
+    active: bool, on_click: impl Fn(&gpui::ClickEvent, &mut Window, &mut gpui::App) + 'static,
 ) -> Button {
     Button::new(id)
         .flat()
@@ -131,11 +123,7 @@ fn nav_item(
 /// [`nav_item`] button as every other entry; clicking it copies the API
 /// address when online and opens the network logs otherwise. The port number
 /// is right-aligned via an extra flex child.
-fn controller_port_item(
-    online: bool,
-    api_port: u16,
-    weak: gpui::WeakEntity<RootView>,
-) -> Button {
+fn controller_port_item(online: bool, api_port: u16, weak: gpui::WeakEntity<RootView>) -> Button {
     nav_item(
         "nav-controller-port",
         if online {

@@ -6,7 +6,10 @@ use tokio::io::AsyncBufReadExt;
 use tracing::{debug, error, warn};
 
 use super::{ServerState, UiEvent, remove_instance};
-use crate::{launcher, models::{FeatureFlags, InstanceData, LogEntry, PingFallSettings}};
+use crate::{
+    launcher,
+    models::{FeatureFlags, InstanceData, LogEntry, PingFallSettings},
+};
 
 /// Periodically pings every instance and updates its latency in the UI.
 pub async fn latency_loop(state: ServerState) {
