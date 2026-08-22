@@ -100,6 +100,7 @@ pub(crate) fn render_get_started(
                             Button::new("interface-selector")
                                 .flat()
                                 .expand(true)
+                                .flex_1()
                                 .icon(Icon::new(IconName::Globe))
                                 .label(selected.clone())
                                 .dropdown_menu({
