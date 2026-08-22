@@ -7,7 +7,8 @@ use tracing::{error, info, warn};
 #[cfg(feature = "client")]
 mod cli;
 
-/// wsrx is a controlled WS-TCP tunnel for CTF platforms like ret2shell, GZCTF and CDSCTF etc..
+/// wsrx is a controlled WS-TCP tunnel for CTF platforms like ret2shell, GZCTF
+/// and CDSCTF etc..
 #[derive(Parser)]
 #[command(name = "wsrx", bin_name = "wsrx", version, about)]
 enum WsrxCli {

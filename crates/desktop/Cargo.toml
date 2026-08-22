@@ -14,42 +14,41 @@ version.workspace      = true
 [dependencies]
 wsrx = { path = "../wsrx" }
 
-i-slint-backend-winit = { workspace = true }
-slint                 = { workspace = true }
-winit                 = { workspace = true }
+gpui          = { workspace = true }
+gpui_platform = { workspace = true }
+woocraft      = { workspace = true, features = ["tray"] }
 
-directories      = { workspace = true }
+async-channel = "2.2"
+rust-embed   = { version = "8.11", features = ["interpolate-folder-path", "include-exclude"] }
+directories   = { workspace = true }
 local-ip-address = { workspace = true }
-open             = { workspace = true }
-sys-locale       = { workspace = true }
-sysinfo          = { workspace = true }
+open          = { workspace = true }
+sys-locale    = { workspace = true }
+sysinfo       = { workspace = true }
 
-async-compat       = { workspace = true }
-bitflags           = { workspace = true }
-once_cell          = { workspace = true }
-rand               = { workspace = true }
-rustls             = { workspace = true }
-tokio              = { workspace = true }
-toml               = { workspace = true }
-tracing            = { workspace = true }
-tracing-appender   = { workspace = true }
+bitflags         = { workspace = true }
+once_cell        = { workspace = true }
+rand             = { workspace = true }
+rustls           = { workspace = true }
+tokio            = { workspace = true }
+toml             = { workspace = true }
+tracing          = { workspace = true }
+tracing-appender = { workspace = true }
 tracing-subscriber = { workspace = true }
 
-axum              = { workspace = true }
-chrono            = { workspace = true }
-reqwest           = { workspace = true }
-serde             = { workspace = true }
-serde_json        = { workspace = true }
-thiserror         = { workspace = true }
-tokio-tungstenite = { workspace = true }
-tokio-util        = { workspace = true }
-tower-http        = { workspace = true }
+axum       = { workspace = true }
+chrono     = { workspace = true }
+reqwest    = { workspace = true }
+serde      = { workspace = true }
+serde_json = { workspace = true }
+thiserror  = { workspace = true }
+tokio-util = { workspace = true }
+tower-http = { workspace = true }
 
 [build-dependencies]
 build-target  = { workspace = true }
 git-version   = { workspace = true }
 rustc_version = { workspace = true }
-slint-build   = { workspace = true }
 winres        = { workspace = true }
 
 [[bin]]

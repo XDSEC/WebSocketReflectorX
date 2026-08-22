@@ -15,7 +15,7 @@ Download from [Releases](https://github.com/XDSEC/WebSocketReflectorX/releases) 
 
 ### Desktop App
 
-[#madewithslint](https://slint.dev/showcase.html) !
+Built with [Woocraft](https://github.com/Reverier-Xu/woocraft) (GPUI component library).
 
 #### For Mac Users
 

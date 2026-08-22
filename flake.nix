@@ -66,12 +66,8 @@
             libxkbfile
             libxrandr
             wayland
+            vulkan-loader
           ];
-
-          skiaBinaries = pkgs.fetchurl {
-            url = "https://github.com/rust-skia/skia-binaries/releases/download/0.99.0/skia-binaries-a25a0fdb7d90429aa2d1-x86_64-unknown-linux-gnu-gl-jpegd-jpege-pdf-textlayout-vulkan.tar.gz";
-            hash = "sha256-CX5413XJFW3EsHC5zKcAjbq1h1E+yxkkuvTPliDzEZs=";
-          };
 
           desktopBuildInputs =
             commonBuildInputs
@@ -152,8 +148,6 @@
               description = "Desktop interface for WebSocketReflectorX";
               mainProgram = "wsrx-desktop";
             };
-          } // lib.optionalAttrs (system == "x86_64-linux") {
-            SKIA_BINARIES_URL = "file://${skiaBinaries}";
           });
         in
         {
