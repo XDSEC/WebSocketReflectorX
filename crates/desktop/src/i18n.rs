@@ -48,7 +48,6 @@ static TABLE: Lazy<Vec<Entry>> = Lazy::new(|| {
         ("Click to copy: ", "点击复制: ", "點擊複製: "),
         ("Click to close", "点击关闭", "點擊關閉"),
         // ---- settings ----
-        ("Idealism is that you will never receive something back,\nbut nonetheless still decide to give.", "理想主义就是你永远不会得到回报，\n但仍然决定付出。", "理想主義就是你永遠不會得到回報，\n但仍然決定付出。"),
         ("Version and Updates", "版本与更新", "版本與更新"),
         ("Update available", "有可用更新", "有可用更新"),
         ("Running in system tray when closed", "关闭时在系统托盘运行", "關閉時在系統匣執行"),
@@ -67,8 +66,6 @@ static TABLE: Lazy<Vec<Entry>> = Lazy::new(|| {
         ("Copy", "复制", "複製"),
         ("Copied", "已复制", "已複製"),
         ("Please include the following information when reporting bugs or asking for help.", "上报 Bug 或寻求帮助时，请附上以下信息。", "回報 Bug 或尋求幫助時，請附上以下資訊。"),
-        ("Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.", "由 Reverier-Xu 提供动力，伴以咖啡因、一只叫 'dog' 的猫，以及热爱。", "由 Reverier-Xu 提供動力，伴以咖啡因、一隻叫 'dog' 的貓，以及熱愛。"),
-        ("(c) 2022 - 2025 XDSEC, distributed with MIT license.", "(c) 2022 - 2025 XDSEC，以 MIT 许可证分发。", "(c) 2022 - 2025 XDSEC，以 MIT 授權條款散佈。"),
     ]
 });
 

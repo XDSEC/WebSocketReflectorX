@@ -1,7 +1,7 @@
 use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px};
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, Disableable as _, DropdownMenu as _, Icon, IconName,
-    PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _, Icon,
+    IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, ui::RootView};
@@ -17,7 +17,6 @@ pub(crate) fn render_settings(
 
     let primary = cx.theme().primary;
     let muted_foreground = cx.theme().muted_foreground;
-    let secondary_hover = cx.theme().secondary_hover;
     let border = cx.theme().border;
 
     let has_updates = root.has_updates();
@@ -52,9 +51,7 @@ pub(crate) fn render_settings(
                                 .text_color(muted_foreground)
                                 .child(format!(
                                     "{}{cursor}",
-                                    i18n::t(
-                                        "Idealism is that you will never receive something back,\nbut nonetheless still decide to give."
-                                    )
+                                    "Idealism is that you will never receive something back,\nbut nonetheless still decide to give."
                                 )),
                         ),
                 ),
@@ -205,12 +202,12 @@ pub(crate) fn render_settings(
                 )),
         )
         .child(
-            div()
-                .rounded_md()
-                .bg(secondary_hover.opacity(0.4))
-                .px_4()
-                .py_3()
-                .child(div().child(info)),
+            CodeEditor::new(&root.info_editor)
+                .h(px(120.))
+                .w_full()
+                .appearance(false)
+                .bordered(false)
+                .focus_bordered(false),
         )
         .child(div().h_6())
         .child(
@@ -220,17 +217,15 @@ pub(crate) fn render_settings(
                     div()
 
                         .text_color(muted_foreground)
-                        .child(i18n::t(
+                        .child(
                             "Powered by Reverier-Xu, with caffeine, a cat named 'dog', and love.",
-                        )),
+                        ),
                 )
                 .child(
                     div()
 
                         .text_color(muted_foreground)
-                        .child(i18n::t(
-                            "(c) 2022 - 2025 XDSEC, distributed with MIT license.",
-                        )),
+                        .child("(c) 2022 - 2025 XDSEC, distributed with MIT license."),
                 ),
         )
 }

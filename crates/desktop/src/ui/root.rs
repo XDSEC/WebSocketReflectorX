@@ -46,6 +46,7 @@ pub struct RootView {
     pub(crate) logs_editor: gpui::Entity<woocraft::EditorState>,
 
     // --- settings page ---
+    pub(crate) info_editor: gpui::Entity<woocraft::EditorState>,
     info: String,
     version: String,
 }
@@ -64,6 +65,14 @@ impl RootView {
             woocraft::EditorState::new(window, cx)
                 .code_editor("text")
                 .read_only(true)
+        });
+
+        let info = daemon::system_info();
+        let info_editor = cx.new(|cx| {
+            woocraft::EditorState::new(window, cx)
+                .code_editor("text")
+                .read_only(true)
+                .default_value(info.clone())
         });
 
         cx.new(|cx| {
@@ -92,7 +101,8 @@ impl RootView {
                 port_input,
                 cursor_visible: true,
                 logs_editor,
-                info: daemon::system_info(),
+                info_editor,
+                info: info,
                 version: env!("CARGO_PKG_VERSION").to_string(),
             };
             view.refresh_from_state();
