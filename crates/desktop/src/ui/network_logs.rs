@@ -2,26 +2,22 @@ use std::{ops::Range, sync::Arc};
 
 use gpui::{Context, HighlightStyle, Hsla, IntoElement, Styled, Window, rgb};
 use woocraft::{
-    CodeEditor, EditorActionSink, EditorBackend, EditorBackendCapabilities, EditorBackendEditRequest,
-    EditorBackendEditResult, EditorContextMenuProvider, EditorEditError, EditorHighlighter,
-    EditorHighlighterProvider, EditorSnapshot, EditorTextChange, HighlightTheme, Rope,
-    RopeEditorSnapshot, RopeExt,
+    CodeEditor, EditorActionSink, EditorBackend, EditorBackendCapabilities,
+    EditorBackendEditRequest, EditorBackendEditResult, EditorContextMenuProvider, EditorEditError,
+    EditorHighlighter, EditorHighlighterProvider, EditorSnapshot, EditorTextChange, HighlightTheme,
+    Rope, RopeEditorSnapshot, RopeExt,
 };
 
 use crate::{models::LogEntry, ui::RootView};
 
 /// Renders the network logs page as a readonly code editor.
 pub(crate) fn render_network_logs(
-    _window: &mut Window,
-    _cx: &mut Context<RootView>,
-    root: &mut RootView,
+    _window: &mut Window, _cx: &mut Context<RootView>, root: &mut RootView,
 ) -> impl IntoElement {
     CodeEditor::new(&root.logs_editor)
         .h_full()
         .w_full()
         .appearance(false)
-        .bordered(false)
-        .focus_bordered(false)
 }
 
 /// Formats log entries into a single plain-text document matching the default
@@ -33,7 +29,10 @@ pub(crate) fn format_logs(logs: &[LogEntry]) -> String {
     for log in logs {
         let timestamp = log.timestamp.format("%Y-%m-%dT%H:%M:%S%.6fZ");
         if log.target.is_empty() {
-            out.push_str(&format!("{timestamp}  {:>5} {}\n", log.level, log.fields.message));
+            out.push_str(&format!(
+                "{timestamp}  {:>5} {}\n",
+                log.level, log.fields.message
+            ));
         } else {
             out.push_str(&format!(
                 "{timestamp}  {:>5} {}: {}\n",

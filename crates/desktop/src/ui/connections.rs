@@ -127,7 +127,7 @@ pub(crate) fn render_connections(
                                 Button::new("enjoy")
                                     .flat()
                                     .icon(Icon::new(IconName::CheckmarkCircle))
-                                    .label(i18n::t("Enjoy"))
+                                    .label(i18n::t("No Operation"))
                                     .disabled(true),
                             )
                         })
@@ -257,7 +257,11 @@ fn render_instance_row(
     } else {
         "-- ms".to_string()
     };
-    let latency_color = if latency >= 0 { colors.success } else { colors.danger };
+    let latency_color = if latency >= 0 {
+        colors.success
+    } else {
+        colors.danger
+    };
 
     div()
         .id(format!("instance-{local}"))
@@ -287,7 +291,12 @@ fn render_instance_row(
                     h_flex()
                         .items_center()
                         .gap_4()
-                        .child(div().flex_1().text_color(colors.muted_foreground).child(remote))
+                        .child(
+                            div()
+                                .flex_1()
+                                .text_color(colors.muted_foreground)
+                                .child(remote),
+                        )
                         .child(
                             h_flex()
                                 .items_center()
@@ -297,7 +306,9 @@ fn render_instance_row(
                                     Button::new(format!("close-{local}"))
                                         .flat()
                                         .small()
-                                        .icon(Icon::new(IconName::Dismiss).text_color(colors.danger))
+                                        .icon(
+                                            Icon::new(IconName::Dismiss).text_color(colors.danger),
+                                        )
                                         .on_click({
                                             let state = state.clone();
                                             let local = local.clone();

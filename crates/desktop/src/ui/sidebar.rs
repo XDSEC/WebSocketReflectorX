@@ -1,5 +1,7 @@
 use gpui::{Context, Entity, IntoElement, ParentElement, Styled, Window, div, px};
-use woocraft::{ActiveTheme, Button, ButtonVariants as _, Icon, IconName, Selectable as _, v_flex};
+use woocraft::{
+    ActiveTheme, Button, ButtonVariants as _, Icon, IconName, Selectable as _, Theme, v_flex,
+};
 
 use crate::{
     i18n,
@@ -102,7 +104,7 @@ pub(crate) fn render_sidebar(
                 }
             },
         ))
-        .child(controller_port_item(online, api_port, weak.clone()))
+        .child(controller_port_item(online, api_port, weak.clone(), theme))
 }
 
 /// A full-width flat navigation button with an active state.
@@ -123,7 +125,9 @@ fn nav_item(
 /// [`nav_item`] button as every other entry; clicking it copies the API
 /// address when online and opens the network logs otherwise. The port number
 /// is right-aligned via an extra flex child.
-fn controller_port_item(online: bool, api_port: u16, weak: gpui::WeakEntity<RootView>) -> Button {
+fn controller_port_item(
+    online: bool, api_port: u16, weak: gpui::WeakEntity<RootView>, theme: &Theme,
+) -> Button {
     nav_item(
         "nav-controller-port",
         if online {
@@ -147,6 +151,7 @@ fn controller_port_item(online: bool, api_port: u16, weak: gpui::WeakEntity<Root
             .flex_1()
             .flex_shrink_0()
             .text_right()
+            .text_color(theme.success)
             .child(if online {
                 api_port.to_string()
             } else {
