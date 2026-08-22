@@ -65,6 +65,7 @@ impl RootView {
         let logs_editor = cx.new(|cx| {
             woocraft::EditorState::new(window, cx)
                 .code_editor("text")
+                .backend(super::network_logs::LogBackend::new(""))
                 .read_only(true)
         });
 
