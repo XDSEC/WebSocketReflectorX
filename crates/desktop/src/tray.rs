@@ -41,6 +41,7 @@ pub fn enable(cx: &mut App, state: &ServerState) -> Result<(), TrayError> {
                 .name("wsrx-tray-events".to_string())
                 .spawn(move || {
                     while let Ok(event) = events_rx.recv() {
+                        tracing::debug!("tray event received: {event:?}");
                         let ui_event = match event {
                             TrayEvent::MenuClicked { id } => match id.as_str() {
                                 "show" => UiEvent::Popup,
@@ -53,6 +54,7 @@ pub fn enable(cx: &mut App, state: &ServerState) -> Result<(), TrayError> {
                             } => UiEvent::Popup,
                             _ => continue,
                         };
+                        tracing::debug!("tray event forwarded: {ui_event:?}");
                         if events.send_blocking(ui_event).is_err() {
                             break;
                         }

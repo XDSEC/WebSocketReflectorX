@@ -23,6 +23,8 @@ pub enum UiEvent {
     Refresh,
     /// A new log line was streamed from the log file.
     Log(LogEntry),
+    /// A batch of log lines (used by the event pump to coalesce floods).
+    Logs(Vec<LogEntry>),
     /// Whether a newer release exists on GitHub.
     HasUpdates(bool),
     /// Another instance asked this app to pop up its window.

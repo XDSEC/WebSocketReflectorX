@@ -64,35 +64,28 @@ fn main() -> Result<(), Box<dyn Error>> {
             cx.spawn(async move |cx| {
                 while let Ok(event) = events_rx.recv().await {
                     match event {
-                        UiEvent::Quit => {
-                            daemon::shutdown(&pump_state);
-                            cx.update(|cx| cx.quit());
-                            return;
-                        }
-                        UiEvent::Popup => {
-                            // Restore the window: activate it if it still
-                            // exists, otherwise reopen it (closed-to-tray).
-                            let handle = *pump_window_ref.lock().unwrap();
-                            if let Some(handle) = handle {
-                                let _ = handle.update(cx, |_, window, _| {
-                                    window.activate_window();
-                                });
-                            } else {
-                                cx.update(|cx| {
-                                    let handle =
-                                        open_main_window(cx, pump_state.clone(), &pump_window_ref);
-                                    let _ = handle.update(cx, |_, window, _| {
-                                        window.activate_window();
-                                    });
-                                });
+                        UiEvent::Log(entry) => {
+                            // Batch-drain pending log events so a log flood
+                            // cannot delay critical events (Popup / Quit) or
+                            // saturate the UI with per-line editor updates.
+                            let mut batch = vec![entry];
+                            while let Ok(next) = events_rx.try_recv() {
+                                match next {
+                                    UiEvent::Log(e) => batch.push(e),
+                                    other => {
+                                        if process_event(cx, &pump_window_ref, &pump_state, other) {
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                            if process_event(cx, &pump_window_ref, &pump_state, UiEvent::Logs(batch)) {
+                                return;
                             }
                         }
-                        _ => {
-                            let handle = *pump_window_ref.lock().unwrap();
-                            if let Some(handle) = handle {
-                                let _ = handle.update(cx, |root, window, cx| {
-                                    root.handle_event(event, window, cx);
-                                });
+                        other => {
+                            if process_event(cx, &pump_window_ref, &pump_state, other) {
+                                return;
                             }
                         }
                     }
@@ -113,6 +106,54 @@ fn main() -> Result<(), Box<dyn Error>> {
     drop(file_guard);
     drop(console_guard);
     Ok(())
+}
+
+/// Handles one UI event on the app level. Returns `true` when the app should
+/// quit (the pump loop should stop).
+fn process_event(
+    cx: &mut gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState, event: UiEvent,
+) -> bool {
+    match event {
+        UiEvent::Quit => {
+            tracing::debug!("event: quit");
+            daemon::shutdown(state);
+            cx.update(|cx| cx.quit());
+            true
+        }
+        UiEvent::Popup => {
+            tracing::debug!("event: popup");
+            // Restore the window: activate it if it still exists, otherwise
+            // reopen it (it was closed-to-tray).
+            let handle = *window_ref.lock().unwrap();
+            if let Some(handle) = handle {
+                let _ = handle.update(cx, |_, window, _| window.activate_window());
+            } else {
+                cx.update(|cx| {
+                    let handle = open_main_window(cx, state.clone(), window_ref);
+                    let _ = handle.update(cx, |_, window, _| window.activate_window());
+                });
+            }
+            false
+        }
+        UiEvent::Logs(batch) => {
+            let handle = *window_ref.lock().unwrap();
+            if let Some(handle) = handle {
+                let _ = handle.update(cx, |root, window, cx| {
+                    root.handle_logs(batch, window, cx);
+                });
+            }
+            false
+        }
+        other => {
+            let handle = *window_ref.lock().unwrap();
+            if let Some(handle) = handle {
+                let _ = handle.update(cx, |root, window, cx| {
+                    root.handle_event(other, window, cx);
+                });
+            }
+            false
+        }
+    }
 }
 
 /// Opens (or reopens) the main window and registers its close handlers.

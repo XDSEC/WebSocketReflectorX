@@ -133,28 +133,8 @@ impl RootView {
                 self.online = true;
             }
             UiEvent::Refresh => self.refresh_from_state(),
-            UiEvent::Log(entry) => {
-                self.logs.push(entry);
-                const MAX_LOGS: usize = 1000;
-                if self.logs.len() > MAX_LOGS {
-                    let excess = self.logs.len() - MAX_LOGS;
-                    self.logs.drain(..excess);
-                }
-
-                // Render the accumulated logs into the readonly editor.
-                // `set_value` is a no-op while `read_only` is set, so flip it
-                // around the update.
-                let text = super::network_logs::format_logs(&self.logs);
-                let editor = self.logs_editor.clone();
-                cx.spawn_in(window, async move |_, cx| {
-                    let _ = editor.update_in(cx, |state, window, cx| {
-                        state.set_read_only(false, window, cx);
-                        state.set_value(text, window, cx);
-                        state.set_read_only(true, window, cx);
-                    });
-                })
-                .detach();
-            }
+            UiEvent::Log(entry) => self.handle_logs(vec![entry], window, cx),
+            UiEvent::Logs(entries) => self.handle_logs(entries, window, cx),
             UiEvent::HasUpdates(value) => self.has_updates = value,
             UiEvent::Popup => {
                 window.activate_window();
@@ -167,6 +147,33 @@ impl RootView {
                 }
             }
         }
+        cx.notify();
+    }
+
+    /// Appends log entries and pushes the accumulated text into the readonly
+    /// editor in a single coalesced update. `set_value` is a no-op while
+    /// `read_only` is set, so it is flipped around the update.
+    pub fn handle_logs(
+        &mut self, entries: Vec<LogEntry>, window: &mut Window, cx: &mut Context<Self>,
+    ) {
+        self.logs.extend(entries);
+        const MAX_LOGS: usize = 1000;
+        if self.logs.len() > MAX_LOGS {
+            let excess = self.logs.len() - MAX_LOGS;
+            self.logs.drain(..excess);
+        }
+
+        let text = super::network_logs::format_logs(&self.logs);
+        let editor = self.logs_editor.clone();
+        cx.spawn_in(window, async move |_, cx| {
+            let _ = editor.update_in(cx, |state, window, cx| {
+                state.set_read_only(false, window, cx);
+                state.set_value(text, window, cx);
+                state.set_read_only(true, window, cx);
+            });
+        })
+        .detach();
+
         cx.notify();
     }
 
