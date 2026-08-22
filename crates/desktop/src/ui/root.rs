@@ -37,7 +37,7 @@ pub struct RootView {
 
     // --- get started page ---
     interfaces: Vec<String>,
-    selected_interface: String,
+    pub(crate) interface_input: gpui::Entity<woocraft::InputState>,
     pub(crate) remote_input: gpui::Entity<woocraft::InputState>,
     pub(crate) port_input: gpui::Entity<woocraft::InputState>,
     cursor_visible: bool,
@@ -67,7 +67,10 @@ impl RootView {
         });
 
         cx.new(|cx| {
-            let remote_input = cx.new(|cx| {
+            let interface_input = cx.new(|cx| {
+            woocraft::InputState::new(cx).default_value("127.0.0.1")
+        });
+        let remote_input = cx.new(|cx| {
                 woocraft::InputState::new(cx).placeholder(i18n::t("[ws|wss]://address..."))
             });
             let port_input = cx.new(|cx| {
@@ -87,7 +90,7 @@ impl RootView {
                 has_updates: false,
                 settings: settings.clone(),
                 interfaces: default_interfaces(),
-                selected_interface: "127.0.0.1".to_string(),
+                interface_input,
                 remote_input,
                 port_input,
                 cursor_visible: true,
@@ -197,8 +200,8 @@ impl RootView {
         &self.interfaces
     }
 
-    pub(crate) fn selected_interface(&self) -> &str {
-        &self.selected_interface
+    pub(crate) fn interface_input(&self) -> &gpui::Entity<woocraft::InputState> {
+        &self.interface_input
     }
 
     pub(crate) fn remote_input(&self) -> &gpui::Entity<woocraft::InputState> {
@@ -227,13 +230,6 @@ impl RootView {
 
     pub(crate) fn refresh_interfaces(&mut self) {
         self.interfaces = default_interfaces();
-        if !self.interfaces.contains(&self.selected_interface) {
-            self.selected_interface = "127.0.0.1".to_string();
-        }
-    }
-
-    pub(crate) fn select_interface(&mut self, interface: String) {
-        self.selected_interface = interface;
     }
 
     pub(crate) fn open_link(url: &str) {

@@ -1,7 +1,7 @@
 use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px, prelude::FluentBuilder as _};
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input,
-    PopupMenuItem, ScrollableElement as _, Sizable as _, h_flex, v_flex,
+    ActiveTheme, Anchor, Button, ButtonVariants as _, Icon, IconName, Input, Popover,
+    ScrollableElement as _, Selectable as _, Sizable as _, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, models::InstanceData, ui::RootView};
@@ -19,7 +19,7 @@ pub(crate) fn render_get_started(
     let has_updates = root.has_updates();
     let cursor = if root.cursor_visible() { "_" } else { " " };
     let interfaces = root.interfaces().to_vec();
-    let selected = root.selected_interface().to_string();
+    let interface_input = root.interface_input().clone();
     let remote_input = root.remote_input().clone();
     let port_input = root.port_input().clone();
 
@@ -84,7 +84,7 @@ pub(crate) fn render_get_started(
                         .gap_1()
                         .child(
                             Button::new("refresh-interfaces")
-                                .flat()
+                                .outline(true)
                                 .icon(Icon::new(IconName::ArrowSync))
                                 .on_click({
                                     let weak = weak.clone();
@@ -97,36 +97,48 @@ pub(crate) fn render_get_started(
                                 }),
                         )
                         .child(
-                            Button::new("interface-selector")
-                                .flat()
-                                .expand(true)
-                                .flex_1()
-                                .icon(Icon::new(IconName::Globe))
-                                .label(selected.clone())
-                                .dropdown_menu({
-                                    let weak = weak.clone();
-                                    let selected = selected.clone();
+                            // Local address input with a popup interface picker.
+                            Popover::new("interface-popover")
+                                .anchor(Anchor::BottomLeft)
+                                .overlay_closable(true)
+                                .trigger(
+                                    Input::new(&interface_input)
+                                        .flex_1()
+                                        .bordered(true),
+                                )
+                                .content({
                                     let interfaces = interfaces.clone();
-                                    move |menu, _, _| {
-                                        let mut menu = menu;
-                                        for interface in interfaces.iter() {
-                                            let interface = interface.clone();
-                                            let weak = weak.clone();
-                                            let checked = interface == selected;
-                                            menu = menu.item(
-                                                PopupMenuItem::new(interface.clone())
-                                                    .checked(checked)
-                                                    .on_click(move |_, _, cx| {
-                                                        let _ = weak.update(cx, |root, cx| {
-                                                            root.select_interface(
+                                    let input = interface_input.clone();
+                                    move |_, _window, cx| {
+                                        let state_entity = cx.entity();
+                                        let current = input.read(cx).value().to_string();
+                                        v_flex()
+                                            .gap_1()
+                                            .p_1()
+                                            .w(px(260.))
+                                            .children(interfaces.iter().map(|interface| {
+                                                let interface = interface.clone();
+                                                let input = input.clone();
+                                                let state_entity = state_entity.clone();
+                                                Button::new(format!("iface-{interface}"))
+                                                    .flat()
+                                                    .expand(true)
+                                                    .selected(interface == current)
+                                                    .label(interface.clone())
+                                                    .on_click(move |_, window, cx| {
+                                                        input.update(cx, |input, input_cx| {
+                                                            input.set_value(
                                                                 interface.clone(),
+                                                                window,
+                                                                input_cx,
                                                             );
-                                                            cx.notify();
                                                         });
-                                                    }),
-                                            );
-                                        }
-                                        menu
+                                                        let _ = state_entity
+                                                            .update(cx, |state, cx| {
+                                                                state.dismiss(window, cx);
+                                                            });
+                                                    })
+                                            }))
                                     }
                                 }),
                         )
@@ -147,12 +159,14 @@ pub(crate) fn render_get_started(
                                 .on_click({
                                     let weak = weak.clone();
                                     let state = state.clone();
-                                    let selected = selected.clone();
+                                    let interface_input = interface_input.clone();
                                     move |_, _, cx| {
                                         let state = state.clone();
+                                        let interface =
+                                            interface_input.read(cx).value().to_string();
                                         let remote = remote_input.read(cx).value().to_string();
                                         let port = port_input.read(cx).value().to_string();
-                                        let local = format!("{selected}:{port}");
+                                        let local = format!("{interface}:{port}");
 
                                         daemon::tokio_handle().spawn(async move {
                                             let data = InstanceData {
