@@ -43,6 +43,7 @@ pub(crate) fn render_connections(
                     h_flex()
                         .items_center()
                         .gap_1()
+                        .pl_3()
                         .child(
                             Icon::new(if is_default {
                                 IconName::GlobeStar
@@ -54,6 +55,7 @@ pub(crate) fn render_connections(
                             .size(px(28.))
                             .text_color(theme.foreground),
                         )
+                        .child(div().w_3())
                         .child(
                             v_flex()
                                 .flex_1()
