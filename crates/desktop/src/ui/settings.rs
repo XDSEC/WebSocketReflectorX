@@ -18,6 +18,7 @@ pub(crate) fn render_settings(
     let primary = cx.theme().primary;
     let muted_foreground = cx.theme().muted_foreground;
     let secondary_hover = cx.theme().secondary_hover;
+    let border = cx.theme().border;
 
     let has_updates = root.has_updates();
     let version = root.version().to_string();
@@ -58,6 +59,7 @@ pub(crate) fn render_settings(
                         ),
                 ),
         )
+        .child(div().h_px().bg(border))
         .child(
             // Version and updates
             settings_row(
@@ -84,6 +86,7 @@ pub(crate) fn render_settings(
                     }),
             ),
         )
+        .child(div().h_px().bg(border))
         .child(
             // Running in system tray (not implemented yet)
             settings_row(
@@ -99,6 +102,7 @@ pub(crate) fn render_settings(
                     .disabled(true),
             ),
         )
+        .child(div().h_px().bg(border))
         .child(
             // Language / Locale
             settings_row(
@@ -143,6 +147,7 @@ pub(crate) fn render_settings(
                     }),
             ),
         )
+        .child(div().h_px().bg(border))
         .child(
             // Export network logs
             settings_row(
@@ -155,6 +160,7 @@ pub(crate) fn render_settings(
                     .on_click(|_, _, _| RootView::open_logs_dir()),
             ),
         )
+        .child(div().h_px().bg(border))
         .child(
             // Support
             settings_row(
@@ -171,6 +177,7 @@ pub(crate) fn render_settings(
                     }),
             ),
         )
+        .child(div().h_px().bg(border))
         .child(
             // System information
             settings_row(
@@ -188,6 +195,7 @@ pub(crate) fn render_settings(
                     }),
             ),
         )
+        .child(div().h_px().bg(border))
         .child(
             div()
 
