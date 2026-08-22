@@ -1,4 +1,4 @@
-use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px};
+use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
     ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _, Icon,
     IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
@@ -15,7 +15,6 @@ pub(crate) fn render_settings(
     let weak = cx.entity().downgrade();
     let state = root.state().clone();
 
-    let primary = cx.theme().primary;
     let muted_foreground = cx.theme().muted_foreground;
     let border = cx.theme().border;
 
@@ -36,7 +35,7 @@ pub(crate) fn render_settings(
             h_flex()
                 .items_center()
                 .gap_1()
-                .child(Icon::new(IconName::GlobeStar).size(px(48.)).text_color(primary))
+                .child(img("logo.png").size(px(48.)))
                 .child(
                     v_flex()
                         .child(

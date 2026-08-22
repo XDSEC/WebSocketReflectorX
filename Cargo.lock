@@ -8922,6 +8922,7 @@ dependencies = [
  "open",
  "rand 0.10.1",
  "reqwest",
+ "rust-embed",
  "rustc_version",
  "rustls",
  "serde",

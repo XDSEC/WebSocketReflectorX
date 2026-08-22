@@ -1,3 +1,4 @@
+pub mod assets;
 pub mod daemon;
 pub mod i18n;
 pub mod launcher;

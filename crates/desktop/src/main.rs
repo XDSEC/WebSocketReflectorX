@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Launch the GPUI application with the woocraft component library.
     gpui_platform::application()
-        .with_assets(woocraft::Assets)
+        .with_assets(wsrx_desktop::assets::asset_source())
         .run(move |cx: &mut App| {
             woocraft::init(cx);
             cx.activate(true);
