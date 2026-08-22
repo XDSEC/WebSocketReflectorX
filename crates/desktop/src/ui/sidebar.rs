@@ -32,8 +32,6 @@ pub(crate) fn render_sidebar(
         .p_1()
         .gap_1()
         .bg(theme.tab_bar)
-        .border_r_1()
-        .border_color(theme.border)
         .child(nav_item(
             "nav-home",
             IconName::Home,

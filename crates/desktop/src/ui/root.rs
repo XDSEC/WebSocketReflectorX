@@ -306,15 +306,22 @@ impl Render for RootView {
                     h_flex()
                         .size_full()
                         .min_h_0()
-                        .child(sidebar::render_sidebar(
-                            window,
-                            cx,
-                            &this,
-                            &self.page,
-                            &self.scopes,
-                            self.online,
-                            self.api_port,
-                        ))
+                        .child(
+                            h_flex()
+                                .h_full()
+                                .flex_shrink_0()
+                                .child(sidebar::render_sidebar(
+                                    window,
+                                    cx,
+                                    &this,
+                                    &self.page,
+                                    &self.scopes,
+                                    self.online,
+                                    self.api_port,
+                                ))
+                                // Divider between the sidebar and the content.
+                                .child(div().w_px().h_full().bg(border)),
+                        )
                         .child(
                             div()
                                 .flex_1()

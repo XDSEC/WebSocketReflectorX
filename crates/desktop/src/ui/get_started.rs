@@ -27,7 +27,9 @@ pub(crate) fn render_get_started(
         .gap_1()
         .px_10()
         .py_6()
+        .min_h_full()
         .items_center()
+        .justify_center()
         .overflow_y_scrollbar()
         .size_full()
         .child(
