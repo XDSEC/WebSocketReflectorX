@@ -1,4 +1,4 @@
-use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px, prelude::FluentBuilder as _};
+use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px, svg, prelude::FluentBuilder as _};
 use woocraft::{
     ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input,
     PopupMenuItem, ScrollableElement as _, Sizable as _, h_flex, v_flex,
@@ -37,7 +37,7 @@ pub(crate) fn render_get_started(
                 .items_center()
                 .gap_1()
                 .child(
-                    img("logo.png").size(px(64.)),
+                    svg().path("logo-stroked.svg").size(px(64.)),
                 )
                 .child(
                     h_flex()

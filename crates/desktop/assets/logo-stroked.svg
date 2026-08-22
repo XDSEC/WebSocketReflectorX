@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 12.7 12.7">
+  <g stroke-width=".265" aria-label="S" font-family="'Hexample LDR'" font-size="6.35" paint-order="stroke fill markers"
+    style="line-height:1.25;-inkscape-font-specification:&quot;Hexample LDR&quot;">
+    <path fill="gray"
+      d="M3.274 9.496a39 39 0 0 1-.508-1.035c0-.01 1.102-.02 2.45-.02h2.448l.523-1.044.522-1.045-.243-.489a10 10 0 0 1-.244-.509c0-.01.51-.02 1.135-.02h1.135l.254.508.254.508-1.04 2.08-1.04 2.082H3.78z" />
+    <path fill="#0078d6"
+      d="M1.955 6.859 1.7 6.35 2.74 4.27l1.04-2.081H8.92l.507 1.015c.28.56.508 1.025.508 1.036 0 .01-1.102.02-2.45.02H5.037l-.522 1.044L3.99 6.35l.244.489c.134.269.244.498.244.508s-.511.02-1.135.02H2.209Z" />
+  </g>
+</svg>

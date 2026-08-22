@@ -1,5 +1,5 @@
 use gpui::{App, ClickEvent, Context, Entity, IntoElement, Window};
-use woocraft::{ActiveTheme, Icon, IconName, Theme, ThemeMode, TitleBar};
+use woocraft::{ActiveTheme, Icon, Theme, ThemeMode, TitleBar};
 
 use crate::{daemon, daemon::ServerState, i18n, ui::RootView};
 
@@ -14,7 +14,7 @@ pub(crate) fn render_title_bar(
 
     TitleBar::new()
         .title("WebSocket Reflector X")
-        .icon(Icon::new(IconName::GlobeStar))
+        .icon(Icon::new("logo.svg").colorized(false))
         .theme_button(true)
         .language_button(true)
         .on_theme_button_click({
