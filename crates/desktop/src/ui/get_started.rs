@@ -1,16 +1,16 @@
-use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, px, prelude::FluentBuilder as _};
+use gpui::{
+    Context, IntoElement, ParentElement, Styled, Window, div, prelude::FluentBuilder as _, px,
+};
 use woocraft::{
-    ActiveTheme, Anchor, Button, ButtonVariants as _, Icon, IconName, Input, Popover,
-    ScrollableElement as _, Selectable as _, Sizable as _, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, DropdownMenu as _, Icon, IconName, Input,
+    PopupMenuItem, ScrollableElement as _, Sizable as _, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, models::InstanceData, ui::RootView};
 
 /// Renders the "Get Started" home page.
 pub(crate) fn render_get_started(
-    _window: &mut Window,
-    cx: &mut Context<RootView>,
-    root: &mut RootView,
+    _window: &mut Window, cx: &mut Context<RootView>, root: &mut RootView,
 ) -> impl IntoElement {
     let theme = cx.theme();
     let weak = cx.entity().downgrade();
@@ -19,14 +19,15 @@ pub(crate) fn render_get_started(
     let has_updates = root.has_updates();
     let cursor = if root.cursor_visible() { "_" } else { " " };
     let interfaces = root.interfaces().to_vec();
-    let interface_input = root.interface_input().clone();
+    let selected = root.selected_interface().to_string();
     let remote_input = root.remote_input().clone();
     let port_input = root.port_input().clone();
 
     v_flex()
-        .gap_1()
+        .gap_8()
         .px_10()
-        .py_6()
+        .pt_6()
+        .pb_12()
         .min_h_full()
         .items_center()
         .justify_center()
@@ -37,14 +38,17 @@ pub(crate) fn render_get_started(
             v_flex()
                 .items_center()
                 .gap_1()
-                .child(Icon::new(IconName::GlobeStar).size(px(64.)).text_color(theme.primary))
+                .child(
+                    Icon::new(IconName::GlobeStar)
+                        .size(px(64.))
+                        .text_color(theme.primary),
+                )
                 .child(
                     h_flex()
                         .items_center()
                         .gap_1()
                         .child(
                             div()
-
                                 .font_weight(gpui::FontWeight::BOLD)
                                 .child("WebSocket Reflector X"),
                         )
@@ -52,6 +56,7 @@ pub(crate) fn render_get_started(
                             this.child(
                                 Button::new("update")
                                     .flat()
+                                    .success()
                                     .small()
                                     .icon(Icon::new(IconName::Sparkle))
                                     .label(i18n::t("Update"))
@@ -63,28 +68,22 @@ pub(crate) fn render_get_started(
                             )
                         }),
                 )
-                .child(
-                    div()
-                        .text_color(theme.muted_foreground)
-                        .child(format!(
-                            "{}{cursor}",
-                            i18n::t(
-                                "Controlled TCP-over-WebSocket forwarding tunnel"
-                            )
-                        )),
-                ),
+                .child(div().text_color(theme.muted_foreground).child(format!(
+                    "{}{cursor}",
+                    i18n::t("Controlled TCP-over-WebSocket forwarding tunnel")
+                ))),
         )
         .child(
             // Form: local interface + port, remote address + send
             v_flex()
-                .w(px(520.))
+                .w(px(420.))
                 .gap_1()
                 .child(
                     h_flex()
                         .gap_1()
                         .child(
                             Button::new("refresh-interfaces")
-                                .outline(true)
+                                .default()
                                 .icon(Icon::new(IconName::ArrowSync))
                                 .on_click({
                                     let weak = weak.clone();
@@ -97,61 +96,48 @@ pub(crate) fn render_get_started(
                                 }),
                         )
                         .child(
-                            // Local address input with a popup interface picker.
-                            Popover::new("interface-popover")
-                                .anchor(Anchor::BottomLeft)
-                                .overlay_closable(true)
-                                .trigger(
-                                    Input::new(&interface_input)
-                                        .flex_1()
-                                        .bordered(true),
-                                )
-                                .content({
-                                    let interfaces = interfaces.clone();
-                                    let input = interface_input.clone();
-                                    move |_, _window, cx| {
-                                        let state_entity = cx.entity();
-                                        let current = input.read(cx).value().to_string();
-                                        v_flex()
-                                            .gap_1()
-                                            .p_1()
-                                            .w(px(260.))
-                                            .children(interfaces.iter().map(|interface| {
+                            div().flex_1().child(
+                                // Local address selector with a dropdown interface picker.
+                                Button::new("interface-selector")
+                                    .default()
+                                    .expand(true)
+                                    .w_full()
+                                    .icon(Icon::new(IconName::Globe))
+                                    .label(selected.clone())
+                                    .dropdown_menu({
+                                        let weak = weak.clone();
+                                        let selected = selected.clone();
+                                        let interfaces = interfaces.clone();
+                                        move |menu, _, _| {
+                                            let mut menu = menu;
+                                            for interface in interfaces.iter() {
                                                 let interface = interface.clone();
-                                                let input = input.clone();
-                                                let state_entity = state_entity.clone();
-                                                Button::new(format!("iface-{interface}"))
-                                                    .flat()
-                                                    .expand(true)
-                                                    .selected(interface == current)
-                                                    .label(interface.clone())
-                                                    .on_click(move |_, window, cx| {
-                                                        input.update(cx, |input, input_cx| {
-                                                            input.set_value(
-                                                                interface.clone(),
-                                                                window,
-                                                                input_cx,
-                                                            );
-                                                        });
-                                                        let _ = state_entity
-                                                            .update(cx, |state, cx| {
-                                                                state.dismiss(window, cx);
+                                                let weak = weak.clone();
+                                                let checked = interface == selected;
+                                                menu = menu.item(
+                                                    PopupMenuItem::new(interface.clone())
+                                                        .checked(checked)
+                                                        .on_click(move |_, _, cx| {
+                                                            let _ = weak.update(cx, |root, cx| {
+                                                                root.select_interface(
+                                                                    interface.clone(),
+                                                                );
+                                                                cx.notify();
                                                             });
-                                                    })
-                                            }))
-                                    }
-                                }),
+                                                        }),
+                                                );
+                                            }
+                                            menu
+                                        }
+                                    }),
+                            ),
                         )
                         .child(Input::new(&port_input).w(px(90.))),
                 )
                 .child(
                     h_flex()
                         .gap_1()
-                        .child(
-                            Input::new(&remote_input)
-                                .flex_1()
-                                .bordered(true),
-                        )
+                        .child(Input::new(&remote_input).flex_1().bordered(true))
                         .child(
                             Button::new("send")
                                 .primary()
@@ -159,11 +145,10 @@ pub(crate) fn render_get_started(
                                 .on_click({
                                     let weak = weak.clone();
                                     let state = state.clone();
-                                    let interface_input = interface_input.clone();
+                                    let selected = selected.clone();
                                     move |_, _, cx| {
                                         let state = state.clone();
-                                        let interface =
-                                            interface_input.read(cx).value().to_string();
+                                        let interface = selected.clone();
                                         let remote = remote_input.read(cx).value().to_string();
                                         let port = port_input.read(cx).value().to_string();
                                         let local = format!("{interface}:{port}");
@@ -176,15 +161,12 @@ pub(crate) fn render_get_started(
                                                 latency: -1,
                                                 scope_host: "default-scope".to_string(),
                                             };
-                                            let _ =
-                                                daemon::launch_instance(&state, &data).await;
+                                            let _ = daemon::launch_instance(&state, &data).await;
                                         });
 
                                         let _ = weak.update(cx, |root, cx| {
                                             root.change_page(
-                                                crate::ui::Page::Scope(
-                                                    "default-scope".to_string(),
-                                                ),
+                                                crate::ui::Page::Scope("default-scope".to_string()),
                                                 cx,
                                             );
                                         });
