@@ -10,7 +10,7 @@ use std::sync::OnceLock;
 
 use gpui::{App, WindowHandle};
 use woocraft::{
-    Tray, TrayAppContext, TrayEvent, TrayMenuItem, TrayMouseButton, Error as TrayError,
+    Error as TrayError, Tray, TrayAppContext, TrayEvent, TrayMenuItem, TrayMouseButton,
 };
 
 use crate::{

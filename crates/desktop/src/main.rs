@@ -3,12 +3,15 @@
 // platforms.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::error::Error;
-use std::sync::{Arc, Mutex};
+use std::{
+    error::Error,
+    sync::{Arc, Mutex},
+};
 
-use gpui::{App, Bounds, QuitMode, Size as GpuiSize, WindowBounds, WindowHandle, WindowOptions, px};
-use wsrx_desktop::daemon::UiEvent;
-use wsrx_desktop::{daemon, launcher, logging, tray, ui::RootView};
+use gpui::{
+    App, Bounds, QuitMode, Size as GpuiSize, WindowBounds, WindowHandle, WindowOptions, px,
+};
+use wsrx_desktop::{daemon, daemon::UiEvent, launcher, logging, tray, ui::RootView};
 
 type WindowRef = Arc<Mutex<Option<WindowHandle<RootView>>>>;
 
@@ -79,7 +82,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     }
                                 }
                             }
-                            if process_event(cx, &pump_window_ref, &pump_state, UiEvent::Logs(batch)) {
+                            if process_event(
+                                cx,
+                                &pump_window_ref,
+                                &pump_state,
+                                UiEvent::Logs(batch),
+                            ) {
                                 return;
                             }
                         }
@@ -127,11 +135,9 @@ fn process_event(
             // removed by close-to-tray), so a failed update means reopen.
             let handle = *window_ref.lock().unwrap();
             let needs_reopen = match handle {
-                Some(handle) => {
-                    handle
-                        .update(cx, |_, window, _| window.activate_window())
-                        .is_err()
-                }
+                Some(handle) => handle
+                    .update(cx, |_, window, _| window.activate_window())
+                    .is_err(),
                 None => true,
             };
             if needs_reopen {
@@ -184,7 +190,9 @@ fn process_event(
 }
 
 /// Opens (or reopens) the main window and registers its close handlers.
-fn open_main_window(cx: &mut App, state: daemon::ServerState, window_ref: &WindowRef) -> WindowHandle<RootView> {
+fn open_main_window(
+    cx: &mut App, state: daemon::ServerState, window_ref: &WindowRef,
+) -> WindowHandle<RootView> {
     let bounds = Bounds::centered(None, GpuiSize::new(px(1080.), px(600.)), cx);
     let window = cx
         .open_window(
