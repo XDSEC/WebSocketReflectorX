@@ -62,9 +62,17 @@ pub struct ProxyInstance {
 impl ProxyInstance {
     pub fn new(
         label: impl AsRef<str>, scope_host: impl AsRef<str>, listener: tokio::net::TcpListener,
-        remote: impl AsRef<str>,
+        remote: impl AsRef<str>, accept_invalid_certs: bool,
     ) -> Self {
-        let tunnel = Tunnel::new(remote.as_ref(), listener);
+        let tunnel = if accept_invalid_certs {
+            warn!(
+                "CREATE insecure tunnel: certificate verification is disabled for {}",
+                remote.as_ref()
+            );
+            Tunnel::with_insecure_tls(remote.as_ref(), listener)
+        } else {
+            Tunnel::new(remote.as_ref(), listener)
+        };
 
         Self {
             data: InstanceData {
@@ -304,6 +312,8 @@ pub async fn launch_instance(
 ) -> Result<InstanceData, (axum::http::StatusCode, String)> {
     use wsrx::utils::create_tcp_listener;
 
+    let accept_invalid_certs = state.settings.read().await.insecure_tls;
+
     let listener = create_tcp_listener(&instance_data.local).await?;
 
     let local = listener
@@ -342,6 +352,7 @@ pub async fn launch_instance(
         scope.clone(),
         listener,
         instance_data.remote.clone(),
+        accept_invalid_certs,
     );
 
     let instance_resp: InstanceData = (&instance).into();
@@ -351,7 +362,18 @@ pub async fn launch_instance(
     let state_clone = state.clone();
     let instance = instance_resp.clone();
     tokio().spawn(async move {
-        let client = reqwest::Client::new();
+        let mut client =
+            reqwest::Client::builder().user_agent(format!("wsrx/{}", env!("CARGO_PKG_VERSION")));
+        if accept_invalid_certs {
+            client = client.danger_accept_invalid_certs(true);
+        }
+        let client = match client.build() {
+            Ok(client) => client,
+            Err(err) => {
+                error!("Failed to build latency probe client: {err}");
+                return;
+            }
+        };
         match workers::update_instance_latency(&instance, &client).await {
             Ok(elapsed) => workers::update_instance_state(&state_clone, &instance, elapsed).await,
             Err(_) => workers::update_instance_state(&state_clone, &instance, -1).await,

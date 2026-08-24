@@ -20,6 +20,7 @@ pub(crate) fn render_settings(
     let version = root.version().to_string();
     let language = root.settings().language.clone();
     let running_in_tray = root.settings().running_in_tray;
+    let insecure_tls = root.settings().insecure_tls;
     let cursor = if root.cursor_visible() { "_" } else { " " };
     let info = root.info().to_string();
 
@@ -168,6 +169,60 @@ pub(crate) fn render_settings(
                         }
                     }),
             ),
+        )
+        .child(div().h_px().bg(border))
+        .child(
+            // Insecure TLS: unconditionally trust server certificates
+            v_flex()
+                .gap_1()
+                .child(settings_row(
+                    cx,
+                    i18n::t("Allow insecure TLS connections"),
+                    Button::new("insecure-tls-toggle")
+                        .flat()
+                        .icon(Icon::new(if insecure_tls {
+                            IconName::ToggleRight
+                        } else {
+                            IconName::ToggleLeft
+                        }))
+                        .label(if insecure_tls {
+                            i18n::t("Enabled")
+                        } else {
+                            i18n::t("Disabled")
+                        })
+                        .on_click({
+                            let weak = weak.clone();
+                            let state = state.clone();
+                            move |_, _, cx| {
+                                let enabled = {
+                                    let mut settings = state.settings.blocking_write();
+                                    settings.insecure_tls = !settings.insecure_tls;
+                                    settings.insecure_tls
+                                };
+                                if enabled {
+                                    tracing::warn!(
+                                        "Insecure TLS is enabled by the user, \
+                                         certificate verification is now disabled."
+                                    );
+                                }
+                                daemon::persist_settings_sync(&state);
+                                let _ = weak.update(cx, |root, cx| {
+                                    root.settings.insecure_tls = enabled;
+                                    cx.notify();
+                                });
+                            }
+                        }),
+                ))
+                .child(
+                    div()
+                        .pl_3()
+                        .pr_3()
+                        .text_color(cx.theme().danger)
+                        .opacity(0.85)
+                        .child(i18n::t(
+                            "WARNING: when enabled, wsrx will skip certificate verification and unconditionally trust any certificate for wss:// connections, including self-signed or forged ones. This makes you vulnerable to man-in-the-middle attacks. Only enable it when you know what you are doing.",
+                        )),
+                ),
         )
         .child(div().h_px().bg(border))
         .child(

@@ -84,6 +84,16 @@ static TABLE: Lazy<Vec<Entry>> = Lazy::new(|| {
         ("Quit", "退出", "退出"),
         ("Enabled", "已启用", "已啟用"),
         ("Disabled", "已禁用", "已停用"),
+        (
+            "Allow insecure TLS connections",
+            "允许不安全的 TLS 连接",
+            "允許不安全的 TLS 連線",
+        ),
+        (
+            "WARNING: when enabled, wsrx will skip certificate verification and unconditionally trust any certificate for wss:// connections, including self-signed or forged ones. This makes you vulnerable to man-in-the-middle attacks. Only enable it when you know what you are doing.",
+            "警告：启用后，wsrx 将跳过证书校验，无条件信任 wss:// 连接的任何证书（包括自签名或伪造的证书），使你面临中间人攻击的风险。仅在明确知晓后果时才应启用。",
+            "警告：啟用後，wsrx 將跳過憑證驗證，無條件信任 wss:// 連線的任何憑證（包括自簽名或偽造的憑證），使你面臨中間人攻擊的風險。僅在明確知曉後果時才應啟用。",
+        ),
         ("Language / Locale", "语言 / 区域", "語言 / 地區"),
         ("English", "English", "English"),
         ("简体中文", "简体中文", "简体中文"),

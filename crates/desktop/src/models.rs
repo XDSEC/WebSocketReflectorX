@@ -40,6 +40,10 @@ pub struct WsrxDesktopConfig {
     pub running_in_tray: bool,
     #[serde(default = "default_language")]
     pub language: String,
+    /// When true, connect to `wss://` remotes without verifying the server
+    /// certificate. Disabled by default.
+    #[serde(default)]
+    pub insecure_tls: bool,
 }
 
 impl Default for WsrxDesktopConfig {
@@ -48,6 +52,7 @@ impl Default for WsrxDesktopConfig {
             theme: default_theme(),
             running_in_tray: default_running_in_tray(),
             language: default_language(),
+            insecure_tls: false,
         }
     }
 }
