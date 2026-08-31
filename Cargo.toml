@@ -25,21 +25,21 @@ futures-util     = { version = "0.3", features = ["sink"] }
 local-ip-address = "0.6"
 rustls           = { version = "0.23", features = ["ring"] }
 thiserror        = "2.0"
-tokio            = { version = "1.52", features = ["full"] }
+tokio            = { version = "1.53", features = ["full"] }
 tokio-util       = { version = "0.7", features = ["codec"] }
 
 # optional
 tokio-tungstenite = { version = "0.30", features = ["rustls-tls-native-roots"] }
 
 # binary cli only
-bitflags           = { version = "2.11" }
+bitflags           = { version = "2.13" }
 chrono             = { version = "0.4", features = ["serde"] }
 clap               = { version = "4.6", features = ["derive"] }
 once_cell          = { version = "1.21" }
 rand               = { version = "0.10" }
 serde              = { version = "1.0", features = ["derive", "rc"] }
 serde_json         = { version = "1.0" }
-subprocess         = { version = "1.0" }
+subprocess         = { version = "1.2" }
 tower-http         = { version = "0.7", features = ["cors", "trace"] }
 tracing            = { version = "0.1" }
 tracing-appender   = { version = "0.2" }
@@ -48,15 +48,11 @@ url                = { version = "2.5" }
 
 # GUI
 async-compat = { version = "0.2" }
-open         = "5.3"
+open         = "5.4"
 
 # GPUI / Woocraft
-gpui = { git = "https://github.com/zed-industries/zed", package = "gpui" }
-gpui_platform = { git = "https://github.com/zed-industries/zed", package = "gpui_platform", features = [
-  "font-kit",
-  "wayland",
-  "x11",
-] }
+# gpui / gpui_platform 请统一使用 woocraft 的 re-export（woocraft::gpui / woocraft::gpui_platform），
+# 不要直接依赖 zed 仓库，避免与 woocraft 解析到不同的 rev。
 woocraft = { git = "https://github.com/Reverier-Xu/woocraft", package = "woocraft" }
 
 reqwest = { version = "0.13", features = [

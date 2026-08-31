@@ -14,12 +14,10 @@ version.workspace      = true
 [dependencies]
 wsrx = { path = "../wsrx" }
 
-gpui          = { workspace = true }
-gpui_platform = { workspace = true }
 woocraft      = { workspace = true, features = ["tray"] }
 
-async-channel = "2.2"
-rust-embed   = { version = "8.11", features = ["interpolate-folder-path", "include-exclude"] }
+async-channel = "2.5"
+rust-embed   = { version = "8.12", features = ["interpolate-folder-path", "include-exclude"] }
 directories   = { workspace = true }
 local-ip-address = { workspace = true }
 open          = { workspace = true }

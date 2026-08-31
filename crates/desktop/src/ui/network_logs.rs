@@ -1,6 +1,6 @@
 use std::{ops::Range, sync::Arc};
 
-use gpui::{Context, HighlightStyle, Hsla, IntoElement, Styled, Window, px, rgb};
+use woocraft::gpui::{Context, HighlightStyle, Hsla, IntoElement, Styled, Window, px, rgb};
 use woocraft::{
     CodeEditor, EditorActionSink, EditorBackend, EditorBackendCapabilities,
     EditorBackendEditRequest, EditorBackendEditResult, EditorContextMenuProvider, EditorEditError,
@@ -364,7 +364,7 @@ mod tests {
         let text = "2026-08-22T14:07:00Z  INFO a: one\n".to_owned()
             + "2026-08-22T14:07:01Z  WARN b: two\n"
             + "2026-08-22T14:07:02Z ERROR c: three\n";
-        let backend = LogBackend::new(&text);
+        let backend = LogBackend::new(text);
         let preview = backend.scrollbar_preview(0..3);
         let lines = &preview.lines;
         assert_eq!(lines.len(), 3, "one preview line per requested row");
@@ -377,7 +377,7 @@ mod tests {
     #[test]
     fn preview_window_is_clamped_to_the_document() {
         let text = "2026-08-22T14:07:00Z  INFO a: one\n2026-08-22T14:07:01Z ERROR b: two\n";
-        let backend = LogBackend::new(&text);
+        let backend = LogBackend::new(text);
         // Window far beyond the document must not produce phantom rows.
         let preview = backend.scrollbar_preview(0..1000);
         let lines = &preview.lines;
@@ -391,7 +391,7 @@ mod tests {
         let text = (0..13)
             .map(|i| format!("2026-08-22T14:07:0{i}Z  INFO line {i}: hello\n"))
             .collect::<String>();
-        let backend = LogBackend::new(&text);
+        let backend = LogBackend::new(text);
         let preview = backend.scrollbar_preview(3..8);
         let lines = &preview.lines;
         assert_eq!(lines.len(), 5);
@@ -406,7 +406,7 @@ mod tests {
         // window starts at, so scrolling moves the preview content.
         let text =
             "2026-08-22T14:07:00Z ERROR first\n".to_owned() + "2026-08-22T14:07:01Z  INFO second\n";
-        let backend = LogBackend::new(&text);
+        let backend = LogBackend::new(text);
         let preview = backend.scrollbar_preview(1..2);
         let lines = &preview.lines;
         assert_eq!(lines.len(), 1);
@@ -452,7 +452,7 @@ mod tests {
         let spans = spans_for_line(second).unwrap();
         assert_eq!(&second[spans.level], "INFO");
         assert_eq!(spans.module, None);
-        let backend = LogBackend::new(&text);
+        let backend = LogBackend::new(text);
         let preview = backend.scrollbar_preview(0..10);
         let lines = &preview.lines;
         assert_eq!(lines.len(), 3, "2 entries + trailing empty row");

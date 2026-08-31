@@ -1,4 +1,4 @@
-use gpui::{
+use woocraft::gpui::{
     Context, InteractiveElement, IntoElement, ParentElement, StatefulInteractiveElement, Styled,
     Window, div, prelude::FluentBuilder as _, px,
 };
@@ -61,7 +61,7 @@ pub(crate) fn render_connections(
                                 .flex_1()
                                 .child(
                                     div()
-                                        .font_weight(gpui::FontWeight::BOLD)
+                                        .font_weight(woocraft::gpui::FontWeight::BOLD)
                                         .child(scope_name(&scope, is_default)),
                                 )
                                 .child(div().text_color(theme.muted_foreground).child(
@@ -77,7 +77,7 @@ pub(crate) fn render_connections(
                                 .items_end()
                                 .child(
                                     div()
-                                        .font_weight(gpui::FontWeight::MEDIUM)
+                                        .font_weight(woocraft::gpui::FontWeight::MEDIUM)
                                         .text_color(if is_default {
                                             theme.primary
                                         } else {
@@ -236,12 +236,12 @@ fn scope_name(scope: &Option<ScopeData>, is_default: bool) -> String {
 
 /// Theme colors used by an instance row.
 struct InstanceRowColors {
-    secondary_hover: gpui::Hsla,
-    success: gpui::Hsla,
-    danger: gpui::Hsla,
-    primary: gpui::Hsla,
-    muted_foreground: gpui::Hsla,
-    border: gpui::Hsla,
+    secondary_hover: woocraft::gpui::Hsla,
+    success: woocraft::gpui::Hsla,
+    danger: woocraft::gpui::Hsla,
+    primary: woocraft::gpui::Hsla,
+    muted_foreground: woocraft::gpui::Hsla,
+    border: woocraft::gpui::Hsla,
 }
 
 fn render_instance_row(
@@ -284,7 +284,7 @@ fn render_instance_row(
                         .child(
                             div()
                                 .flex_1()
-                                .font_weight(gpui::FontWeight::SEMIBOLD)
+                                .font_weight(woocraft::gpui::FontWeight::SEMIBOLD)
                                 .child(label),
                         )
                         .child(div().text_color(colors.primary).child(local.to_string())),

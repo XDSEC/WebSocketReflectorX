@@ -8,7 +8,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use gpui::{
+use woocraft::gpui::{
     App, Bounds, QuitMode, Size as GpuiSize, WindowBounds, WindowHandle, WindowOptions, px,
 };
 use wsrx_desktop::{daemon, daemon::UiEvent, launcher, logging, tray, ui::RootView};
@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     daemon::load_persisted_state(&state);
 
     // Launch the GPUI application with the woocraft component library.
-    gpui_platform::application()
+    woocraft::gpui_platform::application()
         .with_assets(wsrx_desktop::assets::asset_source())
         .run(move |cx: &mut App| {
             woocraft::init(cx);
@@ -119,7 +119,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// Handles one UI event on the app level. Returns `true` when the app should
 /// quit (the pump loop should stop).
 fn process_event(
-    cx: &mut gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState, event: UiEvent,
+    cx: &mut woocraft::gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState, event: UiEvent,
 ) -> bool {
     match event {
         UiEvent::Quit => {
@@ -201,9 +201,9 @@ fn open_main_window(
                 titlebar: Some(woocraft::TitleBar::title_bar_options()),
                 window_min_size: Some(GpuiSize::new(px(800.), px(540.))),
                 #[cfg(target_os = "linux")]
-                window_background: gpui::WindowBackgroundAppearance::Transparent,
+                window_background: woocraft::gpui::WindowBackgroundAppearance::Transparent,
                 #[cfg(target_os = "linux")]
-                window_decorations: Some(gpui::WindowDecorations::Client),
+                window_decorations: Some(woocraft::gpui::WindowDecorations::Client),
                 ..Default::default()
             },
             |window, cx| RootView::view(window, cx, state.clone()),

@@ -8,7 +8,7 @@ static TRAY_THREAD: OnceLock<()> = OnceLock::new();
 
 use std::sync::OnceLock;
 
-use gpui::{App, WindowHandle};
+use woocraft::gpui::{App, WindowHandle};
 use woocraft::{
     Error as TrayError, Tray, TrayAppContext, TrayEvent, TrayMenuItem, TrayMouseButton,
 };

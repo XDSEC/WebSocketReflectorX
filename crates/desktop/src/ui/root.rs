@@ -1,4 +1,4 @@
-use gpui::{
+use woocraft::gpui::{
     App, AppContext, Context, Entity, IntoElement, ParentElement, Render, Styled, Window, div,
 };
 use woocraft::{ActiveTheme, Theme, ThemeMode, h_flex, v_flex, window_border};
@@ -39,15 +39,15 @@ pub struct RootView {
     // --- get started page ---
     interfaces: Vec<String>,
     selected_interface: String,
-    pub(crate) remote_input: gpui::Entity<woocraft::InputState>,
-    pub(crate) port_input: gpui::Entity<woocraft::InputState>,
+    pub(crate) remote_input: woocraft::gpui::Entity<woocraft::InputState>,
+    pub(crate) port_input: woocraft::gpui::Entity<woocraft::InputState>,
     cursor_visible: bool,
 
     // --- network logs page ---
-    pub(crate) logs_editor: gpui::Entity<woocraft::EditorState>,
+    pub(crate) logs_editor: woocraft::gpui::Entity<woocraft::EditorState>,
 
     // --- settings page ---
-    pub(crate) info_editor: gpui::Entity<woocraft::EditorState>,
+    pub(crate) info_editor: woocraft::gpui::Entity<woocraft::EditorState>,
     info: String,
     version: String,
 }
@@ -230,11 +230,11 @@ impl RootView {
         &self.selected_interface
     }
 
-    pub(crate) fn remote_input(&self) -> &gpui::Entity<woocraft::InputState> {
+    pub(crate) fn remote_input(&self) -> &woocraft::gpui::Entity<woocraft::InputState> {
         &self.remote_input
     }
 
-    pub(crate) fn port_input(&self) -> &gpui::Entity<woocraft::InputState> {
+    pub(crate) fn port_input(&self) -> &woocraft::gpui::Entity<woocraft::InputState> {
         &self.port_input
     }
 
@@ -279,7 +279,7 @@ impl RootView {
     }
 
     pub(crate) fn copy_to_clipboard(cx: &mut App, text: &str) {
-        cx.write_to_clipboard(gpui::ClipboardItem::new_string(text.to_string()));
+        cx.write_to_clipboard(woocraft::gpui::ClipboardItem::new_string(text.to_string()));
     }
 }
 

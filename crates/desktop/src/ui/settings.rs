@@ -1,4 +1,4 @@
-use gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
+use woocraft::gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
     ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _,
     Icon, IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
@@ -41,7 +41,7 @@ pub(crate) fn render_settings(
                         .child(
                             div()
 
-                                .font_weight(gpui::FontWeight::BOLD)
+                                .font_weight(woocraft::gpui::FontWeight::BOLD)
                                 .child("WebSocket Reflector X"),
                         )
                         .child(

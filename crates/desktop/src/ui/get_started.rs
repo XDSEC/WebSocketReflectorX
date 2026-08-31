@@ -1,4 +1,4 @@
-use gpui::{
+use woocraft::gpui::{
     Context, IntoElement, ParentElement, Styled, Window, div, img, prelude::FluentBuilder as _, px,
 };
 use woocraft::{
@@ -45,7 +45,7 @@ pub(crate) fn render_get_started(
                         .gap_1()
                         .child(
                             div()
-                                .font_weight(gpui::FontWeight::BOLD)
+                                .font_weight(woocraft::gpui::FontWeight::BOLD)
                                 .child("WebSocket Reflector X"),
                         )
                         .when(has_updates, |this| {

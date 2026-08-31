@@ -1,4 +1,4 @@
-use gpui::{Context, Entity, IntoElement, ParentElement, Styled, Window, div, px};
+use woocraft::gpui::{Context, Entity, IntoElement, ParentElement, Styled, Window, div, px};
 use woocraft::{
     ActiveTheme, Button, ButtonVariants as _, Icon, IconName, Selectable as _, Theme, v_flex,
 };
@@ -109,8 +109,8 @@ pub(crate) fn render_sidebar(
 
 /// A full-width flat navigation button with an active state.
 fn nav_item(
-    id: impl Into<gpui::ElementId>, icon: IconName, label: impl Into<gpui::SharedString>,
-    active: bool, on_click: impl Fn(&gpui::ClickEvent, &mut Window, &mut gpui::App) + 'static,
+    id: impl Into<woocraft::gpui::ElementId>, icon: IconName, label: impl Into<woocraft::gpui::SharedString>,
+    active: bool, on_click: impl Fn(&woocraft::gpui::ClickEvent, &mut Window, &mut woocraft::gpui::App) + 'static,
 ) -> Button {
     Button::new(id)
         .flat()
@@ -126,7 +126,7 @@ fn nav_item(
 /// address when online and opens the network logs otherwise. The port number
 /// is right-aligned via an extra flex child.
 fn controller_port_item(
-    online: bool, api_port: u16, weak: gpui::WeakEntity<RootView>, theme: &Theme,
+    online: bool, api_port: u16, weak: woocraft::gpui::WeakEntity<RootView>, theme: &Theme,
 ) -> Button {
     nav_item(
         "nav-controller-port",
@@ -140,7 +140,7 @@ fn controller_port_item(
         move |_, _, cx| {
             if online {
                 let address = format!("http://127.0.0.1:{api_port}");
-                cx.write_to_clipboard(gpui::ClipboardItem::new_string(address));
+                cx.write_to_clipboard(woocraft::gpui::ClipboardItem::new_string(address));
             } else {
                 let _ = weak.update(cx, |root, cx| root.change_page(Page::Logs, cx));
             }
