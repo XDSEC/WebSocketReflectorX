@@ -33,7 +33,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
@@ -78,25 +78,25 @@ jobs:
           mv WebSocketReflectorX-x86_64.AppImage WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
       # Upload Glibc cli package
       - name: Upload Glibc cli package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.tar.gz
           path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.tar.gz
       # Upload musl cli package
       - name: Upload musl cli package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
           path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-musl-x86_64.tar.gz
       # Upload AppImage
       - name: Upload AppImage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
           path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-linux-gnu-x86_64.AppImage
       # Upload to github release
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
@@ -109,7 +109,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
@@ -121,7 +121,7 @@ jobs:
       - name: Install NASM for aws-lc-rs on Windows
         uses: ilammy/setup-nasm@v1
       - name: Install ninja-build tool for aws-lc-fips-sys on Windows
-        uses: seanmiddleditch/gha-setup-ninja@v5
+        uses: seanmiddleditch/gha-setup-ninja@v6
       # Build application
       - name: Build application
         run: |
@@ -141,25 +141,25 @@ jobs:
           mv WebSocketReflectorX-portable-windows-msvc-x86_64.zip WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
       # Upload application ZIP
       - name: Upload application ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-msvc-x86_64.zip
           path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-windows-msvc-x86_64.zip
       # Upload NSIS installer
       - name: Upload NSIS installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-installer-windows-msvc-x86_64.exe
           path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-installer-windows-msvc-x86_64.exe
       # Upload portable package
       - name: Upload Portable package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
           path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-portable-windows-msvc-x86_64.zip
       # Upload to github release
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
@@ -172,7 +172,7 @@ jobs:
     steps:
       # Checkout repository (and submodules)
       - name: Checkout repository (and submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
@@ -213,31 +213,31 @@ jobs:
           mv wsrx-cli-macos-x86_64.zip wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
       # Upload cli ZIP for aarch64
       - name: Upload cli ZIP for aarch64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
           path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.zip
       # Upload cli ZIP for aarch64
       - name: Upload cli ZIP for x86_64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
           path: wsrx-cli-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-x86_64.zip
       # Upload application ZIP for aarch64
       - name: Upload application ZIP for x86_64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
           path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.app.zip
       # Upload application DMG for aarch64
       - name: Upload application DMG for x86_64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
           path: WebSocketReflectorX-${{steps.git_tag_version.outputs.BUILD_VERSION}}-macos-aarch64.dmg
       # Upload to github release
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
