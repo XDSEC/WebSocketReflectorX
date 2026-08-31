@@ -20,6 +20,7 @@ pub(crate) fn render_connections(
     let theme = cx.theme();
     let weak = cx.entity().downgrade();
     let state = root.state().clone();
+    let insecure_tls = root.settings().insecure_tls;
 
     let scope = root.scope_for_page();
     let instances = root.scoped_instances();
@@ -218,6 +219,7 @@ pub(crate) fn render_connections(
                     muted_foreground: theme.muted_foreground,
                     border: theme.border,
                 },
+                insecure_tls,
             )
         }))
         .child(div().h_6())
@@ -246,6 +248,7 @@ struct InstanceRowColors {
 
 fn render_instance_row(
     state: &crate::daemon::ServerState, instance: &InstanceData, colors: InstanceRowColors,
+    insecure_tls: bool,
 ) -> impl IntoElement {
     let state = state.clone();
     let local = instance.local.clone();
@@ -253,6 +256,9 @@ fn render_instance_row(
     let remote = instance.remote.clone();
     let label = instance.label.clone();
     let latency = instance.latency;
+    // Connections over wss:// are made without certificate verification when
+    // insecure TLS is enabled; mark them with an insecure icon.
+    let is_insecure = insecure_tls && remote.starts_with("wss://");
 
     let latency_text = if latency >= 0 {
         format!("{latency} ms")
@@ -294,10 +300,17 @@ fn render_instance_row(
                         .items_center()
                         .gap_4()
                         .child(
-                            div()
+                            h_flex()
                                 .flex_1()
-                                .text_color(colors.muted_foreground)
-                                .child(remote),
+                                .min_w_0()
+                                .items_center()
+                                .gap_2()
+                                .when(is_insecure, |this| {
+                                    this.child(
+                                        Icon::new(IconName::ShieldError).text_color(colors.danger),
+                                    )
+                                })
+                                .child(div().text_color(colors.muted_foreground).child(remote)),
                         )
                         .child(
                             h_flex()

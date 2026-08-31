@@ -13,7 +13,8 @@ use crate::{
 
 /// Periodically pings every instance and updates its latency in the UI.
 pub async fn latency_loop(state: ServerState) {
-    let client = reqwest::Client::new();
+    let mut client = build_latency_client(&state).await;
+    let mut client_insecure = state.settings.read().await.insecure_tls;
     loop {
         let instances = state.instances.read().await;
         let instances_pure = instances
@@ -44,9 +45,32 @@ pub async fn latency_loop(state: ServerState) {
             state.events.send(UiEvent::Refresh).await.ok();
         }
 
+        // Rebuild the probing client when the insecure-TLS setting changes,
+        // so that latency probes follow the same certificate policy as the
+        // actual tunnels.
+        let insecure_tls = state.settings.read().await.insecure_tls;
+        if insecure_tls != client_insecure {
+            client = build_latency_client(&state).await;
+            client_insecure = insecure_tls;
+        }
+
         // Sleep for 5 seconds
         tokio::time::sleep(Duration::from_secs(5)).await;
     }
+}
+
+/// Builds the HTTP client used to probe instance latency. When the user
+/// enabled insecure TLS, invalid server certificates are accepted as well.
+async fn build_latency_client(state: &ServerState) -> reqwest::Client {
+    let mut builder =
+        reqwest::Client::builder().user_agent(format!("wsrx/{}", env!("CARGO_PKG_VERSION")));
+    if state.settings.read().await.insecure_tls {
+        builder = builder.danger_accept_invalid_certs(true);
+    }
+    builder.build().unwrap_or_else(|err| {
+        error!("Failed to build latency probe client: {err}");
+        reqwest::Client::new()
+    })
 }
 
 #[derive(Debug, Error)]
