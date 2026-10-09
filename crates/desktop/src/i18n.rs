@@ -7,9 +7,10 @@
 //! woocraft's own component strings resolve through one pipeline
 //! ([`woocraft::translate`]).
 //!
-//! The app ships translations for `zh-hans` and `zh-hant` only; `en-us`
-//! needs no file because missing keys fall back to the (English) key itself.
-//! The title bar's built-in language menu is restricted to
+//! All three [`SUPPORTED_LOCALES`] ship a file — including `en-us`, whose
+//! identity mapping is required because rust-i18n's missing-key fallback
+//! renders `"<locale>.<key>"`, which would prefix every untranslated string
+//! with `en-us.`. The title bar's built-in language menu is restricted to
 //! [`SUPPORTED_LOCALES`], and the persisted setting stores the same tags
 //! (legacy `en_US` / `zh_CN` / `zh_TW` values are accepted and normalized).
 
@@ -62,8 +63,9 @@ pub fn set_locale(locale: &str) {
     woocraft::set_locale(normalize(locale));
 }
 
-/// Translates `key` in the active locale, falling back to the key itself
-/// (i.e. the English source string) when no translation exists.
+/// Translates `key` in the active locale. Every shipped locale file must
+/// cover every key: a missing entry renders rust-i18n's
+/// `"<locale>.<key>"` fallback instead of the string.
 pub fn t(key: &str) -> String {
     woocraft::translate(key)
 }
@@ -83,15 +85,17 @@ mod tests {
             woocraft::translate_in_locale("zh-hant", "Get Started"),
             "開始使用"
         );
-        // en-us ships no file: missing keys fall back to the key itself.
+        // The en-us identity file resolves without hitting the fallback.
         assert_eq!(
             woocraft::translate_in_locale("en-us", "Get Started"),
             "Get Started"
         );
-        // Keys the app does not translate fall back verbatim.
+        // Keys missing from every locale file render rust-i18n's
+        // "<locale>.<key>" fallback — which is why each shipped locale
+        // must cover every key.
         assert_eq!(
             woocraft::translate_in_locale("zh-hans", "unknown key"),
-            "unknown key"
+            "zh-hans.unknown key"
         );
     }
 
@@ -102,5 +106,45 @@ mod tests {
         assert_eq!(normalize("en"), "en-us");
         // Locales the app does not ship default to en-us.
         assert_eq!(normalize("fr-FR"), "en-us");
+    }
+
+    #[test]
+    fn locale_files_cover_the_same_keys() {
+        let mut files: Vec<(String, std::collections::HashSet<String>)> = vec![];
+        for file in LocaleAssets::iter() {
+            let Some(bytes) = LocaleAssets::get(&file) else {
+                continue;
+            };
+            let translations: HashMap<String, String> =
+                toml::from_slice(bytes.data.as_ref()).expect("valid locale toml");
+            files.push((
+                file.trim_end_matches(".toml").to_string(),
+                translations.into_keys().collect(),
+            ));
+        }
+
+        let reference = files
+            .iter()
+            .find(|(locale, _)| locale == "en-us")
+            .expect("en-us.toml must exist (its identity mapping prevents the \
+                     locale-prefixed missing-key fallback)");
+        for (locale, keys) in &files {
+            if locale == "en-us" {
+                continue;
+            }
+            let missing: Vec<_> = reference
+                .1
+                .difference(keys)
+                .map(String::as_str)
+                .collect();
+            let extra: Vec<_> = keys
+                .difference(&reference.1)
+                .map(String::as_str)
+                .collect();
+            assert!(
+                missing.is_empty() && extra.is_empty(),
+                "{locale} keys diverge from en-us.toml: missing {missing:?}, extra {extra:?}"
+            );
+        }
     }
 }

@@ -1,0 +1,45 @@
+# en-us translations for the wsrx desktop app.
+#
+# This identity file is required: rust-i18n's missing-key fallback renders
+# `"<locale>.<key>"`, so without it every untranslated (English) string would
+# show an `en-us.` prefix. Any new UI string must therefore be added here
+# (and to the other locale files).
+
+# ---- navigation ----
+"Get Started" = "Get Started"
+"Network logs" = "Network logs"
+"Settings" = "Settings"
+"Default Scope" = "Default Scope"
+"Controller port" = "Controller port"
+
+# ---- get started ----
+"Controlled TCP-over-WebSocket forwarding tunnel" = "Controlled TCP-over-WebSocket forwarding tunnel"
+"Update" = "Update"
+"Port..." = "Port..."
+"[ws|wss]://address..." = "[ws|wss]://address..."
+
+# ---- connections ----
+"This is the default scope." = "This is the default scope."
+"Manually Controlled" = "Manually Controlled"
+"External Controlled" = "External Controlled"
+"This scope is controlled by you manually." = "This scope is controlled by you manually."
+"This domain can control wsrx on your local network." = "This domain can control wsrx on your local network."
+"This domain requested controlling wsrx." = "This domain requested controlling wsrx."
+"No Operation" = "No Operation"
+"Accept" = "Accept"
+"Decline" = "Decline"
+"Remove" = "Remove"
+
+# ---- settings ----
+"Version and Updates" = "Version and Updates"
+"Update available" = "Update available"
+"Running in system tray when closed" = "Running in system tray when closed"
+"Allow unverified TLS certificates" = "Allow unverified TLS certificates"
+"Show" = "Show"
+"Quit" = "Quit"
+"Export network logs" = "Export network logs"
+"Export" = "Export"
+"Have problems? Find support here." = "Have problems? Find support here."
+"Support" = "Support"
+"System information for bug reporting and debugging" = "System information for bug reporting and debugging"
+"Copy" = "Copy"
