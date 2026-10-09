@@ -3,7 +3,7 @@ use std::sync::atomic::Ordering;
 use woocraft::gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
     ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _,
-    Icon, IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
+    Icon, IconName, PopupMenuItem, ScrollableElement as _, Selectable, Switch, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, ui::RootView};
@@ -90,27 +90,14 @@ pub(crate) fn render_settings(
             settings_row(
                 cx,
                 i18n::t("Running in system tray when closed"),
-                Button::new("tray-toggle")
-                    .flat()
-                    .icon(Icon::new(if running_in_tray {
-                        IconName::ToggleRight
-                    } else {
-                        IconName::ToggleLeft
-                    }))
-                    .label(if running_in_tray {
-                        i18n::t("Enabled")
-                    } else {
-                        i18n::t("Disabled")
-                    })
+                Switch::new("tray-toggle")
+                    .checked(running_in_tray)
                     .on_click({
                         let weak = weak.clone();
                         let state = state.clone();
-                        move |_, _, cx| {
-                            let running = {
-                                let mut settings = state.settings.blocking_write();
-                                settings.running_in_tray = !settings.running_in_tray;
-                                settings.running_in_tray
-                            };
+                        move |enabled, _, cx| {
+                            let running = *enabled;
+                            state.settings.blocking_write().running_in_tray = running;
                             daemon::persist_settings_sync(&state);
                             if running {
                                 if let Err(err) = crate::tray::enable(cx, &state) {
@@ -132,40 +119,15 @@ pub(crate) fn render_settings(
             // Allow connecting to wss servers with expired or invalid certs
             settings_row(
                 cx,
-                v_flex()
-                    .gap_0p5()
-                    .child(div().child(i18n::t("Allow unverified TLS certificates")))
-                    .child(
-                        div()
-                            .text_xs()
-                            .text_color(muted_foreground)
-                            .child(
-                                i18n::t(
-                                    "When enabled, connections to wss:// servers with expired or invalid certificates are allowed.",
-                                ),
-                            ),
-                    ),
-                Button::new("insecure-tls-toggle")
-                    .flat()
-                    .icon(Icon::new(if allow_insecure_tls {
-                        IconName::ToggleRight
-                    } else {
-                        IconName::ToggleLeft
-                    }))
-                    .label(if allow_insecure_tls {
-                        i18n::t("Enabled")
-                    } else {
-                        i18n::t("Disabled")
-                    })
+                i18n::t("Allow unverified TLS certificates"),
+                Switch::new("insecure-tls-toggle")
+                    .checked(allow_insecure_tls)
                     .on_click({
                         let weak = weak.clone();
                         let state = state.clone();
-                        move |_, _, cx| {
-                            let enabled = {
-                                let mut settings = state.settings.blocking_write();
-                                settings.allow_insecure_tls = !settings.allow_insecure_tls;
-                                settings.allow_insecure_tls
-                            };
+                        move |enabled, _, cx| {
+                            let enabled = *enabled;
+                            state.settings.blocking_write().allow_insecure_tls = enabled;
                             // Flip the runtime flag so running tunnels and the
                             // latency worker pick the new value up immediately.
                             state.insecure_tls.store(enabled, Ordering::Relaxed);
