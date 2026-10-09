@@ -8,7 +8,7 @@ edition      = "2024"
 homepage     = "https://github.com/XDSEC/WebSocketReflectorX"
 license      = "MIT"
 repository   = "https://github.com/XDSEC/WebSocketReflectorX"
-rust-version = "1.95"
+rust-version = "1.98"
 version      = "0.6.1"
 
 [profile.release]
@@ -52,8 +52,8 @@ open         = "5.4"
 
 # GPUI / Woocraft
 # gpui / gpui_platform 请统一使用 woocraft 的 re-export（woocraft::gpui / woocraft::gpui_platform），
-# 不要直接依赖 zed 仓库，避免与 woocraft 解析到不同的 rev。
-woocraft = { git = "https://github.com/Reverier-Xu/woocraft", package = "woocraft" }
+# 不要直接依赖 gpui-pre，避免与 woocraft 解析到不同的版本。
+woocraft = "0.6.2"
 
 reqwest = { version = "0.13", features = [
   "blocking",

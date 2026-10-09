@@ -22,7 +22,19 @@ use crate::{
 /// Enables the tray icon. Idempotent: the event-forwarding thread is started
 /// once for the app lifetime.
 pub fn enable(cx: &mut App, state: &ServerState) -> Result<(), TrayError> {
-    let logo = include_bytes!("../assets/logo.png").to_vec();
+    // macOS renders tray icons as monochrome template images (alpha channel
+    // only), so a colored icon with a background turns into a solid block;
+    // use the plain black background-less glyph there. The macOS backend
+    // draws the image at its point size without scaling, and the menu bar is
+    // only ~22–24pt tall (menu bar extras should be ~18x18pt per HIG), so the
+    // PNG ships at 36x36px with 144 DPI metadata — 18x18pt for NSImage.
+    // Windows and Linux keep the pixels as-is and their taskbars can be
+    // either light or dark, so a white glyph with a dark outline stays
+    // legible on both (their backends scale to tray metrics themselves).
+    #[cfg(target_os = "macos")]
+    let logo = include_bytes!("../assets/logo-tray.png").to_vec();
+    #[cfg(not(target_os = "macos"))]
+    let logo = include_bytes!("../assets/logo-tray-outline.png").to_vec();
     let tray = Tray::new()
         .tooltip("WebSocket Reflector X")
         .icon_bytes(logo)

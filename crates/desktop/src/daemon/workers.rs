@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{sync::atomic::Ordering, time::Duration};
 
 use reqwest::Method;
 use thiserror::Error;
@@ -11,9 +11,25 @@ use crate::{
     models::{FeatureFlags, InstanceData, LogEntry, PingFallSettings},
 };
 
+/// Builds an HTTP client for latency probes against remote instances.
+/// When `allow_insecure` is set, TLS certificate errors (expired / invalid
+/// certificates) are tolerated so the probe matches the tunnel behavior.
+pub(crate) fn latency_client(allow_insecure: bool) -> reqwest::Client {
+    let mut builder =
+        reqwest::Client::builder().user_agent(format!("wsrx/{}", env!("CARGO_PKG_VERSION")));
+    if allow_insecure {
+        builder = builder.danger_accept_invalid_certs(true);
+    }
+    builder.build().unwrap()
+}
+
 /// Periodically pings every instance and updates its latency in the UI.
 pub async fn latency_loop(state: ServerState) {
-    let client = reqwest::Client::new();
+    // (the `allow_insecure` flag the client was built for, the client
+    // itself). Rebuilt only when the setting flips, so keep-alive
+    // connections are reused between iterations.
+    let initial_insecure = state.insecure_tls.load(Ordering::Relaxed);
+    let mut client = (initial_insecure, latency_client(initial_insecure));
     loop {
         let instances = state.instances.read().await;
         let instances_pure = instances
@@ -22,10 +38,15 @@ pub async fn latency_loop(state: ServerState) {
             .collect::<Vec<InstanceData>>();
         drop(instances);
 
+        let allow_insecure = state.insecure_tls.load(Ordering::Relaxed);
+        if client.0 != allow_insecure {
+            client = (allow_insecure, latency_client(allow_insecure));
+        }
+
         let mut changed = false;
         for instance in instances_pure {
             let instance = instance.clone();
-            let client = client.clone();
+            let client = client.1.clone();
             let state = state.clone();
             let result = update_instance_latency(&instance, &client).await;
             let elapsed = match result {

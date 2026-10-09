@@ -1,7 +1,9 @@
+use std::sync::atomic::Ordering;
+
 use woocraft::gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _,
-    Icon, IconName, PopupMenuItem, ScrollableElement as _, Selectable, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, Icon, IconName,
+    ScrollableElement as _, Selectable, Switch, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, ui::RootView};
@@ -18,8 +20,8 @@ pub(crate) fn render_settings(
 
     let has_updates = root.has_updates();
     let version = root.version().to_string();
-    let language = root.settings().language.clone();
     let running_in_tray = root.settings().running_in_tray;
+    let allow_insecure_tls = root.settings().allow_insecure_tls;
     let cursor = if root.cursor_visible() { "_" } else { " " };
     let info = root.info().to_string();
 
@@ -87,27 +89,14 @@ pub(crate) fn render_settings(
             settings_row(
                 cx,
                 i18n::t("Running in system tray when closed"),
-                Button::new("tray-toggle")
-                    .flat()
-                    .icon(Icon::new(if running_in_tray {
-                        IconName::ToggleRight
-                    } else {
-                        IconName::ToggleLeft
-                    }))
-                    .label(if running_in_tray {
-                        i18n::t("Enabled")
-                    } else {
-                        i18n::t("Disabled")
-                    })
+                Switch::new("tray-toggle")
+                    .checked(running_in_tray)
                     .on_click({
                         let weak = weak.clone();
                         let state = state.clone();
-                        move |_, _, cx| {
-                            let running = {
-                                let mut settings = state.settings.blocking_write();
-                                settings.running_in_tray = !settings.running_in_tray;
-                                settings.running_in_tray
-                            };
+                        move |enabled, _, cx| {
+                            let running = *enabled;
+                            state.settings.blocking_write().running_in_tray = running;
                             daemon::persist_settings_sync(&state);
                             if running {
                                 if let Err(err) = crate::tray::enable(cx, &state) {
@@ -126,45 +115,26 @@ pub(crate) fn render_settings(
         )
         .child(div().h_px().bg(border))
         .child(
-            // Language / Locale
+            // Allow connecting to wss servers with expired or invalid certs
             settings_row(
                 cx,
-                i18n::t("Language / Locale"),
-                Button::new("language-selector")
-                    .flat()
-                    .icon(Icon::new(IconName::LocalLanguage))
-                    .label(language_display_name(&language))
-                    .dropdown_menu({
+                i18n::t("Allow unverified TLS certificates"),
+                Switch::new("insecure-tls-toggle")
+                    .checked(allow_insecure_tls)
+                    .on_click({
                         let weak = weak.clone();
                         let state = state.clone();
-                        move |menu, _, _| {
-                            let mut menu = menu;
-                            for (code, display) in [
-                                ("en_US", "English"),
-                                ("zh_CN", "简体中文"),
-                                ("zh_TW", "繁體中文"),
-                            ] {
-                                let checked = code == language;
-                                let weak = weak.clone();
-                                let state = state.clone();
-                                menu = menu.item(
-                                    PopupMenuItem::new(display)
-                                        .checked(checked)
-                                        .on_click(move |_, _, cx| {
-                                            i18n::set_locale(code);
-                                            state
-                                                .settings
-                                                .blocking_write()
-                                                .language = code.to_string();
-                                            daemon::persist_settings_sync(&state);
-                                            let _ = weak.update(cx, |root, cx| {
-                                                root.settings.language = code.to_string();
-                                                cx.notify();
-                                            });
-                                        }),
-                                );
-                            }
-                            menu
+                        move |enabled, _, cx| {
+                            let enabled = *enabled;
+                            state.settings.blocking_write().allow_insecure_tls = enabled;
+                            // Flip the runtime flag so running tunnels and the
+                            // latency worker pick the new value up immediately.
+                            state.insecure_tls.store(enabled, Ordering::Relaxed);
+                            daemon::persist_settings_sync(&state);
+                            let _ = weak.update(cx, |root, cx| {
+                                root.settings.allow_insecure_tls = enabled;
+                                cx.notify();
+                            });
                         }
                     }),
             ),
@@ -255,13 +225,4 @@ fn settings_row(
         .gap_1()
         .child(div().flex_1().text_color(theme.foreground).child(label))
         .child(control)
-}
-
-fn language_display_name(language: &str) -> String {
-    match language {
-        "zh_CN" => "简体中文",
-        "zh_TW" => "繁體中文",
-        _ => "English",
-    }
-    .to_string()
 }

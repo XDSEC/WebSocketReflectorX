@@ -11,7 +11,7 @@ use std::{
 use woocraft::gpui::{
     App, Bounds, QuitMode, Size as GpuiSize, WindowBounds, WindowHandle, WindowOptions, px,
 };
-use wsrx_desktop::{daemon, daemon::UiEvent, launcher, logging, tray, ui::RootView};
+use wsrx_desktop::{daemon, daemon::UiEvent, i18n, launcher, logging, tray, ui::RootView};
 
 type WindowRef = Arc<Mutex<Option<WindowHandle<RootView>>>>;
 
@@ -45,6 +45,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .with_assets(wsrx_desktop::assets::asset_source())
         .run(move |cx: &mut App| {
             woocraft::init(cx);
+            // Load the app's translations into woocraft's i18n store.
+            i18n::init();
             cx.activate(true);
             // The window can be closed-to-tray while the daemon and tray keep
             // running, so never auto-quit when the last window closes; the
@@ -119,7 +121,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// Handles one UI event on the app level. Returns `true` when the app should
 /// quit (the pump loop should stop).
 fn process_event(
-    cx: &mut woocraft::gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState, event: UiEvent,
+    cx: &mut woocraft::gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState,
+    event: UiEvent,
 ) -> bool {
     match event {
         UiEvent::Quit => {

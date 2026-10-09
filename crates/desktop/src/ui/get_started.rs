@@ -104,8 +104,10 @@ pub(crate) fn render_get_started(
                                         let weak = weak.clone();
                                         let selected = selected.clone();
                                         let interfaces = interfaces.clone();
-                                        move |menu, _, _| {
-                                            let mut menu = menu.min_w(px(282.)).max_w(px(282.));
+                                        move |menu, window, _| {
+                                            let width =
+                                                woocraft::gpui::Rems::from_pixels(px(282.), window);
+                                            let mut menu = menu.min_w(px(282.)).max_w(width);
                                             for interface in interfaces.iter() {
                                                 let interface = interface.clone();
                                                 let weak = weak.clone();

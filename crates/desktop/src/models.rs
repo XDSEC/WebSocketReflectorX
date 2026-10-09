@@ -4,7 +4,6 @@ use bitflags::bitflags;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-
 /// A single proxied tunnel instance shown in the UI.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InstanceData {
@@ -38,6 +37,8 @@ pub struct WsrxDesktopConfig {
     pub theme: String,
     #[serde(default = "default_running_in_tray")]
     pub running_in_tray: bool,
+    #[serde(default = "default_allow_insecure_tls")]
+    pub allow_insecure_tls: bool,
     #[serde(default = "default_language")]
     pub language: String,
 }
@@ -47,6 +48,7 @@ impl Default for WsrxDesktopConfig {
         Self {
             theme: default_theme(),
             running_in_tray: default_running_in_tray(),
+            allow_insecure_tls: default_allow_insecure_tls(),
             language: default_language(),
         }
     }
@@ -147,36 +149,15 @@ fn default_label() -> String {
     format!("inst-{:06x}", rand::random::<u32>())
 }
 
-// handle "en-US" / "en" / "zh" / "zh-CN" / "zh-Hans-CN" / "zh-Hant-TW"
-// into one of "en_US" / "zh_CN" / "zh_TW"
-pub fn normalize_language(locale: String) -> String {
-    let mut parts = locale.split('-');
-    let lang = parts.next().unwrap_or("en");
-    let region = parts.next().map(|s| match s {
-        "CN" => "CN",
-        "TW" => "TW",
-        "HK" => "TW",
-        "Hans" => "CN",
-        "Hant" => "TW",
-        _ => "US",
-    });
-
-    match lang {
-        "en" => format!("en_{}", region.unwrap_or("US")),
-        "zh" => format!("zh_{}", region.unwrap_or("CN")),
-        _ => {
-            tracing::warn!("Unsupported language: {}, defaulting to en_US", locale);
-            "en_US".to_string()
-        }
-    }
-}
-
+/// Detects the system locale, clamped onto the locales the app ships
+/// (woocraft tags like `zh-hans`; anything untranslated defaults to
+/// `en-us`).
 pub fn default_language() -> String {
     sys_locale::get_locale()
-        .map(normalize_language)
+        .map(|locale| crate::i18n::normalize(&locale).to_string())
         .unwrap_or_else(|| {
-            tracing::warn!("Failed to get system locale, defaulting to en_US");
-            "en_US".to_string()
+            tracing::warn!("Failed to get system locale, defaulting to en-us");
+            "en-us".to_string()
         })
 }
 
@@ -185,5 +166,9 @@ fn default_theme() -> String {
 }
 
 const fn default_running_in_tray() -> bool {
+    false
+}
+
+const fn default_allow_insecure_tls() -> bool {
     false
 }
