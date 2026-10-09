@@ -1,3 +1,5 @@
+use std::sync::atomic::Ordering;
+
 use woocraft::gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
     ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _,
@@ -20,6 +22,7 @@ pub(crate) fn render_settings(
     let version = root.version().to_string();
     let language = root.settings().language.clone();
     let running_in_tray = root.settings().running_in_tray;
+    let allow_insecure_tls = root.settings().allow_insecure_tls;
     let cursor = if root.cursor_visible() { "_" } else { " " };
     let info = root.info().to_string();
 
@@ -118,6 +121,57 @@ pub(crate) fn render_settings(
                             }
                             let _ = weak.update(cx, |root, cx| {
                                 root.settings.running_in_tray = running;
+                                cx.notify();
+                            });
+                        }
+                    }),
+            ),
+        )
+        .child(div().h_px().bg(border))
+        .child(
+            // Allow connecting to wss servers with expired or invalid certs
+            settings_row(
+                cx,
+                v_flex()
+                    .gap_0p5()
+                    .child(div().child(i18n::t("Allow unverified TLS certificates")))
+                    .child(
+                        div()
+                            .text_xs()
+                            .text_color(muted_foreground)
+                            .child(
+                                i18n::t(
+                                    "When enabled, connections to wss:// servers with expired or invalid certificates are allowed.",
+                                ),
+                            ),
+                    ),
+                Button::new("insecure-tls-toggle")
+                    .flat()
+                    .icon(Icon::new(if allow_insecure_tls {
+                        IconName::ToggleRight
+                    } else {
+                        IconName::ToggleLeft
+                    }))
+                    .label(if allow_insecure_tls {
+                        i18n::t("Enabled")
+                    } else {
+                        i18n::t("Disabled")
+                    })
+                    .on_click({
+                        let weak = weak.clone();
+                        let state = state.clone();
+                        move |_, _, cx| {
+                            let enabled = {
+                                let mut settings = state.settings.blocking_write();
+                                settings.allow_insecure_tls = !settings.allow_insecure_tls;
+                                settings.allow_insecure_tls
+                            };
+                            // Flip the runtime flag so running tunnels and the
+                            // latency worker pick the new value up immediately.
+                            state.insecure_tls.store(enabled, Ordering::Relaxed);
+                            daemon::persist_settings_sync(&state);
+                            let _ = weak.update(cx, |root, cx| {
+                                root.settings.allow_insecure_tls = enabled;
                                 cx.notify();
                             });
                         }

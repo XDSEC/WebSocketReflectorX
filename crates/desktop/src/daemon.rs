@@ -1,13 +1,16 @@
 use std::{
     collections::VecDeque,
-    sync::{Arc, OnceLock},
+    sync::{
+        Arc, OnceLock,
+        atomic::{AtomicBool, Ordering},
+    },
 };
 
 use async_channel::{Receiver, Sender, unbounded};
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use tracing::{debug, error, info, warn};
-use wsrx::tunnel::Tunnel;
+use wsrx::tunnel::{Tunnel, TunnelOptions};
 
 use crate::{
     launcher,
@@ -44,6 +47,10 @@ pub struct ServerState {
     pub instances: Arc<RwLock<Vec<ProxyInstance>>>,
     pub scopes: Arc<RwLock<Vec<ScopeData>>>,
     pub settings: Arc<RwLock<WsrxDesktopConfig>>,
+    /// Runtime mirror of `settings.allow_insecure_tls`, read by running
+    /// tunnels and the latency worker on every outgoing connection, so
+    /// flipping the setting takes effect without relaunching instances.
+    pub insecure_tls: Arc<AtomicBool>,
     /// The API server port, once bound.
     pub api_port: Arc<RwLock<u16>>,
     /// Whether a newer release exists on GitHub.
@@ -62,9 +69,9 @@ pub struct ProxyInstance {
 impl ProxyInstance {
     pub fn new(
         label: impl AsRef<str>, scope_host: impl AsRef<str>, listener: tokio::net::TcpListener,
-        remote: impl AsRef<str>,
+        remote: impl AsRef<str>, options: TunnelOptions,
     ) -> Self {
-        let tunnel = Tunnel::new(remote.as_ref(), listener);
+        let tunnel = Tunnel::with_options(remote.as_ref(), listener, options);
 
         Self {
             data: InstanceData {
@@ -141,6 +148,7 @@ pub fn spawn_background() -> (ServerState, Receiver<UiEvent>) {
         instances: Arc::new(RwLock::new(vec![])),
         scopes: Arc::new(RwLock::new(vec![])),
         settings: Arc::new(RwLock::new(WsrxDesktopConfig::default())),
+        insecure_tls: Arc::new(AtomicBool::new(false)),
         api_port: Arc::new(RwLock::new(0)),
         has_updates: Arc::new(RwLock::new(false)),
         logs: Arc::new(RwLock::new(VecDeque::new())),
@@ -216,6 +224,9 @@ pub fn load_persisted_state(state: &ServerState) {
         })
         .unwrap_or_default();
     debug!("Loaded config: {:?}", config);
+    state
+        .insecure_tls
+        .store(config.allow_insecure_tls, Ordering::Relaxed);
     *state.settings.blocking_write() = config;
 }
 
@@ -342,6 +353,7 @@ pub async fn launch_instance(
         scope.clone(),
         listener,
         instance_data.remote.clone(),
+        TunnelOptions::shared(state.insecure_tls.clone()),
     );
 
     let instance_resp: InstanceData = (&instance).into();
@@ -350,8 +362,9 @@ pub async fn launch_instance(
 
     let state_clone = state.clone();
     let instance = instance_resp.clone();
+    let allow_insecure = state.insecure_tls.load(Ordering::Relaxed);
     tokio().spawn(async move {
-        let client = reqwest::Client::new();
+        let client = workers::latency_client(allow_insecure);
         match workers::update_instance_latency(&instance, &client).await {
             Ok(elapsed) => workers::update_instance_state(&state_clone, &instance, elapsed).await,
             Err(_) => workers::update_instance_state(&state_clone, &instance, -1).await,

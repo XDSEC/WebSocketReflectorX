@@ -79,6 +79,16 @@ static TABLE: Lazy<Vec<Entry>> = Lazy::new(|| {
             "关闭时在系统托盘运行",
             "關閉時在系統匣執行",
         ),
+        (
+            "Allow unverified TLS certificates",
+            "允许未验证的 TLS 证书",
+            "允許未驗證的 TLS 憑證",
+        ),
+        (
+            "When enabled, connections to wss:// servers with expired or invalid certificates are allowed.",
+            "启用后，允许连接到证书过期或无效的 wss 服务器。",
+            "啟用後，允許連線到憑證過期或無效的 wss 伺服器。",
+        ),
         (" (not implemented yet) ", "（尚未实现）", "（尚未實作）"),
         ("Show", "显示", "顯示"),
         ("Quit", "退出", "退出"),

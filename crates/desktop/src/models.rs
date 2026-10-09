@@ -38,6 +38,8 @@ pub struct WsrxDesktopConfig {
     pub theme: String,
     #[serde(default = "default_running_in_tray")]
     pub running_in_tray: bool,
+    #[serde(default = "default_allow_insecure_tls")]
+    pub allow_insecure_tls: bool,
     #[serde(default = "default_language")]
     pub language: String,
 }
@@ -47,6 +49,7 @@ impl Default for WsrxDesktopConfig {
         Self {
             theme: default_theme(),
             running_in_tray: default_running_in_tray(),
+            allow_insecure_tls: default_allow_insecure_tls(),
             language: default_language(),
         }
     }
@@ -185,5 +188,9 @@ fn default_theme() -> String {
 }
 
 const fn default_running_in_tray() -> bool {
+    false
+}
+
+const fn default_allow_insecure_tls() -> bool {
     false
 }
