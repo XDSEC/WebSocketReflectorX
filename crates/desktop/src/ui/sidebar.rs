@@ -109,8 +109,9 @@ pub(crate) fn render_sidebar(
 
 /// A full-width flat navigation button with an active state.
 fn nav_item(
-    id: impl Into<woocraft::gpui::ElementId>, icon: IconName, label: impl Into<woocraft::gpui::SharedString>,
-    active: bool, on_click: impl Fn(&woocraft::gpui::ClickEvent, &mut Window, &mut woocraft::gpui::App) + 'static,
+    id: impl Into<woocraft::gpui::ElementId>, icon: IconName,
+    label: impl Into<woocraft::gpui::SharedString>, active: bool,
+    on_click: impl Fn(&woocraft::gpui::ClickEvent, &mut Window, &mut woocraft::gpui::App) + 'static,
 ) -> Button {
     Button::new(id)
         .flat()

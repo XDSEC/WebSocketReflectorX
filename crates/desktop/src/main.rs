@@ -119,7 +119,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// Handles one UI event on the app level. Returns `true` when the app should
 /// quit (the pump loop should stop).
 fn process_event(
-    cx: &mut woocraft::gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState, event: UiEvent,
+    cx: &mut woocraft::gpui::AsyncApp, window_ref: &WindowRef, state: &daemon::ServerState,
+    event: UiEvent,
 ) -> bool {
     match event {
         UiEvent::Quit => {
