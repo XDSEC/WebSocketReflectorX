@@ -66,7 +66,7 @@ pub(crate) fn render_connections(
                                 )
                                 .child(div().text_color(theme.muted_foreground).child(
                                     if is_default {
-                                        i18n::t("This is the default scope.").to_string()
+                                        i18n::t("This is the default scope.")
                                     } else {
                                         scope.as_ref().map(|s| s.host.clone()).unwrap_or_default()
                                     },
@@ -225,7 +225,7 @@ pub(crate) fn render_connections(
 
 fn scope_name(scope: &Option<ScopeData>, is_default: bool) -> String {
     if is_default {
-        i18n::t("Default Scope").to_string()
+        i18n::t("Default Scope")
     } else {
         scope
             .as_ref()

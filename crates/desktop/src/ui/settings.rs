@@ -2,8 +2,8 @@ use std::sync::atomic::Ordering;
 
 use woocraft::gpui::{Context, IntoElement, ParentElement, Styled, Window, div, img, px};
 use woocraft::{
-    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, DropdownMenu as _,
-    Icon, IconName, PopupMenuItem, ScrollableElement as _, Selectable, Switch, h_flex, v_flex,
+    ActiveTheme, Button, ButtonVariants as _, CodeEditor, Disableable as _, Icon, IconName,
+    ScrollableElement as _, Selectable, Switch, h_flex, v_flex,
 };
 
 use crate::{daemon, i18n, ui::RootView};
@@ -20,7 +20,6 @@ pub(crate) fn render_settings(
 
     let has_updates = root.has_updates();
     let version = root.version().to_string();
-    let language = root.settings().language.clone();
     let running_in_tray = root.settings().running_in_tray;
     let allow_insecure_tls = root.settings().allow_insecure_tls;
     let cursor = if root.cursor_visible() { "_" } else { " " };
@@ -142,51 +141,6 @@ pub(crate) fn render_settings(
         )
         .child(div().h_px().bg(border))
         .child(
-            // Language / Locale
-            settings_row(
-                cx,
-                i18n::t("Language / Locale"),
-                Button::new("language-selector")
-                    .flat()
-                    .icon(Icon::new(IconName::LocalLanguage))
-                    .label(language_display_name(&language))
-                    .dropdown_menu({
-                        let weak = weak.clone();
-                        let state = state.clone();
-                        move |menu, _, _| {
-                            let mut menu = menu;
-                            for (code, display) in [
-                                ("en_US", "English"),
-                                ("zh_CN", "简体中文"),
-                                ("zh_TW", "繁體中文"),
-                            ] {
-                                let checked = code == language;
-                                let weak = weak.clone();
-                                let state = state.clone();
-                                menu = menu.item(
-                                    PopupMenuItem::new(display)
-                                        .checked(checked)
-                                        .on_click(move |_, _, cx| {
-                                            i18n::set_locale(code);
-                                            state
-                                                .settings
-                                                .blocking_write()
-                                                .language = code.to_string();
-                                            daemon::persist_settings_sync(&state);
-                                            let _ = weak.update(cx, |root, cx| {
-                                                root.settings.language = code.to_string();
-                                                cx.notify();
-                                            });
-                                        }),
-                                );
-                            }
-                            menu
-                        }
-                    }),
-            ),
-        )
-        .child(div().h_px().bg(border))
-        .child(
             // Export network logs
             settings_row(
                 cx,
@@ -271,13 +225,4 @@ fn settings_row(
         .gap_1()
         .child(div().flex_1().text_color(theme.foreground).child(label))
         .child(control)
-}
-
-fn language_display_name(language: &str) -> String {
-    match language {
-        "zh_CN" => "简体中文",
-        "zh_TW" => "繁體中文",
-        _ => "English",
-    }
-    .to_string()
 }

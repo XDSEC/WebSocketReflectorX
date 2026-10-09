@@ -1,0 +1,44 @@
+# zh-hant translations for the wsrx desktop app.
+#
+# Keys are the English source strings; `en-us` needs no file because missing
+# translations fall back to the key itself. These are merged into woocraft's
+# i18n store at startup (see `src/i18n.rs`).
+
+# ---- navigation ----
+"Get Started" = "開始使用"
+"Network logs" = "網路日誌"
+"Settings" = "設定"
+"Default Scope" = "預設範圍"
+"Controller port" = "控制器連接埠"
+
+# ---- get started ----
+"Controlled TCP-over-WebSocket forwarding tunnel" = "受控 TCP-over-WebSocket 轉發隧道"
+"Update" = "更新"
+"Port..." = "連接埠..."
+"[ws|wss]://address..." = "[ws|wss]://位址..."
+
+# ---- connections ----
+"This is the default scope." = "這是預設範圍。"
+"Manually Controlled" = "手動控制"
+"External Controlled" = "外部控制"
+"This scope is controlled by you manually." = "該範圍由你手動控制。"
+"This domain can control wsrx on your local network." = "該網域可以在你的區域網路內控制 wsrx。"
+"This domain requested controlling wsrx." = "該網域請求控制 wsrx。"
+"No Operation" = "无需操作"
+"Accept" = "接受"
+"Decline" = "拒絕"
+"Remove" = "移除"
+
+# ---- settings ----
+"Version and Updates" = "版本與更新"
+"Update available" = "有可用更新"
+"Running in system tray when closed" = "關閉時在系統匣執行"
+"Allow unverified TLS certificates" = "允許未驗證的 TLS 憑證"
+"Show" = "顯示"
+"Quit" = "退出"
+"Export network logs" = "匯出網路日誌"
+"Export" = "匯出"
+"Have problems? Find support here." = "遇到問題？在這裡尋求支援。"
+"Support" = "支援"
+"System information for bug reporting and debugging" = "用於 Bug 回報與除錯的系統資訊"
+"Copy" = "複製"

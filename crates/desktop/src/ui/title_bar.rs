@@ -14,6 +14,9 @@ pub(crate) fn render_title_bar(
         .icon(Icon::new("logo-stroked.svg").colorized(false))
         .theme_button(true)
         .language_button(true)
+        // Only offer the languages the app ships translations for; the menu
+        // itself is woocraft's built-in one.
+        .languages(i18n::SUPPORTED_LOCALES)
         // The woocraft title bar's own close button calls remove_window()
         // directly, bypassing `on_window_should_close`; route it through the
         // same logic (close-to-tray or real shutdown). Linux only.
@@ -51,25 +54,15 @@ pub(crate) fn render_title_bar(
             let weak = weak.clone();
             let state = state.clone();
             move |_: &ClickEvent, _: &mut Window, cx: &mut App| {
-                let woocraft_locale = woocraft::locale();
-                let locale = normalize_woocraft_locale(&woocraft_locale);
-                i18n::set_locale(locale);
-                state.settings.blocking_write().language = locale.to_string();
+                // The title bar's menu has already switched woocraft's locale
+                // (restricted to the supported set); persist that choice.
+                let locale = woocraft::locale().to_string();
+                state.settings.blocking_write().language = locale.clone();
                 daemon::persist_settings_sync(&state);
                 let _ = weak.update(cx, |root, cx| {
-                    root.settings.language = locale.to_string();
+                    root.settings.language = locale.clone();
                     cx.notify();
                 });
             }
         })
-}
-
-/// Maps a woocraft locale (e.g. `"zh-hans"`, `"zh-hant"`, `"en-us"`) onto the
-/// app's locale identifiers (`en_US` / `zh_CN` / `zh_TW`).
-fn normalize_woocraft_locale(locale: &str) -> &'static str {
-    match locale {
-        "zh-hans" => i18n::LOCALE_ZH_CN,
-        "zh-hant" => i18n::LOCALE_ZH_TW,
-        _ => i18n::LOCALE_EN_US,
-    }
 }
