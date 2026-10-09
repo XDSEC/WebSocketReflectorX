@@ -187,7 +187,10 @@ jobs:
       - name: Build CLI binaries
         run: |
           rustup update stable && rustup default stable;
-          cargo install cargo-bundle;
+          # cargo-bundle 0.12.0 (2026-09) dropped the `osx_url_schemes`
+          # metadata field and breaks DMG packaging; pin the last version
+          # that accepts the current [package.metadata.bundle] schema.
+          cargo install cargo-bundle --version 0.11.0;
           cargo build --release --bins;
       # Build CLI binaries for x86_64
       - name: Build CLI binaries for x86_64
