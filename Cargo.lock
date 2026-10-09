@@ -9201,7 +9201,7 @@ checksum = "3ad82d2a33cdc9674dc7465672f271e096168fcdbe0f799d9e6db8c5892679dc"
 
 [[package]]
 name = "wsrx"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "axum",
  "chrono",
@@ -9224,7 +9224,7 @@ dependencies = [
 
 [[package]]
 name = "wsrx-desktop"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-channel",
  "axum",
